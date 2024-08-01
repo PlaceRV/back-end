@@ -1,17 +1,18 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { DatabaseModule } from './database/database.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import Joi from 'joi';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { UserModule } from './user/user.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
+    // Load GraphQL and Apollo SandBox
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       // Code first
@@ -22,6 +23,7 @@ import { UserModule } from './user/user.module';
       playground: false,
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
     }),
+    // Load .env
     ConfigModule.forRoot({
       validationSchema: Joi.object({
         POSTGRES_HOST: Joi.string().required(),
@@ -32,7 +34,22 @@ import { UserModule } from './user/user.module';
         PORT: Joi.number(),
       }),
     }),
-    DatabaseModule,
+    // Load TypeOrm
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get('POSTGRES_HOST'),
+        port: configService.get('POSTGRES_PORT'),
+        username: configService.get('POSTGRES_USER'),
+        password: configService.get('POSTGRES_PASS'),
+        database: configService.get('POSTGRES_DB'),
+        entities: [],
+        synchronize: true,
+        autoLoadEntities: true,
+      }),
+    }),
     UserModule,
   ],
   controllers: [AppController],
