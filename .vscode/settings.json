@@ -9,7 +9,7 @@
     "**/node_modules": true,
     "**/dist": true,
     "**/*.spec*": true,
-    "**/*.example*": true
+    "**/*.example*": false
   },
   "todohighlight.keywords": [
     {
