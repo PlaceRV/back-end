@@ -8,6 +8,11 @@ export class User {
   id: string;
 
   @Field()
+  @Column({ length: 15, default: 'user' })
+  type: string;
+
+  // Basic infomation
+  @Field()
   @Column({ length: 15, nullable: false })
   firstName!: string;
 

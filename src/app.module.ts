@@ -11,6 +11,7 @@ import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { createPostgresDatabase } from 'typeorm-extension';
 import { DataSourceOptions } from 'typeorm';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -24,6 +25,8 @@ import { DataSourceOptions } from 'typeorm';
       // Init Apollo SandBox
       playground: false,
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
+      includeStacktraceInErrorResponses: false,
+      inheritResolversFromInterfaces: false,
     }),
     // Load .env
     ConfigModule.forRoot({
@@ -58,6 +61,7 @@ import { DataSourceOptions } from 'typeorm';
       },
     }),
     UserModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

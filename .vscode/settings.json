@@ -1,0 +1,21 @@
+{
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/*.spec*": true
+  },
+  "todohighlight.keywords": [
+    {
+      "text": "Queries",
+      "color": "#4b3621",
+      "backgroundColor": "#00bfff",
+      "isWholeLine": true
+    },
+    {
+      "text": "Mutations",
+      "color": "#e3a857",
+      "backgroundColor": "#69359c",
+      "isWholeLine": true
+    }
+  ]
+}

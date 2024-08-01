@@ -5,30 +5,27 @@ import { CreateUserInput } from './user.input';
 
 @Resolver(() => User)
 export class UserResolver {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly service: UserService) {}
 
-  @Mutation(() => User)
-  createUser(@Args('createUserInput') createUserInput: CreateUserInput) {
-    return this.userService.create(createUserInput);
+  // Queries
+  @Query(() => User)
+  findOne(@Args('id') id: string) {
+    return this.service.findOne(id);
   }
 
   @Query(() => [User])
   findAll() {
-    return this.userService.findAll();
+    return this.service.findAll();
   }
 
-  @Query(() => User)
-  findOne(@Args('id', { type: () => Int }) id: number) {
-    return this.userService.findOne(id);
+  // Mutations
+  @Mutation(() => User)
+  createUser(@Args('createUserInput') createUserInput: CreateUserInput) {
+    return this.service.create(createUserInput);
   }
 
   @Mutation(() => User)
-  removeUser(@Args('id', { type: () => Int }) id: number) {
-    return this.userService.remove(id);
-  }
-
-  @Query((returns) => String)
-  helloWorld() {
-    return 'Hello World';
+  removeUser(@Args('id') id: string) {
+    return this.service.remove(id);
   }
 }
