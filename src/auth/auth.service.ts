@@ -1,26 +1,28 @@
 import { Injectable } from '@nestjs/common';
-import { CreateAuthInput } from './dto/create-auth.input';
-import { UpdateAuthInput } from './dto/update-auth.input';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/user/user.entity';
+import { Repository } from 'typeorm';
+import { JwtService } from '@nestjs/jwt';
+import { SignUpDto } from './auth.input';
+import * as bcrypt from 'bcryptjs';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
-  create(createAuthInput: CreateAuthInput) {
-    return 'This action adds a new auth';
-  }
+  constructor(
+    @InjectRepository(User) private userRepo: Repository<User>,
+    private jwtSvc: JwtService,
+    private cfgSvc: ConfigService,
+  ) {}
 
-  findAll() {
-    return `This action returns all auth`;
-  }
+  async signUp(signUpDto: SignUpDto) {
+    signUpDto.password = await bcrypt.hash(
+      signUpDto.password,
+      this.cfgSvc.get('JWT_SECRET'),
+    );
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
-
-  update(id: number, updateAuthInput: UpdateAuthInput) {
-    return `This action updates a #${id} auth`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+    const user = await this.userRepo.save(signUpDto),
+      token = this.jwtSvc.sign({ id: user.id });
+    return { token };
   }
 }
