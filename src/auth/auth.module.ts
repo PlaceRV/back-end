@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { AuthSvc } from './auth.service';
 import { AuthResolver } from './auth.resolver';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/user/user.entity';
@@ -7,10 +7,9 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './jwt.stategy';
-import { AuthController } from './auth.controller';
 
 @Module({
-  providers: [AuthResolver, AuthService, JwtStrategy],
+  providers: [AuthResolver, AuthSvc, JwtStrategy],
   imports: [
     ConfigModule,
     TypeOrmModule.forFeature([User]),
@@ -28,6 +27,5 @@ import { AuthController } from './auth.controller';
       },
     }),
   ],
-  controllers: [AuthController],
 })
 export class AuthModule {}

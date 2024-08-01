@@ -9,7 +9,8 @@
     "**/node_modules": true,
     "**/dist": true,
     "**/*.spec*": true,
-    "**/*.example*": false
+    "**/*.example*": true,
+    "**/schema.gql": true
   },
   "todohighlight.keywords": [
     {

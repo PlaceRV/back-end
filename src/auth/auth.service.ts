@@ -3,12 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { LoginDto, SignUpDto } from './auth.input';
+import { LoginDto, SignUpDto, UserRecieve } from './auth.dto';
 import * as bcrypt from 'bcryptjs';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-export class AuthService {
+export class AuthSvc {
   constructor(
     @InjectRepository(User) private userRepo: Repository<User>,
     private jwtSvc: JwtService,
@@ -23,7 +23,7 @@ export class AuthService {
 
     const user = await this.userRepo.save(signUpDto),
       token = this.jwtSvc.sign({ id: user.id });
-    return { token };
+    return new UserRecieve(token);
   }
 
   async login(loginDto: LoginDto) {
@@ -37,7 +37,7 @@ export class AuthService {
       );
       if (isPasswordMatched) {
         const token = this.jwtSvc.sign({ id: user.id });
-        return { token };
+        return new UserRecieve(token);
       }
     }
     throw new BadRequestException('Invalid email or password');
