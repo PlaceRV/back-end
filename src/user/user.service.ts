@@ -9,10 +9,8 @@ import { NotFoundError } from 'rxjs';
 export class UserService {
   constructor(@InjectRepository(User) private userRepo: Repository<User>) {}
 
-  async create(createUserInput: CreateUserInput) {
-    const newUser = this.userRepo.create(createUserInput);
-    await this.userRepo.save(createUserInput);
-    return newUser;
+  create(createUserInput: CreateUserInput) {
+    return this.userRepo.save(createUserInput);
   }
 
   findAll() {
