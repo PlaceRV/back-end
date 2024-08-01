@@ -1,31 +1,26 @@
 import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
 import { UserService } from './user.service';
 import { User } from './user.entity';
-import { CreateUserInput } from './user.input';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Resolver(() => User)
 export class UserResolver {
-  constructor(private readonly service: UserService) {}
+  constructor(
+    private readonly service: UserService,
+    @InjectRepository(User) private userRepo: Repository<User>,
+  ) {}
 
   // Queries
   @Query(() => User)
   findOne(@Args('id') id: string) {
-    return this.service.findOne(id);
+    return this.userRepo.findOneBy({ id: id });
   }
 
   @Query(() => [User])
   findAll() {
-    return this.service.findAll();
+    return this.userRepo.find();
   }
 
   // Mutations
-  @Mutation(() => User)
-  createUser(@Args('createUserInput') createUserInput: CreateUserInput) {
-    return this.service.create(createUserInput);
-  }
-
-  @Mutation(() => User)
-  removeUser(@Args('id') id: string) {
-    return this.service.remove(id);
-  }
 }

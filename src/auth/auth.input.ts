@@ -2,15 +2,24 @@ import { InputType, Field } from '@nestjs/graphql';
 
 @InputType()
 export class SignUpDto {
-  @Field()
-  firstName: string;
+  @Field({ nullable: false })
+  firstName!: string;
 
-  @Field()
-  lastName: string;
+  @Field({ nullable: false })
+  lastName!: string;
 
-  @Field()
-  email: string;
+  @Field({ nullable: false })
+  email!: string;
 
-  @Field()
-  password: string;
+  @Field({ nullable: false })
+  password!: string;
+}
+
+@InputType()
+export class LoginDto {
+  @Field({ nullable: false })
+  email!: string;
+
+  @Field({ nullable: false })
+  password!: string;
 }
