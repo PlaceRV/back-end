@@ -15,7 +15,7 @@ export class UserService {
   }
 
   findAll() {
-    return `This action returns all user`;
+    return this.userRepo.find();
   }
 
   findOne(id: number) {

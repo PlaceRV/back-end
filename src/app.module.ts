@@ -54,7 +54,7 @@ import { DataSourceOptions } from 'typeorm';
           options: sqlOptions,
           ifNotExist: true,
         });
-        return { ...sqlOptions, autoLoadEntities: true };
+        return { ...sqlOptions, autoLoadEntities: true, synchronize: true };
       },
     }),
     UserModule,
