@@ -4,7 +4,7 @@ import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Resolver(() => User)
 export class UserResolv {
@@ -15,13 +15,13 @@ export class UserResolv {
 
   // Queries
   @Query(() => User)
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard)
   findOne(@Args('id') id: string) {
     return this.userRepo.findOneBy({ id: id });
   }
 
   @Query(() => [User])
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard)
   findAll() {
     return this.userRepo.find();
   }

@@ -25,14 +25,20 @@ export class AuthSvc {
   }
 
   async signUp(signUpDto: SignUpDto) {
-    signUpDto.password = await bcrypt.hash(
-      signUpDto.password,
-      await bcrypt.genSalt(Number(this.cfgSvc.get('BCRYPT_SALT'))),
-    );
+    const user = await this.userRepo.findOne({
+      where: { email: signUpDto.email },
+    });
+    if (!user) {
+      signUpDto.password = await bcrypt.hash(
+        signUpDto.password,
+        await bcrypt.genSalt(Number(this.cfgSvc.get('BCRYPT_SALT'))),
+      );
 
-    const user = await this.userRepo.save(signUpDto),
-      token = this.jwtSvc.sign({ id: user.id });
-    return new UserRecieve(token);
+      const user = await this.userRepo.save(signUpDto),
+        token = this.jwtSvc.sign({ id: user.id });
+      return new UserRecieve(token);
+    }
+    throw new BadRequestException('Email already assigned');
   }
 
   async login(loginDto: LoginDto) {
