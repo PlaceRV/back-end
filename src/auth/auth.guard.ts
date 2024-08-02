@@ -31,17 +31,16 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		if (super.canActivate(context)) {
-		const roles = this.reflector.get<Role[]>(ROLES_KEY, context.getHandler());
-		if (roles) {
-			const header = context.switchToHttp().getNext().req.header('authorization') as string,
-				token = header.split(' ')[1],
-				decoded = this.jwtSvc.verify(token),
-				user = (await this.usrSvc.find({ where: { id: decoded.id } }))[0];
+			const roles = this.reflector.get<Role[]>(ROLES_KEY, context.getHandler());
+			if (roles) {
+				const header = context.switchToHttp().getNext().req.header('authorization') as string,
+					token = header.split(' ')[1],
+					decoded = this.jwtSvc.verify(token),
+					user = (await this.usrSvc.find({ where: { id: decoded.id } }))[0];
 
-			return matchRoles(roles, user.roles);
+				return matchRoles(roles, user.roles);
+			}
 		}
 		return this.reflector.get<boolean>(ALLOWPUBLIC_KEY, context.getHandler());
-	}
-		return false;
 	}
 }

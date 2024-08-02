@@ -1,5 +1,6 @@
 import { InputType, Field, ObjectType } from '@nestjs/graphql';
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { IncomingMessage } from 'http';
 
 @InputType()
 export class SignUpDto {
@@ -20,7 +21,31 @@ export class UserRecieve {
 	constructor(token: string) {
 		this.token = token!;
 	}
+	@Field() token: string;
+	@Field() refreshToken: string;
+}
 
-	@Field()
-	token: string;
+export class UserMetadata {
+	constructor(ctx: GqlContext) {
+		const fp = ctx.req['fp'];
+		this.deviceId = fp.id;
+		this.userAgent = this.objectToString(fp.userAgent);
+		this.ipAddress = fp.ipAddress.value;
+	}
+
+	ipAddress!: string;
+	userAgent!: string;
+	deviceId!: string;
+
+	objectToString(obj: object) {
+		if (typeof obj === 'object') {
+			return `{${Object.keys(obj)
+				.map((key) => `"${key}":${this.objectToString(obj[key])}`)
+				.join(',')}}`;
+		} else return JSON.stringify(obj);
+	}
+}
+
+export class GqlContext {
+	req: IncomingMessage;
 }

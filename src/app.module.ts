@@ -17,7 +17,7 @@ import { DeviceModule } from './device/device.module';
 		// GraphQL and Apollo SandBox
 		GraphQLModule.forRoot<ApolloDriverConfig>({
 			driver: ApolloDriver,
-			// Avoid deprecated 
+			// Avoid deprecated
 			subscriptions: {
 				'graphql-ws': true,
 				'subscriptions-transport-ws': true,

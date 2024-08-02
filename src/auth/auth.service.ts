@@ -30,7 +30,7 @@ export class AuthService {
 	async login(loginDto: LoginDto, mtdt: UserMetadata) {
 		const user = (
 			await this.usrSvc.find({
-			where: { email: loginDto.email },
+				where: { email: loginDto.email },
 			})
 		)[0];
 		if (user) {
