@@ -12,55 +12,55 @@ import { DataSourceOptions } from 'typeorm';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [
-    // Load GraphQL and Apollo SandBox
-    GraphQLModule.forRoot<ApolloDriverConfig>({
-      driver: ApolloDriver,
-      // Code first
-      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-      sortSchema: true,
+	imports: [
+		// Load GraphQL and Apollo SandBox
+		GraphQLModule.forRoot<ApolloDriverConfig>({
+			driver: ApolloDriver,
+			// Code first
+			autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+			sortSchema: true,
 
-      // Init Apollo SandBox
-      playground: false,
-      plugins: [ApolloServerPluginLandingPageLocalDefault()],
-      includeStacktraceInErrorResponses: false,
-      inheritResolversFromInterfaces: false,
-    }),
-    // Load .env
-    ConfigModule.forRoot({
-      validationSchema: Joi.object({
-        POSTGRES_HOST: Joi.string().required(),
-        POSTGRES_PORT: Joi.string().required(),
-        POSTGRES_USER: Joi.string().required(),
-        POSTGRES_PASS: Joi.string().required(),
-        POSTGRES_DB: Joi.string().required(),
-        JWT_SECRET: Joi.string().required(),
-        JWT_EXPIRES: Joi.string().required(),
-      }),
-    }),
-    // Load TypeOrm
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => {
-        const sqlOptions: DataSourceOptions = {
-          type: 'postgres',
-          host: configService.get('POSTGRES_HOST'),
-          port: configService.get('POSTGRES_PORT'),
-          username: configService.get('POSTGRES_USER'),
-          password: configService.get('POSTGRES_PASS'),
-          database: configService.get('POSTGRES_DB'),
-          synchronize: true,
-        };
-        await createPostgresDatabase({
-          options: sqlOptions,
-          ifNotExist: true,
-        });
-        return { ...sqlOptions, autoLoadEntities: true, synchronize: true };
-      },
-    }),
-    UserModule,
-    AuthModule,
-  ],
+			// Init Apollo SandBox
+			playground: false,
+			plugins: [ApolloServerPluginLandingPageLocalDefault()],
+			includeStacktraceInErrorResponses: false,
+			inheritResolversFromInterfaces: false,
+		}),
+		// Load .env
+		ConfigModule.forRoot({
+			validationSchema: Joi.object({
+				POSTGRES_HOST: Joi.string().required(),
+				POSTGRES_PORT: Joi.string().required(),
+				POSTGRES_USER: Joi.string().required(),
+				POSTGRES_PASS: Joi.string().required(),
+				POSTGRES_DB: Joi.string().required(),
+				JWT_SECRET: Joi.string().required(),
+				JWT_EXPIRES: Joi.string().required(),
+			}),
+		}),
+		// Load TypeOrm
+		TypeOrmModule.forRootAsync({
+			imports: [ConfigModule],
+			inject: [ConfigService],
+			useFactory: async (configService: ConfigService) => {
+				const sqlOptions: DataSourceOptions = {
+					type: 'postgres',
+					host: configService.get('POSTGRES_HOST'),
+					port: configService.get('POSTGRES_PORT'),
+					username: configService.get('POSTGRES_USER'),
+					password: configService.get('POSTGRES_PASS'),
+					database: configService.get('POSTGRES_DB'),
+					synchronize: true,
+				};
+				await createPostgresDatabase({
+					options: sqlOptions,
+					ifNotExist: true,
+				});
+				return { ...sqlOptions, autoLoadEntities: true, synchronize: true };
+			},
+		}),
+		UserModule,
+		AuthModule,
+	],
 })
 export class AppModule {}

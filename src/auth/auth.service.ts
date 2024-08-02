@@ -9,52 +9,37 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthSvc {
-  constructor(
-    @InjectRepository(User) private userRepo: Repository<User>,
-    private jwtSvc: JwtService,
-    private cfgSvc: ConfigService,
-  ) {}
+	constructor(
+		@InjectRepository(User) private userRepo: Repository<User>,
+		private jwtSvc: JwtService,
+		private cfgSvc: ConfigService,
+	) {}
 
-  async validateUser(email: string, pass: string): Promise<any> {
-    const user = await this.userRepo.findOne({ where: { email: email } });
-    if (user && (await bcrypt.compare(pass, user.password))) {
-      const { password, ...result } = user;
-      return result;
-    }
-    throw new BadRequestException('Invalid request');
-  }
+	async signUp(signUpDto: SignUpDto) {
+		const user = await this.userRepo.findOne({
+			where: { email: signUpDto.email },
+		});
+		if (!user) {
+			signUpDto.password = await bcrypt.hash(signUpDto.password, await bcrypt.genSalt(Number(this.cfgSvc.get('BCRYPT_SALT'))));
 
-  async signUp(signUpDto: SignUpDto) {
-    const user = await this.userRepo.findOne({
-      where: { email: signUpDto.email },
-    });
-    if (!user) {
-      signUpDto.password = await bcrypt.hash(
-        signUpDto.password,
-        await bcrypt.genSalt(Number(this.cfgSvc.get('BCRYPT_SALT'))),
-      );
+			const user = await this.userRepo.save(signUpDto),
+				token = this.jwtSvc.sign({ id: user.id });
+			return new UserRecieve(token);
+		}
+		throw new BadRequestException('Email already assigned');
+	}
 
-      const user = await this.userRepo.save(signUpDto),
-        token = this.jwtSvc.sign({ id: user.id });
-      return new UserRecieve(token);
-    }
-    throw new BadRequestException('Email already assigned');
-  }
-
-  async login(loginDto: LoginDto) {
-    const user = await this.userRepo.findOne({
-      where: { email: loginDto.email },
-    });
-    if (user) {
-      const isPasswordMatched = await bcrypt.compare(
-        loginDto.password,
-        user.password,
-      );
-      if (isPasswordMatched) {
-        const token = this.jwtSvc.sign({ id: user.id });
-        return new UserRecieve(token);
-      }
-    }
-    throw new BadRequestException('Invalid email or password');
-  }
+	async login(loginDto: LoginDto) {
+		const user = await this.userRepo.findOne({
+			where: { email: loginDto.email },
+		});
+		if (user) {
+			const isPasswordMatched = await bcrypt.compare(loginDto.password, user.password);
+			if (isPasswordMatched) {
+				const token = this.jwtSvc.sign({ id: user.id });
+				return new UserRecieve(token);
+			}
+		}
+		throw new BadRequestException('Invalid email or password');
+	}
 }

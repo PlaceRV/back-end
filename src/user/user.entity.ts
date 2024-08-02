@@ -4,27 +4,26 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 @ObjectType()
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+	// Sensitive infomation
+	@PrimaryGeneratedColumn('uuid')
+	id: string;
 
-  @Field()
-  @Column({ length: 15, default: 'user' })
-  type: string;
+	@Column({ length: 15, default: 'user' })
+	type: string;
 
-  // Basic infomation
-  @Field()
-  @Column({ length: 15, nullable: false })
-  firstName!: string;
+	@Column('text', { nullable: false })
+	password: string;
 
-  @Field()
-  @Column({ length: 15, nullable: false })
-  lastName!: string;
+	// Basic infomation
+	@Field()
+	@Column({ length: 15, nullable: false })
+	firstName!: string;
 
-  @Field()
-  @Column({ length: 128, nullable: false, unique: true })
-  email: string;
+	@Field()
+	@Column({ length: 15, nullable: false })
+	lastName!: string;
 
-  @Field()
-  @Column('text', { nullable: false })
-  password: string;
+	@Field()
+	@Column({ length: 128, nullable: false, unique: true })
+	email: string;
 }

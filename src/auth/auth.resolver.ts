@@ -4,16 +4,16 @@ import { LoginDto, SignUpDto, UserRecieve } from './auth.dto';
 
 @Resolver()
 export class AuthResolv {
-  constructor(private readonly authSvc: AuthSvc) {}
+	constructor(private readonly authSvc: AuthSvc) {}
 
-  // Mutations
-  @Mutation(() => UserRecieve)
-  signUp(@Args('signUpDto') signupDto: SignUpDto) {
-    return this.authSvc.signUp(signupDto);
-  }
+	// Mutations
+	@Mutation(() => UserRecieve)
+	signUp(@Args('signUpDto') signupDto: SignUpDto) {
+		return this.authSvc.signUp(signupDto);
+	}
 
-  @Mutation(() => UserRecieve)
-  login(@Args('loginDto') loginDto: LoginDto) {
-    return this.authSvc.login(loginDto);
-  }
+	@Mutation(() => UserRecieve)
+	login(@Args('loginDto') loginDto: LoginDto) {
+		return this.authSvc.login(loginDto);
+	}
 }
