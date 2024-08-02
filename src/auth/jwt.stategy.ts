@@ -5,13 +5,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from 'src/user/user.entity';
 import { ConfigService } from '@nestjs/config';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
 	constructor(
-		@InjectRepository(User)
-		private usersRepository: Repository<User>,
 		private cfgSvc: ConfigService,
+		private usrSvc: UserService,
 	) {
 		super({
 			jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -20,13 +20,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 	}
 
 	async validate(payload: { id: string }) {
-		const { id } = payload;
-
-		const user = await this.usersRepository.findOne({
-			where: {
-				id: id,
-			},
-		});
+		const { id } = payload,
+			user = await this.usrSvc.find({
+				where: {
+					id: id,
+				},
+			});
 
 		if (user) {
 			return user;

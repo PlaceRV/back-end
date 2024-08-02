@@ -1,24 +1,24 @@
 import { Resolver, Query, Args } from '@nestjs/graphql';
-import { User } from './user.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Role, User } from './user.entity';
 import { UseGuards } from '@nestjs/common';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { AuthGuard, Roles } from 'src/auth/auth.guard';
+import { UserService } from './user.service';
 
 @Resolver(() => User)
 export class UserResolv {
-	constructor(@InjectRepository(User) private userRepo: Repository<User>) {}
+	constructor(private usrSvc: UserService) {}
 
 	// Queries
 	@Query(() => User)
 	@UseGuards(AuthGuard)
 	findOne(@Args('id') id: string) {
-		return this.userRepo.findOneBy({ id: id });
+		return this.usrSvc.find({ where: { id: id } });
 	}
 
 	@Query(() => [User])
 	@UseGuards(AuthGuard)
+	@Roles(Role.ADMIN, Role.USER)
 	findAll() {
-		return this.userRepo.find();
+		return this.usrSvc.find();
 	}
 }

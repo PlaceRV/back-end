@@ -10,6 +10,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { createPostgresDatabase } from 'typeorm-extension';
 import { DataSourceOptions } from 'typeorm';
 import { AuthModule } from './auth/auth.module';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
 	imports: [
@@ -28,6 +30,7 @@ import { AuthModule } from './auth/auth.module';
 		}),
 		// Load .env
 		ConfigModule.forRoot({
+			isGlobal: true,
 			validationSchema: Joi.object({
 				POSTGRES_HOST: Joi.string().required(),
 				POSTGRES_PORT: Joi.string().required(),
@@ -59,6 +62,23 @@ import { AuthModule } from './auth/auth.module';
 				return { ...sqlOptions, autoLoadEntities: true, synchronize: true };
 			},
 		}),
+		// Authencation secure
+		PassportModule.register({ defaultStrategy: 'jwt' }),
+		JwtModule.registerAsync({
+			global: true,
+			imports: [ConfigModule],
+			inject: [ConfigService],
+			useFactory: (cfg: ConfigService) => {
+				return {
+					secret: cfg.get<string>('JWT_SECRET'),
+					signOptions: {
+						expiresIn: cfg.get<string>('JWT_EXPIRES'),
+					},
+				};
+			},
+		}),
+		PassportModule,
+		// Load sub modules
 		UserModule,
 		AuthModule,
 	],
