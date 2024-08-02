@@ -1,16 +1,19 @@
 import { ExecutionContext, Injectable, SetMetadata } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard as AuthPassport } from '@nestjs/passport';
-import { Observable } from 'rxjs';
-import { Role, User } from 'src/user/user.entity';
+import { Role } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
 
 const ROLES_KEY = 'roles';
 export const Roles = (...roles: Role[]) => {
 	return SetMetadata(ROLES_KEY, roles);
+};
+
+const ALLOWPUBLIC_KEY = 'allowpublic';
+export const AllowPublic = () => {
+	return SetMetadata(ALLOWPUBLIC_KEY, true);
 };
 
 const matchRoles = (roles: Role[], userRoles: Role[]) => {
@@ -42,6 +45,6 @@ export class AuthGuard extends AuthPassport('jwt') {
 
 			return matchRoles(roles, user.roles);
 		}
-		return false;
+		return this.reflector.get<boolean>(ALLOWPUBLIC_KEY, context.getHandler());
 	}
 }
