@@ -1,8 +1,7 @@
 import { ExecutionContext, Injectable, SetMetadata } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { GqlExecutionContext } from '@nestjs/graphql';
 import { JwtService } from '@nestjs/jwt';
-import { AuthGuard as AuthPassport } from '@nestjs/passport';
+import { AuthGuard } from '@nestjs/passport';
 import { Role } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
 
@@ -21,7 +20,7 @@ const matchRoles = (roles: Role[], userRoles: Role[]) => {
 };
 
 @Injectable()
-export class AuthGuard extends AuthPassport('jwt') {
+export class JwtAuthGuard extends AuthGuard('jwt') {
 	constructor(
 		private reflector: Reflector,
 		private jwtSvc: JwtService,
@@ -30,12 +29,8 @@ export class AuthGuard extends AuthPassport('jwt') {
 		super();
 	}
 
-	getRequest(context: ExecutionContext) {
-		const ctx = GqlExecutionContext.create(context);
-		return ctx.getContext().req;
-	}
-
 	async canActivate(context: ExecutionContext): Promise<boolean> {
+		if (super.canActivate(context)) {
 		const roles = this.reflector.get<Role[]>(ROLES_KEY, context.getHandler());
 		if (roles) {
 			const header = context.switchToHttp().getNext().req.header('authorization') as string,
@@ -46,5 +41,7 @@ export class AuthGuard extends AuthPassport('jwt') {
 			return matchRoles(roles, user.roles);
 		}
 		return this.reflector.get<boolean>(ALLOWPUBLIC_KEY, context.getHandler());
+	}
+		return false;
 	}
 }

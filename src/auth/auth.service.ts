@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { LoginDto, SignUpDto, UserRecieve } from './auth.dto';
+import { LoginDto, SignUpDto, UserMetadata, UserRecieve } from './auth.dto';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { UserService } from 'src/user/user.service';
@@ -27,10 +27,12 @@ export class AuthService {
 		throw new BadRequestException('Email already assigned');
 	}
 
-	async login(loginDto: LoginDto) {
-		const user = await this.usrSvc.find({
+	async login(loginDto: LoginDto, mtdt: UserMetadata) {
+		const user = (
+			await this.usrSvc.find({
 			where: { email: loginDto.email },
-		})[0];
+			})
+		)[0];
 		if (user) {
 			const isPasswordMatched = await bcrypt.compare(loginDto.password, user.password);
 			if (isPasswordMatched) {

@@ -10,17 +10,17 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { createPostgresDatabase } from 'typeorm-extension';
 import { DataSourceOptions } from 'typeorm';
 import { AuthModule } from './auth/auth.module';
-import { PassportModule } from '@nestjs/passport';
-import { JwtModule } from '@nestjs/jwt';
 import { DeviceModule } from './device/device.module';
 
 @Module({
 	imports: [
-		// Load GraphQL and Apollo SandBox
+		// GraphQL and Apollo SandBox
 		GraphQLModule.forRoot<ApolloDriverConfig>({
 			driver: ApolloDriver,
+			// Avoid deprecated 
 			subscriptions: {
 				'graphql-ws': true,
+				'subscriptions-transport-ws': true,
 			},
 			// Code first
 			autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
@@ -44,7 +44,7 @@ import { DeviceModule } from './device/device.module';
 				JWT_EXPIRES: Joi.string().required(),
 			}),
 		}),
-		// Load TypeOrm
+		// TypeOrm
 		TypeOrmModule.forRootAsync({
 			imports: [ConfigModule],
 			inject: [ConfigService],
@@ -65,22 +65,6 @@ import { DeviceModule } from './device/device.module';
 				return { ...sqlOptions, autoLoadEntities: true, synchronize: true };
 			},
 		}),
-		// Authencation secure
-		PassportModule.register({ defaultStrategy: 'jwt' }),
-		JwtModule.registerAsync({
-			global: true,
-			imports: [ConfigModule],
-			inject: [ConfigService],
-			useFactory: (cfg: ConfigService) => {
-				return {
-					secret: cfg.get<string>('JWT_SECRET'),
-					signOptions: {
-						expiresIn: cfg.get<string>('JWT_EXPIRES'),
-					},
-				};
-			},
-		}),
-		PassportModule,
 		// Load sub modules
 		UserModule,
 		AuthModule,
