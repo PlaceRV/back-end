@@ -13,7 +13,7 @@ export class UserResolv {
 	@UseGuards(AuthGuard)
 	@AllowPublic()
 	async findOne(@Args('id') id: string) {
-		return (await this.usrSvc.find({ where: { id: id } }))[0];
+		return (await this.usrSvc.find({ where: { id } }))[0];
 	}
 
 	@Query(() => [User])

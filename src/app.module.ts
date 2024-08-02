@@ -12,16 +12,19 @@ import { DataSourceOptions } from 'typeorm';
 import { AuthModule } from './auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
+import { DeviceModule } from './device/device.module';
 
 @Module({
 	imports: [
 		// Load GraphQL and Apollo SandBox
 		GraphQLModule.forRoot<ApolloDriverConfig>({
 			driver: ApolloDriver,
+			subscriptions: {
+				'graphql-ws': true,
+			},
 			// Code first
 			autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
 			sortSchema: true,
-
 			// Init Apollo SandBox
 			playground: false,
 			plugins: [ApolloServerPluginLandingPageLocalDefault()],
@@ -81,6 +84,7 @@ import { JwtModule } from '@nestjs/jwt';
 		// Load sub modules
 		UserModule,
 		AuthModule,
+		DeviceModule,
 	],
 })
 export class AppModule {}
