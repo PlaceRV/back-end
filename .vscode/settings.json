@@ -10,7 +10,8 @@
     "**/dist": true,
     "**/*.spec*": true,
     "**/*.example*": true,
-    "**/schema.gql": true
+    "**/schema.gql": true,
+    "**/package-lock.json": true
   },
   "todohighlight.keywords": [
     {

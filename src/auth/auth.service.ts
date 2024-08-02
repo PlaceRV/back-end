@@ -21,7 +21,7 @@ export class AuthSvc {
       const { password, ...result } = user;
       return result;
     }
-    throw new BadRequestException('Invalid request')
+    throw new BadRequestException('Invalid request');
   }
 
   async signUp(signUpDto: SignUpDto) {

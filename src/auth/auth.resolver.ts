@@ -3,7 +3,7 @@ import { AuthSvc } from './auth.service';
 import { LoginDto, SignUpDto, UserRecieve } from './auth.dto';
 
 @Resolver()
-export class AuthResolver {
+export class AuthResolv {
   constructor(private readonly authSvc: AuthSvc) {}
 
   // Mutations

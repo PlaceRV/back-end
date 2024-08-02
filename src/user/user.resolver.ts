@@ -7,7 +7,7 @@ import { UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 @Resolver(() => User)
-export class UserResolver {
+export class UserResolv {
   constructor(
     private readonly service: UserService,
     @InjectRepository(User) private userRepo: Repository<User>,
