@@ -15,6 +15,15 @@ export class AuthSvc {
     private cfgSvc: ConfigService,
   ) {}
 
+  async validateUser(email: string, pass: string): Promise<any> {
+    const user = await this.userRepo.findOne({ where: { email: email } });
+    if (user && (await bcrypt.compare(pass, user.password))) {
+      const { password, ...result } = user;
+      return result;
+    }
+    throw new BadRequestException('Invalid request')
+  }
+
   async signUp(signUpDto: SignUpDto) {
     signUpDto.password = await bcrypt.hash(
       signUpDto.password,
