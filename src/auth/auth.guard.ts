@@ -18,9 +18,10 @@ export class RoleGuard extends AuthGuard('access') {
 	}
 
 	/**
-	 * Convert context's request to graphql's request
+	 * * Convert context's request to graphql's request
 	 * @param {ExecutionContext} context - context's request
 	 * @return {GqlExecutionContext} graphql's request
+	 * ! Cautious: Since using GraphQL, it's NOT recommend to DELETE this
 	 */
 	getRequest(context: ExecutionContext): GqlExecutionContext {
 		const ctx = GqlExecutionContext.create(context);
@@ -28,7 +29,7 @@ export class RoleGuard extends AuthGuard('access') {
 	}
 
 	/**
-	 * Check user's role
+	 * * Check user's role
 	 * @param {ExecutionContext} context - context from request
 	 * @return {boolean} allow user proceed process
 	 */
