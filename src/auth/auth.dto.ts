@@ -49,3 +49,12 @@ export class UserMetadata {
 export class GqlContext {
 	req: IncomingMessage;
 }
+
+export class PayLoad {
+	constructor(id: string, deviceId: string) {
+		this.id = id;
+		this.deviceId = deviceId;
+	}
+	id!: string;
+	deviceId!: string;
+}

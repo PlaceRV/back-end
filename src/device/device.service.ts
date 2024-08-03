@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeviceSession } from './device.entity';
 import { Repository } from 'typeorm';
-import { UserMetadata, UserRecieve } from 'src/auth/auth.dto';
+import { PayLoad, UserMetadata, UserRecieve } from 'src/auth/auth.dto';
 import { randomBytes } from 'crypto';
 import { JwtService } from '@nestjs/jwt';
 
@@ -20,7 +20,7 @@ export class DeviceService {
 	async handleDeviceSession(usrId: string, mtdt: UserMetadata): Promise<UserRecieve> {
 		const { deviceId } = mtdt,
 			scrtKey = this.generateKey(),
-			payload = { id: usrId, deviceId },
+			payload = new PayLoad(usrId, deviceId),
 			[tkn, rfshTkn] = [this.jwtSvc.sign(payload), this.generateKey()];
 
 		await this.repo.save({

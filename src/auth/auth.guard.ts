@@ -6,19 +6,14 @@ import { AuthGuard } from '@nestjs/passport';
 import { Role } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
 
-const ROLES_KEY = 'roles';
-export const Roles = (...roles: Role[]) => {
-	return SetMetadata(ROLES_KEY, roles);
-};
+const ROLES_KEY = 'roles',
+	ALLOWPUBLIC_KEY = 'allowpublic',
+	matchRoles = (roles: Role[], userRoles: Role[]) => {
+		return roles.some((i) => userRoles.some((j) => i === j));
+	};
 
-const ALLOWPUBLIC_KEY = 'allowpublic';
-export const AllowPublic = () => {
-	return SetMetadata(ALLOWPUBLIC_KEY, true);
-};
-
-const matchRoles = (roles: Role[], userRoles: Role[]) => {
-	return roles.some((i) => userRoles.some((j) => i === j));
-};
+export const Roles = (...roles: Role[]) => SetMetadata(ROLES_KEY, roles),
+	AllowPublic = () => SetMetadata(ALLOWPUBLIC_KEY, true);
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
