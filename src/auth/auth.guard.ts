@@ -1,10 +1,8 @@
 import { ExecutionContext, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
-import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
 import { Role } from 'src/user/user.entity';
-import { UserService } from 'src/user/user.service';
 
 const matchRoles = (roles: Role[], userRoles: Role[]) => {
 	return roles.some((i) => userRoles.some((j) => i === j));
@@ -15,11 +13,7 @@ export const Roles = Reflector.createDecorator<Role[]>(),
 
 @Injectable()
 export class RoleGuard extends AuthGuard('access') {
-	constructor(
-		private reflector: Reflector,
-		private jwtSvc: JwtService,
-		private usrSvc: UserService,
-	) {
+	constructor(private reflector: Reflector) {
 		super();
 	}
 
