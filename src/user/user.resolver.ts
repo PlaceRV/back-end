@@ -11,7 +11,7 @@ export class UserResolv {
 
 	// Queries
 	@Query(() => User)
-	@AllowPublic()
+	@AllowPublic(true)
 	async findOne(@Args('id') id: string) {
 		const user = await this.usrSvc.findOne({ where: { id } });
 		if (user) return user;

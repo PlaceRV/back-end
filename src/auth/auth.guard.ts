@@ -7,13 +7,12 @@ import { Role } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
 import { PayLoad } from './auth.service';
 
-const ALLOWPUBLIC_KEY = 'allowpublic',
-	matchRoles = (roles: Role[], userRoles: Role[]) => {
-		return roles.some((i) => userRoles.some((j) => i === j));
-	};
+const matchRoles = (roles: Role[], userRoles: Role[]) => {
+	return roles.some((i) => userRoles.some((j) => i === j));
+};
 
 export const Roles = Reflector.createDecorator<Role[]>(),
-	AllowPublic = () => SetMetadata(ALLOWPUBLIC_KEY, true);
+	AllowPublic = Reflector.createDecorator<boolean>();
 
 @Injectable()
 export class RoleGuard extends AuthGuard('access') {
@@ -41,7 +40,8 @@ export class RoleGuard extends AuthGuard('access') {
 	 * @return {boolean} allow user proceed process
 	 */
 	async canActivate(context: ExecutionContext): Promise<boolean> {
-		if (await super.canActivate(context)) {
+		if (!this.reflector.get(AllowPublic, context.getHandler())) {
+			await super.canActivate(context); // Check user's authencation via access-strategy
 			const roles = this.reflector.get(Roles, context.getHandler());
 			if (roles) {
 				const req = context.switchToHttp().getNext().req,
@@ -55,6 +55,6 @@ export class RoleGuard extends AuthGuard('access') {
 				return matchRoles(roles, user.roles);
 			}
 		}
-		return this.reflector.get<boolean>(ALLOWPUBLIC_KEY, context.getHandler());
+		return true;
 	}
 }
