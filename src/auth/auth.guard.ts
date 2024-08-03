@@ -30,7 +30,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 	}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
-		if (super.canActivate(context)) {
+		if (await super.canActivate(context)) {
 			const roles = this.reflector.get<Role[]>(ROLES_KEY, context.getHandler());
 			if (roles) {
 				const header = context.switchToHttp().getNext().req.header('authorization') as string,
