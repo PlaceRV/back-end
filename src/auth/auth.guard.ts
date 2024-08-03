@@ -1,5 +1,6 @@
 import { ExecutionContext, Injectable, SetMetadata } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { GqlExecutionContext } from '@nestjs/graphql';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
 import { Role } from 'src/user/user.entity';
@@ -29,6 +30,21 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 		super();
 	}
 
+	/**
+	 * Convert context's request to graphql's request
+	 * @param {ExecutionContext} context - context's request
+	 * @return {GqlExecutionContext} graphql's request
+	 */
+	getRequest(context: ExecutionContext): GqlExecutionContext {
+		const ctx = GqlExecutionContext.create(context);
+		return ctx.getContext().req;
+	}
+
+	/**
+	 * Check user's role
+	 * @param {ExecutionContext} context - context from request
+	 * @return {boolean} allow user proceed process
+	 */
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		if (await super.canActivate(context)) {
 			const roles = this.reflector.get<Role[]>(ROLES_KEY, context.getHandler());
