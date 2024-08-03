@@ -1,23 +1,24 @@
 import { Resolver, Query, Args } from '@nestjs/graphql';
 import { Role, User } from './user.entity';
-import { UseGuards } from '@nestjs/common';
+import { BadRequestException, UseGuards } from '@nestjs/common';
 import { AllowPublic, JwtAuthGuard, Roles } from 'src/auth/auth.guard';
 import { UserService } from './user.service';
 
 @Resolver(() => User)
+@UseGuards(JwtAuthGuard)
 export class UserResolv {
 	constructor(private usrSvc: UserService) {}
 
 	// Queries
 	@Query(() => User)
-	@UseGuards(JwtAuthGuard)
 	@AllowPublic()
 	async findOne(@Args('id') id: string) {
-		return (await this.usrSvc.find({ where: { id } }))[0];
+		const user = await this.usrSvc.findOne({ where: { id } });
+		if (user) return user;
+		throw new BadRequestException('User not found');
 	}
 
 	@Query(() => [User])
-	@UseGuards(JwtAuthGuard)
 	@Roles(Role.ADMIN, Role.USER)
 	findAll() {
 		return this.usrSvc.find();

@@ -48,7 +48,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 				const req = context.switchToHttp().getNext().req,
 					token = req.header('authorization').split(' ')[1],
 					decoded = this.jwtSvc.verify(token) as PayLoad,
-					user = (await this.usrSvc.find({ where: { id: decoded.id } }))[0],
+					user = await this.usrSvc.findOne({ where: { id: decoded.id } }),
 					dvcId = req.fp.id;
 
 				if (dvcId !== decoded.deviceId) throw new UnauthorizedException('Device not match');
