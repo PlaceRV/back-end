@@ -1,11 +1,10 @@
-import { ExecutionContext, Injectable, SetMetadata } from '@nestjs/common';
+import { ExecutionContext, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
 import { Role } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
-import { PayLoad } from './auth.service';
 
 const matchRoles = (roles: Role[], userRoles: Role[]) => {
 	return roles.some((i) => userRoles.some((j) => i === j));
@@ -40,21 +39,15 @@ export class RoleGuard extends AuthGuard('access') {
 	 * @return {boolean} allow user proceed process
 	 */
 	async canActivate(context: ExecutionContext): Promise<boolean> {
-		if (!this.reflector.get(AllowPublic, context.getHandler())) {
-			await super.canActivate(context); // Check user's authencation via access-strategy
-			const roles = this.reflector.get(Roles, context.getHandler());
-			if (roles) {
-				const req = context.switchToHttp().getNext().req,
-					token = req.header('authorization').split(' ')[1],
-					decoded = this.jwtSvc.verify(token) as PayLoad,
-					user = await this.usrSvc.findOne({ where: { id: decoded.id } }),
-					dvcId = req.fp.id;
+		if (this.reflector.get(AllowPublic, context.getHandler())) return true;
+		await super.canActivate(context); // Check user's authencation via access-strategy
+		const roles = this.reflector.get(Roles, context.getHandler());
+		if (roles) {
+			const req = context.switchToHttp().getNext().req,
+				user = req.user;
 
-				//if (dvcId !== decoded.deviceId) throw new UnauthorizedException('Device not match');
-
-				return matchRoles(roles, user.roles);
-			}
+			return matchRoles(roles, user.roles);
 		}
-		return true;
+		throw new InternalServerErrorException('Function not defined roles/permissions');
 	}
 }

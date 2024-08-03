@@ -44,7 +44,7 @@ export class DeviceService {
 			tkn = this.jwtSvc.sign(payload.toPlainObj());
 
 		await this.repo.save({
-			id: mtdt.deviceId,
+			deviceId: mtdt.deviceId,
 			ipAddress: mtdt.ipAddress,
 			userAgent: mtdt.userAgent,
 			user: usrId,
