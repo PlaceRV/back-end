@@ -19,5 +19,5 @@ export class User {
 	@Field() @Column({ length: 15, nullable: false }) firstName!: string;
 	@Field() @Column({ length: 15, nullable: false }) lastName!: string;
 	@Field() @Column({ length: 128, nullable: false, unique: true }) email: string;
-	@Field((type) => [Role]) @Column({ type: 'enum', enum: Role, array: true, default: [Role.USER] }) roles: Role[];
+	@Field(() => [Role]) @Column({ type: 'enum', enum: Role, array: true, default: [Role.USER] }) roles: Role[];
 }

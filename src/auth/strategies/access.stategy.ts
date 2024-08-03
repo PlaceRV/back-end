@@ -6,7 +6,7 @@ import { UserService } from 'src/user/user.service';
 import { PayLoad } from '../auth.service';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class AccessStrategy extends PassportStrategy(Strategy, 'access') {
 	constructor(
 		private cfgSvc: ConfigService,
 		private usrSvc: UserService,

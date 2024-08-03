@@ -1,11 +1,11 @@
 import { Resolver, Query, Args } from '@nestjs/graphql';
 import { Role, User } from './user.entity';
 import { BadRequestException, UseGuards } from '@nestjs/common';
-import { AllowPublic, JwtAuthGuard, Roles } from 'src/auth/auth.guard';
+import { AllowPublic, RoleGuard, Roles } from 'src/auth/auth.guard';
 import { UserService } from './user.service';
 
 @Resolver(() => User)
-@UseGuards(JwtAuthGuard)
+@UseGuards(RoleGuard)
 export class UserResolv {
 	constructor(private usrSvc: UserService) {}
 
@@ -19,7 +19,7 @@ export class UserResolv {
 	}
 
 	@Query(() => [User])
-	@Roles(Role.ADMIN, Role.USER)
+	@Roles([Role.ADMIN, Role.USER])
 	findAll() {
 		return this.usrSvc.find();
 	}

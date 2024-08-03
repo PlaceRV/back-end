@@ -6,7 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { JwtStrategy } from './strategies/jwt.stategy';
+import { AccessStrategy } from './strategies/access.stategy';
 import { DeviceService } from 'src/device/device.service';
 import { DeviceSession } from 'src/device/device.entity';
 import { AuthController } from './auth.controller';
@@ -34,7 +34,7 @@ import { AuthController } from './auth.controller';
 		AuthService,
 		// Foreign service
 		UserService,
-		JwtStrategy,
+		AccessStrategy,
 		DeviceService,
 	],
 	controllers: [AuthController],

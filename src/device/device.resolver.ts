@@ -3,5 +3,5 @@ import { DeviceService } from './device.service';
 
 @Resolver()
 export class DeviceResolver {
-  constructor(private readonly deviceService: DeviceService) {}
+	constructor(private readonly deviceService: DeviceService) {}
 }

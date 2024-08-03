@@ -1,4 +1,4 @@
-import { ExecutionContext, Injectable, SetMetadata, UnauthorizedException } from '@nestjs/common';
+import { ExecutionContext, Injectable, SetMetadata } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { JwtService } from '@nestjs/jwt';
@@ -7,17 +7,16 @@ import { Role } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
 import { PayLoad } from './auth.service';
 
-const ROLES_KEY = 'roles',
-	ALLOWPUBLIC_KEY = 'allowpublic',
+const ALLOWPUBLIC_KEY = 'allowpublic',
 	matchRoles = (roles: Role[], userRoles: Role[]) => {
 		return roles.some((i) => userRoles.some((j) => i === j));
 	};
 
-export const Roles = (...roles: Role[]) => SetMetadata(ROLES_KEY, roles),
+export const Roles = Reflector.createDecorator<Role[]>(),
 	AllowPublic = () => SetMetadata(ALLOWPUBLIC_KEY, true);
 
 @Injectable()
-export class JwtAuthGuard extends AuthGuard('jwt') {
+export class RoleGuard extends AuthGuard('access') {
 	constructor(
 		private reflector: Reflector,
 		private jwtSvc: JwtService,
@@ -43,7 +42,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 	 */
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		if (await super.canActivate(context)) {
-			const roles = this.reflector.get<Role[]>(ROLES_KEY, context.getHandler());
+			const roles = this.reflector.get(Roles, context.getHandler());
 			if (roles) {
 				const req = context.switchToHttp().getNext().req,
 					token = req.header('authorization').split(' ')[1],
@@ -51,7 +50,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 					user = await this.usrSvc.findOne({ where: { id: decoded.id } }),
 					dvcId = req.fp.id;
 
-				if (dvcId !== decoded.deviceId) throw new UnauthorizedException('Device not match');
+				//if (dvcId !== decoded.deviceId) throw new UnauthorizedException('Device not match');
 
 				return matchRoles(roles, user.roles);
 			}

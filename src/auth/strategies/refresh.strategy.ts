@@ -7,7 +7,7 @@ import { PayLoad } from '../auth.service';
 import ms from 'ms';
 
 @Injectable()
-export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
+export class RefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
 	constructor(
 		private usrSvc: UserService,
 		private cfgSvc: ConfigService,
