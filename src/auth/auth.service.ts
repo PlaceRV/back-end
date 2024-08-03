@@ -1,40 +1,73 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { LoginDto, SignUpDto, UserMetadata, UserRecieve } from './auth.dto';
+import { LoginDto, SignUpDto } from './auth.dto';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { UserService } from 'src/user/user.service';
 import { DeviceService } from 'src/device/device.service';
+import { DeepPartial } from 'typeorm';
+import { IncomingMessage } from 'http';
+
+export class GqlContext {
+	req: IncomingMessage;
+}
+
+export class PayLoad {
+	constructor(id: string, deviceId: string) {
+		this.id = id;
+		this.deviceId = deviceId;
+	}
+
+	id!: string;
+	deviceId!: string;
+
+	toPlainObj(): DeepPartial<PayLoad> {
+		return Object.assign({}, this);
+	}
+}
+
+export class UserMetadata {
+	constructor(ctx: GqlContext) {
+		const fp = ctx.req['fp'];
+		this.deviceId = fp.id;
+		this.userAgent = this.objectToString(fp.userAgent);
+		this.ipAddress = fp.ipAddress.value;
+	}
+
+	ipAddress!: string;
+	userAgent!: string;
+	deviceId!: string;
+
+	objectToString(obj: object) {
+		if (typeof obj === 'object') {
+			return `{${Object.keys(obj)
+				.map((key) => `"${key}":${this.objectToString(obj[key])}`)
+				.join(',')}}`;
+		} else return JSON.stringify(obj);
+	}
+}
 
 @Injectable()
 export class AuthService {
 	constructor(
-		private jwtSvc: JwtService,
 		private cfgSvc: ConfigService,
 		private usrSvc: UserService,
 		private dvcSvc: DeviceService,
 	) {}
 
-	async signUp(signUpDto: SignUpDto) {
-		const user = await this.usrSvc.find({
-			where: { email: signUpDto.email },
-		});
+	async signUp(signUpDto: SignUpDto, mtdt: UserMetadata) {
+		const user = await this.usrSvc.findOne({ where: { email: signUpDto.email } });
 		if (!user) {
 			signUpDto.password = await bcrypt.hash(signUpDto.password, await bcrypt.genSalt(Number(this.cfgSvc.get('BCRYPT_SALT'))));
 
-			const user = await this.usrSvc.save(signUpDto),
-				token = this.jwtSvc.sign({ id: user.id });
-			return new UserRecieve(token);
+			const user = await this.usrSvc.save(signUpDto);
+			return this.dvcSvc.handleDeviceSession(user.id, mtdt);
 		}
 		throw new BadRequestException('Email already assigned');
 	}
 
 	async login(loginDto: LoginDto, mtdt: UserMetadata) {
-		const user = (
-			await this.usrSvc.find({
-				where: { email: loginDto.email },
-			})
-		)[0];
+		const user = await this.usrSvc.findOne({ where: { email: loginDto.email } });
 		if (user) {
 			const isPasswordMatched = await bcrypt.compare(loginDto.password, user.password);
 			if (isPasswordMatched) return this.dvcSvc.handleDeviceSession(user.id, mtdt);

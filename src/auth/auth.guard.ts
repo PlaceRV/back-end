@@ -5,7 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
 import { Role } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
-import { PayLoad } from './auth.dto';
+import { PayLoad } from './auth.service';
 
 const ROLES_KEY = 'roles',
 	ALLOWPUBLIC_KEY = 'allowpublic',

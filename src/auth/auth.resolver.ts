@@ -1,6 +1,6 @@
 import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
-import { AuthService } from './auth.service';
-import { GqlContext, LoginDto, SignUpDto, UserMetadata, UserRecieve } from './auth.dto';
+import { AuthService, GqlContext, UserMetadata } from './auth.service';
+import { LoginDto, SignUpDto, UserRecieve } from './auth.dto';
 
 @Resolver()
 export class AuthResolver {
@@ -9,7 +9,7 @@ export class AuthResolver {
 	// Mutations
 	@Mutation(() => UserRecieve)
 	signUp(@Args('signUpDto') signupDto: SignUpDto, @Context() ctx: GqlContext) {
-		return this.authSvc.signUp(signupDto);
+		return this.authSvc.signUp(signupDto, new UserMetadata(ctx));
 	}
 
 	@Mutation(() => UserRecieve)
