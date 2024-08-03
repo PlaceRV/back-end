@@ -18,7 +18,7 @@ export class DeviceService {
 		return randomBytes(length).toString('hex');
 	}
 
-	// TODO thêm sign scrtkey vào rfshTrf
+	// TODO thêm sign scrtkey vào rfshTkn
 	async handleDeviceSession(usrId: string, mtdt: UserMetadata): Promise<UserRecieve> {
 		const { deviceId } = mtdt,
 			scrtKey = this.generateKey(),
