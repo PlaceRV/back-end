@@ -3,7 +3,7 @@ import { Column, Entity, ManyToOne, PrimaryColumn, UpdateDateColumn } from 'type
 
 @Entity()
 export class DeviceSession {
-	@PrimaryColumn('string') id: string;
+	@PrimaryColumn('varchar', { length: 128 }) id: string;
 	@Column() ipAddress: string;
 	@Column() userAgent: string;
 	@ManyToOne(() => User, (user: { id: string }) => user.id) user: string;

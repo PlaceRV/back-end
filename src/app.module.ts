@@ -11,6 +11,7 @@ import { createPostgresDatabase } from 'typeorm-extension';
 import { DataSourceOptions } from 'typeorm';
 import { AuthModule } from './auth/auth.module';
 import { DeviceModule } from './device/device.module';
+import { NestjsFingerprintModule } from 'nestjs-fingerprint';
 
 @Module({
 	imports: [
@@ -64,6 +65,10 @@ import { DeviceModule } from './device/device.module';
 				});
 				return { ...sqlOptions, autoLoadEntities: true, synchronize: true };
 			},
+		}),
+		// Implement fingerprint
+		NestjsFingerprintModule.forRoot({
+      params: ['headers', 'userAgent', 'ipAddress'],
 		}),
 		// Load sub modules
 		UserModule,

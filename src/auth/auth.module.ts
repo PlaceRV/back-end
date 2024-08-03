@@ -8,12 +8,14 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './jwt.stategy';
 import { AuthResolver } from './auth.resolver';
+import { DeviceService } from 'src/device/device.service';
+import { DeviceSession } from 'src/device/device.entity';
 
 @Module({
 	imports: [
-		TypeOrmModule.forFeature([User]),
+		TypeOrmModule.forFeature([User, DeviceSession]),
 		// Authencation
-		PassportModule,
+		PassportModule.register({ session: true }),
 		JwtModule.registerAsync({
 			global: true,
 			imports: [ConfigModule],
@@ -34,6 +36,7 @@ import { AuthResolver } from './auth.resolver';
 		// Foreign service
 		UserService,
 		JwtStrategy,
+		DeviceService,
 	],
 })
 export class AuthModule {}

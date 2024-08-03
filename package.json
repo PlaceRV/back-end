@@ -37,6 +37,7 @@
     "generate-env-example": "^1.1.0",
     "graphql": "^16.9.0",
     "joi": "^17.13.3",
+    "nestjs-fingerprint": "^1.0.4",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "pg": "^8.12.0",

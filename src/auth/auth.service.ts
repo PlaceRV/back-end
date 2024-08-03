@@ -4,6 +4,7 @@ import { LoginDto, SignUpDto, UserMetadata, UserRecieve } from './auth.dto';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { UserService } from 'src/user/user.service';
+import { DeviceService } from 'src/device/device.service';
 
 @Injectable()
 export class AuthService {
@@ -11,6 +12,7 @@ export class AuthService {
 		private jwtSvc: JwtService,
 		private cfgSvc: ConfigService,
 		private usrSvc: UserService,
+		private dvcSvc: DeviceService,
 	) {}
 
 	async signUp(signUpDto: SignUpDto) {
@@ -35,10 +37,7 @@ export class AuthService {
 		)[0];
 		if (user) {
 			const isPasswordMatched = await bcrypt.compare(loginDto.password, user.password);
-			if (isPasswordMatched) {
-				const token = this.jwtSvc.sign({ id: user.id });
-				return new UserRecieve(token);
-			}
+			if (isPasswordMatched) return this.dvcSvc.handleDeviceSession(user.id, mtdt);
 		}
 		throw new BadRequestException('Invalid email or password');
 	}
