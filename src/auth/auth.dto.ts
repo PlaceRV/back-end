@@ -1,6 +1,7 @@
 import { InputType, Field, ObjectType } from '@nestjs/graphql';
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 import { IncomingMessage } from 'http';
+import { DeepPartial } from 'typeorm';
 
 @InputType()
 export class SignUpDto {
@@ -55,6 +56,11 @@ export class PayLoad {
 		this.id = id;
 		this.deviceId = deviceId;
 	}
+
 	id!: string;
 	deviceId!: string;
+
+	toPlainObj(): DeepPartial<PayLoad> {
+		return Object.assign({}, this);
+	}
 }

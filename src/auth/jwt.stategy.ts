@@ -26,7 +26,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 		const { id } = payload,
 			user = await this.usrSvc.find({ where: { id: id } });
 
-		if (user) return user;
+		if (user) return true;
 
 		throw new UnauthorizedException('Login first to access this endpoint.');
 	}

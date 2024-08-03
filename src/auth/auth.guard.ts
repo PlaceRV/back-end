@@ -1,10 +1,11 @@
-import { ExecutionContext, Injectable, SetMetadata } from '@nestjs/common';
+import { ExecutionContext, Injectable, SetMetadata, UnauthorizedException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
 import { Role } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
+import { PayLoad } from './auth.dto';
 
 const ROLES_KEY = 'roles',
 	ALLOWPUBLIC_KEY = 'allowpublic',
@@ -44,10 +45,13 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 		if (await super.canActivate(context)) {
 			const roles = this.reflector.get<Role[]>(ROLES_KEY, context.getHandler());
 			if (roles) {
-				const header = context.switchToHttp().getNext().req.header('authorization') as string,
-					token = header.split(' ')[1],
-					decoded = this.jwtSvc.verify(token),
-					user = (await this.usrSvc.find({ where: { id: decoded.id } }))[0];
+				const req = context.switchToHttp().getNext().req,
+					token = req.header('authorization').split(' ')[1],
+					decoded = this.jwtSvc.verify(token) as PayLoad,
+					user = (await this.usrSvc.find({ where: { id: decoded.id } }))[0],
+					dvcId = req.fp.id;
+
+				if (dvcId !== decoded.deviceId) throw new UnauthorizedException('Device not match');
 
 				return matchRoles(roles, user.roles);
 			}

@@ -21,7 +21,7 @@ export class DeviceService {
 		const { deviceId } = mtdt,
 			scrtKey = this.generateKey(),
 			payload = new PayLoad(usrId, deviceId),
-			[tkn, rfshTkn] = [this.jwtSvc.sign(payload), this.generateKey()];
+			[tkn, rfshTkn] = [this.jwtSvc.sign(payload.toPlainObj()), this.generateKey()];
 
 		await this.repo.save({
 			id: mtdt.deviceId,
