@@ -15,11 +15,3 @@ export class LoginDto {
 	@IsNotEmpty() @Field({ nullable: false }) password!: string;
 }
 
-@ObjectType()
-export class UserRecieve {
-	constructor(token: string) {
-		this.token = token!;
-	}
-	@Field() token: string;
-	@Field() refreshToken: string;
-}

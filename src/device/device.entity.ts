@@ -1,5 +1,5 @@
 import { User } from 'src/user/user.entity';
-import { Column, Entity, ManyToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
 
 @Entity()
 export class DeviceSession {
@@ -9,4 +9,5 @@ export class DeviceSession {
 	@ManyToOne(() => User, (user: { id: string }) => user.id) user: string;
 	@Column() secretKey: string;
 	@Column() refreshToken: string;
+	@Column() expiredAt: Date;
 }

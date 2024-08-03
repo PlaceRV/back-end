@@ -1,5 +1,4 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { LoginDto, SignUpDto } from './auth.dto';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
@@ -13,13 +12,15 @@ export class GqlContext {
 }
 
 export class PayLoad {
-	constructor(id: string, deviceId: string) {
+	constructor(id: string, deviceId: string, rfshTknExpAt: string) {
 		this.id = id;
 		this.deviceId = deviceId;
+		this.rfshTknExpAt = rfshTknExpAt;
 	}
 
 	id!: string;
 	deviceId!: string;
+	rfshTknExpAt!: string;
 
 	toPlainObj(): DeepPartial<PayLoad> {
 		return Object.assign({}, this);
@@ -27,8 +28,8 @@ export class PayLoad {
 }
 
 export class UserMetadata {
-	constructor(ctx: GqlContext) {
-		const fp = ctx.req['fp'];
+	constructor(req: IncomingMessage) {
+		const fp = req['fp'];
 		this.deviceId = fp.id;
 		this.userAgent = this.objectToString(fp.userAgent);
 		this.ipAddress = fp.ipAddress.value;

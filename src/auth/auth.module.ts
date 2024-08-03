@@ -6,10 +6,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { JwtStrategy } from './jwt.stategy';
-import { AuthResolver } from './auth.resolver';
+import { JwtStrategy } from './strategies/jwt.stategy';
 import { DeviceService } from 'src/device/device.service';
 import { DeviceSession } from 'src/device/device.entity';
+import { AuthController } from './auth.controller';
 
 @Module({
 	imports: [
@@ -22,9 +22,9 @@ import { DeviceSession } from 'src/device/device.entity';
 			inject: [ConfigService],
 			useFactory: (cfg: ConfigService) => {
 				return {
-					secret: cfg.get<string>('JWT_SECRET'),
+					secret: cfg.get('JWT_ACCESS_SECRET'),
 					signOptions: {
-						expiresIn: cfg.get<string>('JWT_EXPIRES'),
+						expiresIn: cfg.get('JWT_ACCESS_EXPIRES'),
 					},
 				};
 			},
@@ -32,11 +32,11 @@ import { DeviceSession } from 'src/device/device.entity';
 	],
 	providers: [
 		AuthService,
-		AuthResolver,
 		// Foreign service
 		UserService,
 		JwtStrategy,
 		DeviceService,
 	],
+	controllers: [AuthController],
 })
 export class AuthModule {}
