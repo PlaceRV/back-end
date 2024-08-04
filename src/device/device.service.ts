@@ -37,7 +37,12 @@ export class DeviceService {
 			scrtKey = this.generateKey(),
 			rfshTknExpIn = this.cfgSvc.get('JWT_REFRESH_EXPIRES'),
 			rfshTkn = this.jwtSvc.sign(
-				{ key: this.jwtSvc.sign({ ip: ipAddress, ua: userAgent }, { expiresIn: '10 years', secret: scrtKey }) },
+				{
+					key: this.jwtSvc.sign(
+						{ ip: ipAddress, ua: userAgent },
+						{ expiresIn: '10 years', secret: scrtKey },
+					),
+				},
 				{ secret: this.cfgSvc.get('JWT_REFRESH_SECRET'), expiresIn: rfshTknExpIn },
 			),
 			payload = new PayLoad(usrId, deviceId, rfshTknExpIn),

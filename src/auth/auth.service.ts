@@ -59,7 +59,10 @@ export class AuthService {
 	async signUp(signUpDto: SignUpDto, mtdt: UserMetadata) {
 		const user = await this.usrSvc.findOne({ where: { email: signUpDto.email } });
 		if (!user) {
-			signUpDto.password = await bcrypt.hash(signUpDto.password, await bcrypt.genSalt(Number(this.cfgSvc.get('BCRYPT_SALT'))));
+			signUpDto.password = await bcrypt.hash(
+				signUpDto.password,
+				await bcrypt.genSalt(Number(this.cfgSvc.get('BCRYPT_SALT'))),
+			);
 
 			const user = await this.usrSvc.save(signUpDto);
 			return this.dvcSvc.handleDeviceSession(user.id, mtdt);
@@ -70,7 +73,10 @@ export class AuthService {
 	async login(loginDto: LoginDto, mtdt: UserMetadata) {
 		const user = await this.usrSvc.findOne({ where: { email: loginDto.email } });
 		if (user) {
-			const isPasswordMatched = await bcrypt.compare(loginDto.password, user.password);
+			const isPasswordMatched = await bcrypt.compare(
+				loginDto.password,
+				user.password,
+			);
 			if (isPasswordMatched) return this.dvcSvc.handleDeviceSession(user.id, mtdt);
 		}
 		throw new BadRequestException('Invalid email or password');

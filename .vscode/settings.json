@@ -8,7 +8,7 @@
 		"**/Thumbs.db": true,
 		"**/node_modules": true,
 		"**/dist": true,
-		"**/*.spec*": false,
+		"**/*.spec*": true,
 		"**/*.example*": true,
 		"**/schema.gql": true,
 		"**/package-lock.json": true
