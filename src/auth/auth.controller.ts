@@ -8,20 +8,13 @@ import { UserRecieve } from 'src/device/device.service';
 
 @Controller('auth')
 export class AuthController {
-	constructor(
-		private readonly authSvc: AuthService,
-		private crptSvc: EncryptionService,
-	) {}
+	constructor(private authSvc: AuthService) {}
 
 	async sendBack(res: Response, usrRcv: UserRecieve) {
 		const [hdr, pld, sig] = usrRcv.token.split('.'),
-			sessId = this.crptSvc.encrypt(usrRcv.sessId, sig),
 			ckiProp: CookieOptions = { httpOnly: true, secure: true, sameSite: 'lax' };
 
-		res
-			.cookie('signature', sig, ckiProp)
-			.cookie('sessId', sessId, ckiProp)
-			.send({ header: hdr, payload: pld });
+		res.cookie('signature', sig, ckiProp).send({ header: hdr, payload: pld });
 	}
 
 	@Post('login')
@@ -41,4 +34,10 @@ export class AuthController {
 	) {
 		this.sendBack(res, await this.authSvc.signUp(signupDto, new UserMetadata(req)));
 	}
+
+	@Post('refresh')
+	async refresh(
+		@Req() req: IncomingMessage,
+		@Res({ passthrough: true }) res: Response,
+	) {}
 }

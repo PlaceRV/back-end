@@ -13,7 +13,7 @@ export class User {
 	// Sensitive infomation
 	@PrimaryGeneratedColumn('uuid') id: string;
 	@Column('text', { nullable: false }) password: string;
-	@OneToMany(() => DeviceSession, (deviceSessions) => deviceSessions.id)
+	@OneToMany(() => DeviceSession, (deviceSessions) => deviceSessions.deviceId)
 	deviceSessions: DeviceSession[];
 
 	// Basic infomation

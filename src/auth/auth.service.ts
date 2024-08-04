@@ -52,14 +52,12 @@ export class AuthService {
 		private usrSvc: UserService,
 		private dvcSvc: DeviceService,
 	) {}
+	private readonly bcryptSalt = this.cfgSvc.get('BCRYPT_SALT');
 
 	async signUp(signUpDto: SignUpDto, mtdt: UserMetadata) {
 		const user = await this.usrSvc.findOne({ where: { email: signUpDto.email } });
 		if (!user) {
-			signUpDto.password = await hash(
-				signUpDto.password,
-				Number(this.cfgSvc.get('BCRYPT_SALT')),
-			);
+			signUpDto.password = await hash(signUpDto.password, this.bcryptSalt);
 
 			const user = await this.usrSvc.save(signUpDto);
 			return this.dvcSvc.handleDeviceSession(user.id, mtdt);
@@ -70,10 +68,7 @@ export class AuthService {
 	async login(loginDto: LoginDto, mtdt: UserMetadata) {
 		const user = await this.usrSvc.findOne({ where: { email: loginDto.email } });
 		if (user) {
-			const isPasswordMatched = await compare(
-				await hash(loginDto.password, Number(this.cfgSvc.get('BCRYPT_SALT'))),
-				user.password,
-			);
+			const isPasswordMatched = await compare(loginDto.password, user.password);
 			if (isPasswordMatched) return this.dvcSvc.handleDeviceSession(user.id, mtdt);
 		}
 		throw new BadRequestException('Invalid email or password');
@@ -82,7 +77,8 @@ export class AuthService {
 
 @Injectable()
 export class EncryptionService {
-	private readonly algorithm = 'aes-256-ctr';
+	constructor(private cfgSvc: ConfigService) {}
+	private readonly algorithm = this.cfgSvc.get('AES_ALGO');
 
 	sigToKey(str: string): string {
 		const first32Chars = str.substring(0, 32);

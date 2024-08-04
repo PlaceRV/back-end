@@ -47,6 +47,10 @@ import { NestjsFingerprintModule } from 'nestjs-fingerprint';
 				JWT_ACCESS_EXPIRES: Joi.string().required(),
 				JWT_REFRESH_SECRET: Joi.string().required(),
 				JWT_REFRESH_EXPIRES: Joi.string().required(),
+				// bcrypt secret
+				BCRYPT_SALT: Joi.number().required(),
+				// AES secret
+				AES_ALGO: Joi.string().required(),
 			}),
 		}),
 		// TypeOrm

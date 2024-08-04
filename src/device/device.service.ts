@@ -2,18 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeviceSession } from './device.entity';
 import { Repository } from 'typeorm';
-import { randomBytes } from 'crypto';
 import { JwtService } from '@nestjs/jwt';
 import { PayLoad, UserMetadata } from 'src/auth/auth.service';
 import { ConfigService } from '@nestjs/config';
+import { createHash } from 'crypto';
 
 export class UserRecieve {
-	constructor(tkn: string, sessId: string) {
+	constructor(tkn: string) {
 		this.token = tkn;
-		this.sessId = sessId;
 	}
 	token!: string;
-	sessId!: string;
 }
 
 @Injectable()
@@ -24,11 +22,6 @@ export class DeviceService {
 		private cfgSvc: ConfigService,
 	) {}
 
-	// TODO change length to 256
-	generateKey(length: number = 5) {
-		return randomBytes(length).toString('hex');
-	}
-
 	async handleDeviceSession(usrId: string, mtdt: UserMetadata): Promise<UserRecieve> {
 		const rfshTkn = this.jwtSvc.sign(
 				{ mtdt: mtdt },
@@ -38,13 +31,15 @@ export class DeviceService {
 				},
 			),
 			payload = new PayLoad(usrId),
-			tkn = this.jwtSvc.sign(payload.toPlainObj());
+			tkn = this.jwtSvc.sign(payload.toPlainObj()),
+			dvcId = createHash('sha256').update(mtdt.toString()).digest('base64');
 
-		const session = await this.repo.save({
+		this.repo.save({
+			deviceId: dvcId,
 			user: usrId,
 			refreshToken: rfshTkn,
 		});
 
-		return new UserRecieve(tkn, session.id);
+		return new UserRecieve(tkn);
 	}
 }
