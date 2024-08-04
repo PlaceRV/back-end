@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { AuthService, EncryptionService } from './auth.service';
 import { UserService } from 'src/user/user.service';
 import { User } from 'src/user/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -32,6 +32,7 @@ import { AuthController } from './auth.controller';
 	],
 	providers: [
 		AuthService,
+		EncryptionService,
 		// Foreign service
 		UserService,
 		AccessStrategy,

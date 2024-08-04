@@ -20,12 +20,8 @@ export class RefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
 	}
 
 	async validate(payload: PayLoad) {
-		const user = await this.usrSvc.findOne({ where: { id: payload.id } });
-		if (user)
-			return {
-				user: user,
-				rfshTknExpAt: new Date(ms(payload.rfshTknExpAt)),
-			};
+		const user = await this.usrSvc.findOne({ where: { id: payload.usrId } });
+		if (user) return { user: user };
 		throw new UnauthorizedException('Login first to access this endpoint.');
 	}
 }

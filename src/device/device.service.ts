@@ -6,17 +6,14 @@ import { randomBytes } from 'crypto';
 import { JwtService } from '@nestjs/jwt';
 import { PayLoad, UserMetadata } from 'src/auth/auth.service';
 import { ConfigService } from '@nestjs/config';
-import ms from 'ms';
 
 export class UserRecieve {
-	constructor(tkn: string, rfshTkn: string, rfshTknExpIn: string) {
+	constructor(tkn: string, sessId: string) {
 		this.token = tkn;
-		this.refreshToken = rfshTkn;
-		this.refreshTokenExpiresIn = rfshTknExpIn;
+		this.sessId = sessId;
 	}
 	token!: string;
-	refreshToken!: string;
-	refreshTokenExpiresIn!: string;
+	sessId!: string;
 }
 
 @Injectable()
@@ -27,37 +24,27 @@ export class DeviceService {
 		private cfgSvc: ConfigService,
 	) {}
 
-	generateKey(length: number = 256) {
+	// TODO change length to 256
+	generateKey(length: number = 5) {
 		return randomBytes(length).toString('hex');
 	}
 
-	// TODO thêm sign scrtkey vào rfshTkn
 	async handleDeviceSession(usrId: string, mtdt: UserMetadata): Promise<UserRecieve> {
-		const { deviceId, ipAddress, userAgent } = mtdt,
-			scrtKey = this.generateKey(),
-			rfshTknExpIn = this.cfgSvc.get('JWT_REFRESH_EXPIRES'),
-			rfshTkn = this.jwtSvc.sign(
+		const rfshTkn = this.jwtSvc.sign(
+				{ mtdt: mtdt },
 				{
-					key: this.jwtSvc.sign(
-						{ ip: ipAddress, ua: userAgent },
-						{ expiresIn: '10 years', secret: scrtKey },
-					),
+					secret: this.cfgSvc.get('JWT_REFRESH_SECRET'),
+					expiresIn: this.cfgSvc.get('JWT_REFRESH_EXPIRES'),
 				},
-				{ secret: this.cfgSvc.get('JWT_REFRESH_SECRET'), expiresIn: rfshTknExpIn },
 			),
-			payload = new PayLoad(usrId, deviceId, rfshTknExpIn),
+			payload = new PayLoad(usrId),
 			tkn = this.jwtSvc.sign(payload.toPlainObj());
 
-		await this.repo.save({
-			deviceId: mtdt.deviceId,
-			ipAddress: mtdt.ipAddress,
-			userAgent: mtdt.userAgent,
+		const session = await this.repo.save({
 			user: usrId,
-			secretKey: scrtKey,
 			refreshToken: rfshTkn,
-			expiredAt: new Date(ms(rfshTknExpIn) + new Date().getTime()),
 		});
 
-		return new UserRecieve(tkn, rfshTkn, rfshTknExpIn);
+		return new UserRecieve(tkn, session.id);
 	}
 }

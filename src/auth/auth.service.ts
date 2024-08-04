@@ -1,26 +1,23 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { LoginDto, SignUpDto } from './auth.dto';
-import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { UserService } from 'src/user/user.service';
 import { DeviceService } from 'src/device/device.service';
 import { DeepPartial } from 'typeorm';
 import { IncomingMessage } from 'http';
+import { compare, hash } from 'bcrypt';
+import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 
 export class GqlContext {
 	req: IncomingMessage;
 }
 
 export class PayLoad {
-	constructor(id: string, deviceId: string, rfshTknExpAt: string) {
-		this.id = id;
-		this.deviceId = deviceId;
-		this.rfshTknExpAt = rfshTknExpAt;
+	constructor(usrId: string) {
+		this.usrId = usrId;
 	}
 
-	id!: string;
-	deviceId!: string;
-	rfshTknExpAt!: string;
+	usrId!: string;
 
 	toPlainObj(): DeepPartial<PayLoad> {
 		return Object.assign({}, this);
@@ -31,18 +28,18 @@ export class UserMetadata {
 	constructor(req: IncomingMessage) {
 		const fp = req['fp'];
 		this.deviceId = fp.id;
-		this.userAgent = this.objectToString(fp.userAgent);
+		this.userAgent = fp.userAgent;
 		this.ipAddress = fp.ipAddress.value;
 	}
 
 	ipAddress!: string;
-	userAgent!: string;
+	userAgent!: object;
 	deviceId!: string;
 
-	objectToString(obj: object) {
+	toString(obj: object = this) {
 		if (typeof obj === 'object') {
 			return `{${Object.keys(obj)
-				.map((key) => `"${key}":${this.objectToString(obj[key])}`)
+				.map((key) => `"${key}":${this.toString(obj[key])}`)
 				.join(',')}}`;
 		} else return JSON.stringify(obj);
 	}
@@ -59,9 +56,9 @@ export class AuthService {
 	async signUp(signUpDto: SignUpDto, mtdt: UserMetadata) {
 		const user = await this.usrSvc.findOne({ where: { email: signUpDto.email } });
 		if (!user) {
-			signUpDto.password = await bcrypt.hash(
+			signUpDto.password = await hash(
 				signUpDto.password,
-				await bcrypt.genSalt(Number(this.cfgSvc.get('BCRYPT_SALT'))),
+				Number(this.cfgSvc.get('BCRYPT_SALT')),
 			);
 
 			const user = await this.usrSvc.save(signUpDto);
@@ -73,12 +70,37 @@ export class AuthService {
 	async login(loginDto: LoginDto, mtdt: UserMetadata) {
 		const user = await this.usrSvc.findOne({ where: { email: loginDto.email } });
 		if (user) {
-			const isPasswordMatched = await bcrypt.compare(
-				loginDto.password,
+			const isPasswordMatched = await compare(
+				await hash(loginDto.password, Number(this.cfgSvc.get('BCRYPT_SALT'))),
 				user.password,
 			);
 			if (isPasswordMatched) return this.dvcSvc.handleDeviceSession(user.id, mtdt);
 		}
 		throw new BadRequestException('Invalid email or password');
+	}
+}
+
+@Injectable()
+export class EncryptionService {
+	private readonly algorithm = 'aes-256-ctr';
+
+	sigToKey(str: string): string {
+		const first32Chars = str.substring(0, 32);
+		return first32Chars.padStart(32, '0');
+	}
+
+	encrypt(text: string, key: string) {
+		const iv = randomBytes(16),
+			cipher = createCipheriv(this.algorithm, this.sigToKey(key), iv),
+			encrypted = Buffer.concat([cipher.update(text), cipher.final()]);
+		return iv.toString('hex') + encrypted.toString('hex');
+	}
+
+	decrypt(encryptedText: string, key: string) {
+		const iv = Buffer.from(encryptedText.substring(0, 32), 'hex'),
+			encrypted = Buffer.from(encryptedText.substring(32), 'hex'),
+			decipher = createDecipheriv(this.algorithm, this.sigToKey(key), iv),
+			decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()]);
+		return decrypted.toString();
 	}
 }
