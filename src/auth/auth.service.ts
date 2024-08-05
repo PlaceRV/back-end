@@ -26,15 +26,13 @@ export class PayLoad {
 
 export class UserMetadata {
 	constructor(req: IncomingMessage) {
-		const fp = req['fp'];
-		this.deviceId = fp.id;
-		this.userAgent = fp.userAgent;
-		this.ipAddress = fp.ipAddress.value;
+		const fp = req['fingerprint'];
+		this.userAgent = fp.ua;
+		this.ipAddress = fp.ip;
 	}
 
 	ipAddress!: string;
 	userAgent!: object;
-	deviceId!: string;
 
 	toString(obj: object = this) {
 		if (typeof obj === 'object') {

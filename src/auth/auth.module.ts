@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AuthService, EncryptionService } from './auth.service';
 import { UserService } from 'src/user/user.service';
 import { User } from 'src/user/user.entity';
@@ -10,6 +10,7 @@ import { AccessStrategy } from './strategies/access.stategy';
 import { DeviceService } from 'src/device/device.service';
 import { DeviceSession } from 'src/device/device.entity';
 import { AuthController } from './auth.controller';
+import { AuthMiddleware } from './auth.middleware';
 
 @Module({
 	imports: [
@@ -40,4 +41,8 @@ import { AuthController } from './auth.controller';
 	],
 	controllers: [AuthController],
 })
-export class AuthModule {}
+export class AuthModule {
+	configure(consumer: MiddlewareConsumer) {
+		consumer.apply(AuthMiddleware).forRoutes(AuthController);
+	}
+}
