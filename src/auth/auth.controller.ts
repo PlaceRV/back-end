@@ -5,16 +5,30 @@ import { IncomingMessage } from 'http';
 import { Response } from 'express';
 import { CookieOptions } from 'express';
 import { UserRecieve } from 'src/device/device.service';
+import { ConfigService } from '@nestjs/config';
+import { compare, hash } from 'bcrypt';
 
 @Controller('auth')
 export class AuthController {
-	constructor(private authSvc: AuthService) {}
+	constructor(
+		private authSvc: AuthService,
+		private encryptSvc: EncryptionService,
+		private cfgSvc: ConfigService,
+	) {}
 
-	async sendBack(res: Response, usrRcv: UserRecieve) {
-		const [hdr, pld, sig] = usrRcv.token.split('.'),
-			ckiProp: CookieOptions = { httpOnly: true, secure: true, sameSite: 'lax' };
+	async sendBack(req: IncomingMessage, res: Response, usrRcv: UserRecieve) {
+		const ckiProp: CookieOptions = { httpOnly: true, secure: true, sameSite: 'lax' },
+			e = (s: string) => this.encryptSvc.encrypt(s, this.cfgSvc.get('SERVER_SECRET')),
+			h = (s: string) => hash(s, this.cfgSvc.get('BCRYPT_SALT'));
 
-		res.cookie('signature', sig, ckiProp).send({ header: hdr, payload: pld });
+		for (const cki in req['cookies']) {
+			if ((await compare('access', cki)) || (await compare('refresh', cki)))
+				res.clearCookie(cki, ckiProp);
+		}
+
+		res
+			.cookie(await h('access'), e(usrRcv.accessToken), ckiProp)
+			.cookie(await h('refresh'), e(usrRcv.refreshToken), ckiProp);
 	}
 
 	@Post('login')
@@ -23,7 +37,11 @@ export class AuthController {
 		@Body() loginDto: LoginDto,
 		@Res({ passthrough: true }) res: Response,
 	) {
-		this.sendBack(res, await this.authSvc.login(loginDto, new UserMetadata(req)));
+		await this.sendBack(
+			req,
+			res,
+			await this.authSvc.login(loginDto, new UserMetadata(req)),
+		);
 	}
 
 	@Post('signup')
@@ -32,7 +50,11 @@ export class AuthController {
 		@Body() signupDto: SignUpDto,
 		@Res({ passthrough: true }) res: Response,
 	) {
-		this.sendBack(res, await this.authSvc.signUp(signupDto, new UserMetadata(req)));
+		await this.sendBack(
+			req,
+			res,
+			await this.authSvc.signUp(signupDto, new UserMetadata(req)),
+		);
 	}
 
 	@Post('refresh')

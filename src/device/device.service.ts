@@ -1,17 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeviceSession } from './device.entity';
-import { Repository } from 'typeorm';
+import { DeepPartial, FindOneOptions, Repository, SaveOptions } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { PayLoad, UserMetadata } from 'src/auth/auth.service';
 import { ConfigService } from '@nestjs/config';
-import { createHash } from 'crypto';
+import { hash } from 'bcrypt';
 
 export class UserRecieve {
-	constructor(tkn: string) {
-		this.token = tkn;
+	constructor(tkn: string, rfshTkn: string) {
+		this.accessToken = tkn;
+		this.refreshToken = rfshTkn;
 	}
-	token!: string;
+	accessToken: string;
+	refreshToken: string;
 }
 
 @Injectable()
@@ -21,25 +23,36 @@ export class DeviceService {
 		private jwtSvc: JwtService,
 		private cfgSvc: ConfigService,
 	) {}
+	// bcrypt
+	private readonly slt = this.cfgSvc.get('BCRYPT_SALT');
+	// jwt
+	private readonly scr = this.cfgSvc.get('JWT_REFRESH_SECRET');
+	private readonly exp = this.cfgSvc.get('JWT_REFRESH_EXPIRES');
+	private readonly use = this.cfgSvc.get('JWT_REFRESH_USE');
 
 	async handleDeviceSession(usrId: string, mtdt: UserMetadata): Promise<UserRecieve> {
-		const rfshTkn = this.jwtSvc.sign(
-				{ mtdt: mtdt },
-				{
-					secret: this.cfgSvc.get('JWT_REFRESH_SECRET'),
-					expiresIn: this.cfgSvc.get('JWT_REFRESH_EXPIRES'),
-				},
+		const session = await this.save({
+				user: usrId,
+				hashedUserAgent: await hash(mtdt.toString(), this.slt),
+			}),
+			rfshTkn = this.jwtSvc.sign(
+				{ id: session.id, use: this.use },
+				{ secret: this.scr, expiresIn: this.exp },
 			),
 			payload = new PayLoad(usrId),
-			tkn = this.jwtSvc.sign(payload.toPlainObj()),
-			dvcId = createHash('sha256').update(mtdt.toString()).digest('base64');
+			tkn = this.jwtSvc.sign(payload.toPlainObj());
 
-		this.repo.save({
-			deviceId: dvcId,
-			user: usrId,
-			refreshToken: rfshTkn,
-		});
+		return new UserRecieve(tkn, rfshTkn);
+	}
 
-		return new UserRecieve(tkn);
+	findOne(options?: FindOneOptions<DeviceSession>): Promise<DeviceSession> {
+		return this.repo.findOne(options);
+	}
+
+	save(
+		entities: DeepPartial<DeviceSession>,
+		options?: SaveOptions & { reload: false },
+	): Promise<DeepPartial<DeviceSession>> {
+		return this.repo.save(entities, options);
 	}
 }

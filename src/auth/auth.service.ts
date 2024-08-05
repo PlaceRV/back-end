@@ -34,10 +34,10 @@ export class UserMetadata {
 	ipAddress!: string;
 	userAgent!: object;
 
-	toString(obj: object = this) {
+	toString(obj: object = this.userAgent) {
 		if (typeof obj === 'object') {
 			return `{${Object.keys(obj)
-				.map((key) => `"${key}":${this.toString(obj[key])}`)
+				.map((key) => `${key}:${obj[key] ? this.toString(obj[key]) : '~'}`)
 				.join(',')}}`;
 		} else return JSON.stringify(obj);
 	}
@@ -50,12 +50,12 @@ export class AuthService {
 		private usrSvc: UserService,
 		private dvcSvc: DeviceService,
 	) {}
-	private readonly bcryptSalt = this.cfgSvc.get('BCRYPT_SALT');
+	private readonly slt = this.cfgSvc.get('BCRYPT_SALT');
 
 	async signUp(signUpDto: SignUpDto, mtdt: UserMetadata) {
 		const user = await this.usrSvc.findOne({ where: { email: signUpDto.email } });
 		if (!user) {
-			signUpDto.password = await hash(signUpDto.password, this.bcryptSalt);
+			signUpDto.password = await hash(signUpDto.password, this.slt);
 
 			const user = await this.usrSvc.save(signUpDto);
 			return this.dvcSvc.handleDeviceSession(user.id, mtdt);

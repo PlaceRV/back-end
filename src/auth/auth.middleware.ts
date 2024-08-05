@@ -9,7 +9,7 @@ function generateFingerprint(req: Request) {
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
-	async use(req: Request, next: NextFunction) {
+	use(req: Request, res: Response, next: NextFunction) {
 		req['fingerprint'] = generateFingerprint(req);
 
 		next();

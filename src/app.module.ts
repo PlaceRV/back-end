@@ -46,6 +46,9 @@ import { DeviceModule } from './device/device.module';
 				JWT_ACCESS_EXPIRES: Joi.string().required(),
 				JWT_REFRESH_SECRET: Joi.string().required(),
 				JWT_REFRESH_EXPIRES: Joi.string().required(),
+				JWT_REFRESH_USE: Joi.number().required(),
+				// Server secret
+				SERVER_SECRET: Joi.string().required(),
 				// bcrypt secret
 				BCRYPT_SALT: Joi.number().required(),
 				// AES secret

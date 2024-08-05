@@ -8,7 +8,7 @@ import { PayLoad } from '../auth.service';
 @Injectable()
 export class AccessStrategy extends PassportStrategy(Strategy, 'access') {
 	constructor(
-		private cfgSvc: ConfigService,
+		cfgSvc: ConfigService,
 		private usrSvc: UserService,
 	) {
 		super({

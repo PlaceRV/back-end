@@ -13,18 +13,18 @@ import {
 export class UserService {
 	constructor(@InjectRepository(User) private repo: Repository<User>) {}
 
-	async find(options?: FindManyOptions<User>): Promise<User[]> {
-		return await this.repo.find(options);
+	find(options?: FindManyOptions<User>): Promise<User[]> {
+		return this.repo.find(options);
 	}
 
-	async findOne(options?: FindOneOptions<User>): Promise<User> {
-		return await this.repo.findOne(options);
+	findOne(options?: FindOneOptions<User>): Promise<User> {
+		return this.repo.findOne(options);
 	}
 
-	async save<T extends DeepPartial<User>>(
-		entities: T,
+	save(
+		entities: DeepPartial<User>,
 		options?: SaveOptions & { reload: false },
-	): Promise<User> {
-		return (await this.repo.save(entities, options)) as User;
+	): Promise<DeepPartial<User>> {
+		return this.repo.save(entities, options);
 	}
 }
