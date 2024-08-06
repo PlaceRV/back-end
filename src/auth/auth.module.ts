@@ -1,21 +1,19 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { forwardRef, MiddlewareConsumer, Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { UserService } from 'src/user/user.service';
 import { User } from 'src/user/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AccessStrategy } from './strategies/access.stategy';
-import { DeviceService } from 'src/device/device.service';
-import { DeviceSession } from 'src/device/device.entity';
 import { AuthController } from './auth.controller';
 import { AuthMiddleware } from './auth.middleware';
 import { RefreshStrategy } from './strategies/refresh.strategy';
+import { DeviceModule } from 'src/device/device.module';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
 	imports: [
-		TypeOrmModule.forFeature([User, DeviceSession]),
 		// Authencation
 		PassportModule.register({ session: true }),
 		JwtModule.registerAsync({
@@ -31,17 +29,18 @@ import { RefreshStrategy } from './strategies/refresh.strategy';
 				};
 			},
 		}),
+		// Foreign modules
+		forwardRef(() => DeviceModule),
+		UserModule,
 	],
 	providers: [
 		AuthService,
-		// Foreign service
-		UserService,
-		DeviceService,
 		// Strategies
 		AccessStrategy,
 		RefreshStrategy,
 	],
 	controllers: [AuthController],
+	exports: [AuthService],
 })
 export class AuthModule {
 	configure(consumer: MiddlewareConsumer) {

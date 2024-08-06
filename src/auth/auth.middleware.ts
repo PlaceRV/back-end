@@ -4,6 +4,7 @@ import { getClientIp } from 'request-ip';
 import uaParserJs from 'ua-parser-js';
 import { compareSync } from 'bcrypt';
 import { AuthService } from './auth.service';
+import { ConfigService } from '@nestjs/config';
 
 function generateFingerprint(req: Request) {
 	return { ip: getClientIp(req), ua: uaParserJs.UAParser() };
@@ -11,21 +12,24 @@ function generateFingerprint(req: Request) {
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
-	constructor(private authSvc: AuthService) {}
+	constructor(
+		private authSvc: AuthService,
+		private cfgSvc: ConfigService,
+	) {}
 
 	use(req: Request, res: Response, next: NextFunction) {
 		req['fingerprint'] = generateFingerprint(req);
 
-		var u: boolean;
+		let u: boolean = false;
 		for (const cki in req.cookies)
-			if ((u = compareSync('refresh', cki)) || compareSync('access', cki)) {
+			if (
+				(u = u || compareSync(this.cfgSvc.get('REFRESH'), cki)) ||
+				compareSync(this.cfgSvc.get('ACCESS'), cki)
+			) {
 				req.headers.authorization = `Bearer ${this.authSvc.decrypt(req.cookies[cki])}`;
-				if (req.url === '/auth/refresh' && u) {
-					next();
-					return;
-				}
+				if (req.url === '/auth/refresh' && u) next();
 			}
 
-		next();
+		if (!u) next();
 	}
 }

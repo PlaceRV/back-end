@@ -1,17 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeviceSession } from './device.entity';
-import {
-	DeepPartial,
-	FindOneOptions,
-	FindOptionsWhere,
-	Repository,
-	SaveOptions,
-} from 'typeorm';
+import { DeepPartial, FindOneOptions, FindOptionsWhere, Repository, SaveOptions } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { PayLoad, UserMetadata } from 'src/auth/auth.service';
+import { AuthService, PayLoad, UserMetadata } from 'src/auth/auth.service';
 import { ConfigService } from '@nestjs/config';
-import { hash } from 'bcrypt';
 
 export class UserRecieve {
 	constructor(tkn: string, rfshTkn: string) {
@@ -28,18 +21,18 @@ export class DeviceService {
 		@InjectRepository(DeviceSession) private repo: Repository<DeviceSession>,
 		private jwtSvc: JwtService,
 		private cfgSvc: ConfigService,
+		@Inject(forwardRef(() => AuthService))
+		private authSvc: AuthService,
 	) {}
-	// bcrypt
-	private readonly slt = this.cfgSvc.get('BCRYPT_SALT');
 	// session secret
 	private readonly scr = this.cfgSvc.get('SERVER_SECRET');
 	private readonly exp = this.cfgSvc.get('REFRESH_EXPIRE');
 	private readonly use = this.cfgSvc.get('REFRESH_USE');
 
-	async handleDeviceSession(usrId: string, mtdt: UserMetadata) {
+	async getTokens(usrId: string, mtdt: UserMetadata) {
 		const session = await this.save({
 				userId: usrId,
-				hashedUserAgent: await hash(mtdt.toString(), this.slt),
+				hashedUserAgent: this.authSvc.hash(mtdt.toString()),
 				useTimeLeft: this.use,
 			}),
 			rfshTkn = this.jwtSvc.sign(new PayLoad(session.id).toPlainObj(), {
@@ -55,10 +48,7 @@ export class DeviceService {
 		return this.repo.findOne(options);
 	}
 
-	save(
-		entities: DeepPartial<DeviceSession>,
-		options?: SaveOptions & { reload: false },
-	) {
+	save(entities: DeepPartial<DeviceSession>, options?: SaveOptions & { reload: false }) {
 		return this.repo.save(entities, options);
 	}
 

@@ -5,12 +5,11 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
-import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { createPostgresDatabase } from 'typeorm-extension';
 import { DataSourceOptions } from 'typeorm';
 import { AuthModule } from './auth/auth.module';
-import { DeviceModule } from './device/device.module';
+import { randomBytes } from 'crypto';
 
 @Module({
 	imports: [
@@ -43,16 +42,19 @@ import { DeviceModule } from './device/device.module';
 				POSTGRES_DB: Joi.string().required(),
 				// Jwt secret
 				JWT_SECRET: Joi.string().required(),
-				JWT_EXPIRES: Joi.string().required(),
+				JWT_EXPIRES: Joi.string() || '5m',
 				// Server secret
 				SERVER_SECRET: Joi.string().required(),
-				REFRESH_EXPIRE: Joi.string().required(),
-				REFRESH_USE: Joi.number().required(),
-				PORT: Joi.number().required(),
+				REFRESH_EXPIRE: Joi.string() || '366d',
+				REFRESH_USE: Joi.number() || 6,
+				PORT: Joi.number() || 3000,
 				// bcrypt secret
-				BCRYPT_SALT: Joi.number().required(),
+				BCRYPT_SALT: Joi.number() || 6,
 				// AES secret
-				AES_ALGO: Joi.string().required(),
+				AES_ALGO: Joi.string() || 'aes-256-ctr',
+				// Custom keys
+				REFRESH: Joi.string() || randomBytes(6).toString('hex'),
+				ACCESS: Joi.string() || randomBytes(6).toString('hex'),
 			}),
 		}),
 		// TypeOrm
@@ -77,9 +79,7 @@ import { DeviceModule } from './device/device.module';
 			},
 		}),
 		// Load sub modules
-		UserModule,
 		AuthModule,
-		DeviceModule,
 	],
 })
 export class AppModule {}

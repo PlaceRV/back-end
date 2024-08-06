@@ -1,16 +1,12 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
 import { LoginDto, SignUpDto } from './auth.dto';
 import { ConfigService } from '@nestjs/config';
 import { UserService } from 'src/user/user.service';
 import { DeviceService } from 'src/device/device.service';
 import { DeepPartial } from 'typeorm';
 import { IncomingMessage } from 'http';
-import { compare, hash, hashSync } from 'bcrypt';
+import { compareSync, hashSync } from 'bcrypt';
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
-
-export class GqlContext {
-	req: IncomingMessage;
-}
 
 export class PayLoad {
 	constructor(id: string) {
@@ -48,6 +44,7 @@ export class AuthService {
 	constructor(
 		private cfgSvc: ConfigService,
 		private usrSvc: UserService,
+		@Inject(forwardRef(() => DeviceService))
 		private dvcSvc: DeviceService,
 	) {}
 	private readonly slt = this.cfgSvc.get('BCRYPT_SALT');
@@ -57,10 +54,10 @@ export class AuthService {
 	async signUp(signUpDto: SignUpDto, mtdt: UserMetadata) {
 		const user = await this.usrSvc.findOne({ where: { email: signUpDto.email } });
 		if (!user) {
-			signUpDto.password = await hash(signUpDto.password, this.slt);
+			signUpDto.password = this.hash(signUpDto.password);
 
 			const user = await this.usrSvc.save(signUpDto);
-			return this.dvcSvc.handleDeviceSession(user.id, mtdt);
+			return this.dvcSvc.getTokens(user.id, mtdt);
 		}
 		throw new BadRequestException('Email already assigned');
 	}
@@ -68,8 +65,8 @@ export class AuthService {
 	async login(loginDto: LoginDto, mtdt: UserMetadata) {
 		const user = await this.usrSvc.findOne({ where: { email: loginDto.email } });
 		if (user) {
-			const isPasswordMatched = await compare(loginDto.password, user.password);
-			if (isPasswordMatched) return this.dvcSvc.handleDeviceSession(user.id, mtdt);
+			const isPasswordMatched = compareSync(loginDto.password, user.password);
+			if (isPasswordMatched) return this.dvcSvc.getTokens(user.id, mtdt);
 		}
 		throw new BadRequestException('Invalid email or password');
 	}
