@@ -20,7 +20,10 @@ export class AuthMiddleware implements NestMiddleware {
 		for (const cki in req.cookies)
 			if ((u = compareSync('refresh', cki)) || compareSync('access', cki)) {
 				req.headers.authorization = `Bearer ${this.authSvc.decrypt(req.cookies[cki])}`;
-				if (req.url === '/auth/refresh' && u) next();
+				if (req.url === '/auth/refresh' && u) {
+					next();
+					return;
+				}
 			}
 
 		next();

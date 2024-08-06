@@ -11,6 +11,7 @@ import { DeviceService } from 'src/device/device.service';
 import { DeviceSession } from 'src/device/device.entity';
 import { AuthController } from './auth.controller';
 import { AuthMiddleware } from './auth.middleware';
+import { RefreshStrategy } from './strategies/refresh.strategy';
 
 @Module({
 	imports: [
@@ -23,9 +24,9 @@ import { AuthMiddleware } from './auth.middleware';
 			inject: [ConfigService],
 			useFactory: (cfg: ConfigService) => {
 				return {
-					secret: cfg.get('JWT_ACCESS_SECRET'),
+					secret: cfg.get('JWT_SECRET'),
 					signOptions: {
-						expiresIn: cfg.get('JWT_ACCESS_EXPIRES'),
+						expiresIn: cfg.get('JWT_EXPIRES'),
 					},
 				};
 			},
@@ -35,8 +36,10 @@ import { AuthMiddleware } from './auth.middleware';
 		AuthService,
 		// Foreign service
 		UserService,
-		AccessStrategy,
 		DeviceService,
+		// Strategies
+		AccessStrategy,
+		RefreshStrategy,
 	],
 	controllers: [AuthController],
 })

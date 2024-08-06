@@ -2,26 +2,42 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { UserService } from 'src/user/user.service';
 import { PayLoad } from '../auth.service';
-import ms from 'ms';
+import { DeviceService } from 'src/device/device.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class RefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
 	constructor(
-		private usrSvc: UserService,
-		private cfgSvc: ConfigService,
+		cfgSvc: ConfigService,
+		private dvcSvc: DeviceService,
+		private jwtSvc: JwtService,
 	) {
 		super({
 			jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
 			ignoreExpiration: false,
-			secretOrKey: cfgSvc.get('JWT_REFRESH_SECRET'),
+			secretOrKey: cfgSvc.get('SERVER_SECRET'),
 		});
 	}
 
 	async validate(payload: PayLoad) {
-		const user = await this.usrSvc.findOne({ where: { id: payload.usrId } });
-		if (user) return { user: user };
-		throw new UnauthorizedException('Login first to access this endpoint.');
+		const session = await this.dvcSvc.findOne({ where: { id: payload.id } });
+		if (session) {
+			if (session.useTimeLeft - 1 > 0) {
+				await this.dvcSvc.save({
+					id: session.id,
+					useTimeLeft: session.useTimeLeft - 1,
+				});
+				return {
+					success: true,
+					ua: session.hashedUserAgent,
+					tkn: this.jwtSvc.sign(new PayLoad(session.userId).toPlainObj()),
+				};
+			} else {
+				await this.dvcSvc.delete({ id: session.id });
+				return { success: false, userId: session.userId };
+			}
+		}
+		throw new UnauthorizedException('Invalid refresh token');
 	}
 }

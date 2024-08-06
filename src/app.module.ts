@@ -42,8 +42,8 @@ import { DeviceModule } from './device/device.module';
 				POSTGRES_PASS: Joi.string().required(),
 				POSTGRES_DB: Joi.string().required(),
 				// Jwt secret
-				JWT_ACCESS_SECRET: Joi.string().required(),
-				JWT_ACCESS_EXPIRES: Joi.string().required(),
+				JWT_SECRET: Joi.string().required(),
+				JWT_EXPIRES: Joi.string().required(),
 				// Server secret
 				SERVER_SECRET: Joi.string().required(),
 				REFRESH_EXPIRE: Joi.string().required(),

@@ -1,32 +1,51 @@
-import { Body, Controller, Post, Req, Res } from '@nestjs/common';
+import {
+	BadRequestException,
+	Body,
+	Controller,
+	Post,
+	Req,
+	Res,
+	UseGuards,
+} from '@nestjs/common';
 import { LoginDto, SignUpDto } from './auth.dto';
 import { AuthService, UserMetadata } from './auth.service';
 import { Request, Response } from 'express';
 import { CookieOptions } from 'express';
-import { UserRecieve } from 'src/device/device.service';
+import { DeviceService, UserRecieve } from 'src/device/device.service';
 import { compareSync } from 'bcrypt';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
-	constructor(private authSvc: AuthService) {}
+	constructor(
+		private authSvc: AuthService,
+		private dvcSvc: DeviceService,
+	) {}
+	private readonly ckiProp: CookieOptions = {
+		httpOnly: true,
+		secure: true,
+		sameSite: 'lax',
+	};
+
+	clearCookies(req: Request, res: Response, access = true, refresh = true) {
+		for (const cki in req.cookies)
+			if (compareSync('access', cki) && access) res.clearCookie(cki, this.ckiProp);
+			else if (compareSync('refresh', cki) && refresh)
+				res.clearCookie(cki, this.ckiProp);
+	}
 
 	async sendBack(req: Request, res: Response, usrRcv: UserRecieve) {
-		const ckiProp: CookieOptions = { httpOnly: true, secure: true, sameSite: 'lax' };
-
-		for (const cki in req.cookies)
-			if (compareSync('access', cki)) res.clearCookie(cki, ckiProp);
-			else if (compareSync('refresh', cki)) res.clearCookie(cki, ckiProp);
-
+		this.clearCookies(req, res);
 		res
 			.cookie(
 				this.authSvc.hash('access'),
 				this.authSvc.encrypt(usrRcv.accessToken),
-				ckiProp,
+				this.ckiProp,
 			)
 			.cookie(
 				this.authSvc.hash('refresh'),
 				this.authSvc.encrypt(usrRcv.refreshToken),
-				ckiProp,
+				this.ckiProp,
 			);
 	}
 
@@ -57,5 +76,27 @@ export class AuthController {
 	}
 
 	@Post('refresh')
-	async refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response) {}
+	@UseGuards(AuthGuard('refresh'))
+	async refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+		if (req.user['success']) {
+			if (compareSync(new UserMetadata(req).toString(), req.user['ua'])) {
+				this.clearCookies(req, res, true, false);
+				res.cookie(
+					this.authSvc.hash('access'),
+					this.authSvc.encrypt(req.user['tkn']),
+					this.ckiProp,
+				);
+				return;
+			}
+		} else
+			await this.sendBack(
+				req,
+				res,
+				await this.dvcSvc.handleDeviceSession(
+					req.user['userId'],
+					new UserMetadata(req),
+				),
+			);
+		throw new BadRequestException('Invalid refresh token');
+	}
 }

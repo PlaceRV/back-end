@@ -1,7 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeviceSession } from './device.entity';
-import { DeepPartial, FindOneOptions, Repository, SaveOptions } from 'typeorm';
+import {
+	DeepPartial,
+	FindOneOptions,
+	FindOptionsWhere,
+	Repository,
+	SaveOptions,
+} from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { PayLoad, UserMetadata } from 'src/auth/auth.service';
 import { ConfigService } from '@nestjs/config';
@@ -25,35 +31,38 @@ export class DeviceService {
 	) {}
 	// bcrypt
 	private readonly slt = this.cfgSvc.get('BCRYPT_SALT');
-	// jwt
+	// session secret
 	private readonly scr = this.cfgSvc.get('SERVER_SECRET');
 	private readonly exp = this.cfgSvc.get('REFRESH_EXPIRE');
 	private readonly use = this.cfgSvc.get('REFRESH_USE');
 
-	async handleDeviceSession(usrId: string, mtdt: UserMetadata): Promise<UserRecieve> {
+	async handleDeviceSession(usrId: string, mtdt: UserMetadata) {
 		const session = await this.save({
-				user: usrId,
+				userId: usrId,
 				hashedUserAgent: await hash(mtdt.toString(), this.slt),
 				useTimeLeft: this.use,
 			}),
-			rfshTkn = this.jwtSvc.sign(
-				{ id: session.id },
-				{ secret: this.scr, expiresIn: this.exp },
-			),
-			payload = new PayLoad(usrId),
-			tkn = this.jwtSvc.sign(payload.toPlainObj());
+			rfshTkn = this.jwtSvc.sign(new PayLoad(session.id).toPlainObj(), {
+				secret: this.scr,
+				expiresIn: this.exp,
+			}),
+			tkn = this.jwtSvc.sign(new PayLoad(usrId).toPlainObj());
 
 		return new UserRecieve(tkn, rfshTkn);
 	}
 
-	findOne(options?: FindOneOptions<DeviceSession>): Promise<DeviceSession> {
+	findOne(options?: FindOneOptions<DeviceSession>) {
 		return this.repo.findOne(options);
 	}
 
 	save(
 		entities: DeepPartial<DeviceSession>,
 		options?: SaveOptions & { reload: false },
-	): Promise<DeepPartial<DeviceSession>> {
+	) {
 		return this.repo.save(entities, options);
+	}
+
+	delete(criteria: FindOptionsWhere<DeviceSession>) {
+		return this.repo.delete(criteria);
 	}
 }

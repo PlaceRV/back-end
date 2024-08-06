@@ -13,11 +13,11 @@ export class GqlContext {
 }
 
 export class PayLoad {
-	constructor(usrId: string) {
-		this.usrId = usrId;
+	constructor(id: string) {
+		this.id = id;
 	}
 
-	usrId!: string;
+	id!: string;
 
 	toPlainObj(): DeepPartial<PayLoad> {
 		return Object.assign({}, this);
