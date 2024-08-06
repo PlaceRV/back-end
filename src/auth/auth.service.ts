@@ -5,7 +5,7 @@ import { UserService } from 'src/user/user.service';
 import { DeviceService } from 'src/device/device.service';
 import { DeepPartial } from 'typeorm';
 import { IncomingMessage } from 'http';
-import { compare, hash } from 'bcrypt';
+import { compare, hash, hashSync } from 'bcrypt';
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 
 export class GqlContext {
@@ -51,6 +51,8 @@ export class AuthService {
 		private dvcSvc: DeviceService,
 	) {}
 	private readonly slt = this.cfgSvc.get('BCRYPT_SALT');
+	private readonly algorithm = this.cfgSvc.get('AES_ALGO');
+	private readonly svrScr = this.cfgSvc.get('SERVER_SECRET');
 
 	async signUp(signUpDto: SignUpDto, mtdt: UserMetadata) {
 		const user = await this.usrSvc.findOne({ where: { email: signUpDto.email } });
@@ -71,30 +73,28 @@ export class AuthService {
 		}
 		throw new BadRequestException('Invalid email or password');
 	}
-}
-
-@Injectable()
-export class EncryptionService {
-	constructor(private cfgSvc: ConfigService) {}
-	private readonly algorithm = this.cfgSvc.get('AES_ALGO');
 
 	sigToKey(str: string): string {
 		const first32Chars = str.substring(0, 32);
 		return first32Chars.padStart(32, '0');
 	}
 
-	encrypt(text: string, key: string) {
+	encrypt(text: string) {
 		const iv = randomBytes(16),
-			cipher = createCipheriv(this.algorithm, this.sigToKey(key), iv),
+			cipher = createCipheriv(this.algorithm, this.sigToKey(this.svrScr), iv),
 			encrypted = Buffer.concat([cipher.update(text), cipher.final()]);
 		return iv.toString('hex') + encrypted.toString('hex');
 	}
 
-	decrypt(encryptedText: string, key: string) {
+	decrypt(encryptedText: string) {
 		const iv = Buffer.from(encryptedText.substring(0, 32), 'hex'),
 			encrypted = Buffer.from(encryptedText.substring(32), 'hex'),
-			decipher = createDecipheriv(this.algorithm, this.sigToKey(key), iv),
+			decipher = createDecipheriv(this.algorithm, this.sigToKey(this.svrScr), iv),
 			decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()]);
 		return decrypted.toString();
+	}
+
+	hash(text: string) {
+		return hashSync(text, this.slt);
 	}
 }

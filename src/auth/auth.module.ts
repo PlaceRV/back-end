@@ -1,5 +1,5 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
-import { AuthService, EncryptionService } from './auth.service';
+import { AuthService } from './auth.service';
 import { UserService } from 'src/user/user.service';
 import { User } from 'src/user/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -33,7 +33,6 @@ import { AuthMiddleware } from './auth.middleware';
 	],
 	providers: [
 		AuthService,
-		EncryptionService,
 		// Foreign service
 		UserService,
 		AccessStrategy,

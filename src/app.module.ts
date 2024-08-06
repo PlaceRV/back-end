@@ -44,11 +44,11 @@ import { DeviceModule } from './device/device.module';
 				// Jwt secret
 				JWT_ACCESS_SECRET: Joi.string().required(),
 				JWT_ACCESS_EXPIRES: Joi.string().required(),
-				JWT_REFRESH_SECRET: Joi.string().required(),
-				JWT_REFRESH_EXPIRES: Joi.string().required(),
-				JWT_REFRESH_USE: Joi.number().required(),
 				// Server secret
 				SERVER_SECRET: Joi.string().required(),
+				REFRESH_EXPIRE: Joi.string().required(),
+				REFRESH_USE: Joi.number().required(),
+				PORT: Joi.number().required(),
 				// bcrypt secret
 				BCRYPT_SALT: Joi.number().required(),
 				// AES secret

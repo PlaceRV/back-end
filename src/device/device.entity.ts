@@ -6,4 +6,5 @@ export class DeviceSession {
 	@PrimaryGeneratedColumn('uuid') id: string;
 	@ManyToOne(() => User, (user: { id: string }) => user.id) user: string;
 	@Column() hashedUserAgent: string;
+	@Column() useTimeLeft: string;
 }

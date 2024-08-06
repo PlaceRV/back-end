@@ -26,17 +26,18 @@ export class DeviceService {
 	// bcrypt
 	private readonly slt = this.cfgSvc.get('BCRYPT_SALT');
 	// jwt
-	private readonly scr = this.cfgSvc.get('JWT_REFRESH_SECRET');
-	private readonly exp = this.cfgSvc.get('JWT_REFRESH_EXPIRES');
-	private readonly use = this.cfgSvc.get('JWT_REFRESH_USE');
+	private readonly scr = this.cfgSvc.get('SERVER_SECRET');
+	private readonly exp = this.cfgSvc.get('REFRESH_EXPIRE');
+	private readonly use = this.cfgSvc.get('REFRESH_USE');
 
 	async handleDeviceSession(usrId: string, mtdt: UserMetadata): Promise<UserRecieve> {
 		const session = await this.save({
 				user: usrId,
 				hashedUserAgent: await hash(mtdt.toString(), this.slt),
+				useTimeLeft: this.use,
 			}),
 			rfshTkn = this.jwtSvc.sign(
-				{ id: session.id, use: this.use },
+				{ id: session.id },
 				{ secret: this.scr, expiresIn: this.exp },
 			),
 			payload = new PayLoad(usrId),

@@ -1,65 +1,61 @@
 import { Body, Controller, Post, Req, Res } from '@nestjs/common';
 import { LoginDto, SignUpDto } from './auth.dto';
-import { AuthService, EncryptionService, UserMetadata } from './auth.service';
-import { IncomingMessage } from 'http';
-import { Response } from 'express';
+import { AuthService, UserMetadata } from './auth.service';
+import { Request, Response } from 'express';
 import { CookieOptions } from 'express';
 import { UserRecieve } from 'src/device/device.service';
-import { ConfigService } from '@nestjs/config';
-import { compare, hash } from 'bcrypt';
+import { compareSync } from 'bcrypt';
 
 @Controller('auth')
 export class AuthController {
-	constructor(
-		private authSvc: AuthService,
-		private encryptSvc: EncryptionService,
-		private cfgSvc: ConfigService,
-	) {}
+	constructor(private authSvc: AuthService) {}
 
-	async sendBack(req: IncomingMessage, res: Response, usrRcv: UserRecieve) {
-		const ckiProp: CookieOptions = { httpOnly: true, secure: true, sameSite: 'lax' },
-			e = (s: string) => this.encryptSvc.encrypt(s, this.cfgSvc.get('SERVER_SECRET')),
-			h = (s: string) => hash(s, this.cfgSvc.get('BCRYPT_SALT'));
+	async sendBack(req: Request, res: Response, usrRcv: UserRecieve) {
+		const ckiProp: CookieOptions = { httpOnly: true, secure: true, sameSite: 'lax' };
 
-		for (const cki in req['cookies']) {
-			if ((await compare('access', cki)) || (await compare('refresh', cki)))
-				res.clearCookie(cki, ckiProp);
-		}
+		for (const cki in req.cookies)
+			if (compareSync('access', cki)) res.clearCookie(cki, ckiProp);
+			else if (compareSync('refresh', cki)) res.clearCookie(cki, ckiProp);
 
 		res
-			.cookie(await h('access'), e(usrRcv.accessToken), ckiProp)
-			.cookie(await h('refresh'), e(usrRcv.refreshToken), ckiProp);
+			.cookie(
+				this.authSvc.hash('access'),
+				this.authSvc.encrypt(usrRcv.accessToken),
+				ckiProp,
+			)
+			.cookie(
+				this.authSvc.hash('refresh'),
+				this.authSvc.encrypt(usrRcv.refreshToken),
+				ckiProp,
+			);
 	}
 
 	@Post('login')
 	async login(
-		@Req() req: IncomingMessage,
-		@Body() loginDto: LoginDto,
+		@Req() req: Request,
+		@Body() dto: LoginDto,
 		@Res({ passthrough: true }) res: Response,
 	) {
 		await this.sendBack(
 			req,
 			res,
-			await this.authSvc.login(loginDto, new UserMetadata(req)),
+			await this.authSvc.login(dto, new UserMetadata(req)),
 		);
 	}
 
 	@Post('signup')
 	async signup(
-		@Req() req: IncomingMessage,
-		@Body() signupDto: SignUpDto,
+		@Req() req: Request,
+		@Body() dto: SignUpDto,
 		@Res({ passthrough: true }) res: Response,
 	) {
 		await this.sendBack(
 			req,
 			res,
-			await this.authSvc.signUp(signupDto, new UserMetadata(req)),
+			await this.authSvc.signUp(dto, new UserMetadata(req)),
 		);
 	}
 
 	@Post('refresh')
-	async refresh(
-		@Req() req: IncomingMessage,
-		@Res({ passthrough: true }) res: Response,
-	) {}
+	async refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response) {}
 }
