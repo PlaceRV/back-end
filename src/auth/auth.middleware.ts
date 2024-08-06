@@ -16,20 +16,20 @@ export class AuthMiddleware implements NestMiddleware {
 		private authSvc: AuthService,
 		private cfgSvc: ConfigService,
 	) {}
+	private readonly refreshUrl = '/auth/refreshToken';
 
 	use(req: Request, res: Response, next: NextFunction) {
 		req['fingerprint'] = generateFingerprint(req);
 
-		let u: boolean = false;
-		for (const cki in req.cookies)
-			if (
-				(u = u || compareSync(this.cfgSvc.get('REFRESH'), cki)) ||
-				compareSync(this.cfgSvc.get('ACCESS'), cki)
-			) {
-				req.headers.authorization = `Bearer ${this.authSvc.decrypt(req.cookies[cki])}`;
-				if (req.url === '/auth/refresh' && u) next();
-			}
-
-		if (!u) next();
+		var token: string;
+		for (const cki in req.cookies) {
+			if (compareSync(this.cfgSvc.get('REFRESH'), cki) && req.url === this.refreshUrl)
+				token = req.cookies[cki];
+			else if (compareSync(this.cfgSvc.get('ACCESS'), cki) && req.url !== this.refreshUrl)
+				token = req.cookies[cki];
+		}
+		req.headers.authorization = `Bearer ${this.authSvc.decrypt(token)}`;
+		
+		next();
 	}
 }

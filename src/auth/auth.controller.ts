@@ -52,9 +52,9 @@ export class AuthController {
 		this.sendBack(req, res, await this.authSvc.signUp(dto, new UsrMtdt(req)));
 	}
 
-	@Post('refresh')
+	@Post('refreshToken')
 	@UseGuards(AuthGuard('refresh'))
-	async refresh(@Req() req: Rqt, @Res() res: Rsp) {
+	async refresh(@Req() req: Rqt, @Res({ passthrough: true }) res: Rsp) {
 		if (req.user['success']) {
 			if (compareSync(new UsrMtdt(req).toString(), req.user['ua'])) {
 				this.clearCookies(req, res, true, false);
