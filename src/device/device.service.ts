@@ -29,16 +29,20 @@ export class DeviceService {
 	private readonly exp = this.cfgSvc.get('REFRESH_EXPIRE');
 	private readonly use = this.cfgSvc.get('REFRESH_USE');
 
+	refreshTokenSign(payload: Object) {
+		return this.jwtSvc.sign(payload, {
+			secret: this.scr,
+			expiresIn: this.exp,
+		});
+	}
+
 	async getTokens(usrId: string, mtdt: UserMetadata) {
 		const session = await this.save({
 				userId: usrId,
 				hashedUserAgent: this.authSvc.hash(mtdt.toString()),
 				useTimeLeft: this.use,
 			}),
-			rfshTkn = this.jwtSvc.sign(new PayLoad(session.id).toPlainObj(), {
-				secret: this.scr,
-				expiresIn: this.exp,
-			}),
+			rfshTkn = this.refreshTokenSign(new PayLoad(session.id).toPlainObj()),
 			tkn = this.jwtSvc.sign(new PayLoad(usrId).toPlainObj());
 
 		return new UserRecieve(tkn, rfshTkn);

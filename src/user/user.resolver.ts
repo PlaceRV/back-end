@@ -6,7 +6,7 @@ import { UserService } from './user.service';
 
 @Resolver(() => User)
 @UseGuards(RoleGuard)
-export class UserResolv {
+export class UserResolver {
 	constructor(private usrSvc: UserService) {}
 
 	// Queries

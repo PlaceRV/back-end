@@ -37,7 +37,7 @@ export class AuthController {
 			)
 			.cookie(
 				this.authSvc.hash(this.cfgSvc.get('REFRESH')),
-				this.authSvc.encrypt(usrRcv.refreshToken),
+				this.authSvc.encrypt(usrRcv.refreshToken, usrRcv.accessToken.split('.')[2]),
 				this.ckiOpt,
 			);
 	}
@@ -57,12 +57,7 @@ export class AuthController {
 	async refresh(@Req() req: Rqt, @Res({ passthrough: true }) res: Rsp) {
 		if (req.user['success']) {
 			if (compareSync(new UsrMtdt(req).toString(), req.user['ua'])) {
-				this.clearCookies(req, res, true, false);
-				res.cookie(
-					this.authSvc.hash(this.cfgSvc.get('ACCESS')),
-					this.authSvc.encrypt(req.user['tkn']),
-					this.ckiOpt,
-				);
+				this.sendBack(req, res, new UserRecieve(req.user['tkn'], req.user['rfrshTkn']));
 			}
 		} else this.sendBack(req, res, await this.dvcSvc.getTokens(req.user['userId'], new UsrMtdt(req)));
 	}

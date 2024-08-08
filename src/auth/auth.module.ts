@@ -44,6 +44,6 @@ import { UserModule } from 'src/user/user.module';
 })
 export class AuthModule {
 	configure(consumer: MiddlewareConsumer) {
-		consumer.apply(AuthMiddleware).forRoutes(AuthController);
+		consumer.apply(AuthMiddleware).forRoutes(AuthController, 'graphql');
 	}
 }

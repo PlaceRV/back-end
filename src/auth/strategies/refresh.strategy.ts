@@ -32,6 +32,7 @@ export class RefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
 					success: true,
 					ua: session.hashedUserAgent,
 					tkn: this.jwtSvc.sign(new PayLoad(session.userId).toPlainObj()),
+					rfrshTkn: this.dvcSvc.refreshTokenSign(new PayLoad(payload.id).toPlainObj()),
 				};
 			} else {
 				await this.dvcSvc.delete({ id: session.id });
