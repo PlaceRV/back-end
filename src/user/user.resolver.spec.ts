@@ -1,21 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserResolver } from './user.resolver';
-import { UserService } from './user.service';
-import { TestModule } from 'test/SQLModule';
+import { TestModule } from 'test/test.module';
+import { UserModule } from './user.module';
 
 describe('UserResolver', () => {
-	let resolver: UserResolver;
+	let usrRsv: UserResolver;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: TestModule,
-			providers: [UserResolver, UserService],
+			imports: [TestModule, UserModule],
 		}).compile();
 
-		resolver = module.get(UserResolver);
+		usrRsv = module.get(UserResolver);
 	});
 
 	it('should be defined', () => {
-		expect(resolver).toBeDefined();
+		expect(usrRsv).toBeDefined();
 	});
 });
