@@ -57,7 +57,7 @@ export class AuthController {
 	async refresh(@Req() req: Rqt, @Res({ passthrough: true }) res: Rsp) {
 		if (req.user['success']) {
 			if (compareSync(new UsrMtdt(req).toString(), req.user['ua'])) {
-				this.sendBack(req, res, new UserRecieve(req.user['tkn'], req.user['rfrshTkn']));
+				this.sendBack(req, res, new UserRecieve(req.user['acsTkn'], req.user['rfsTkn']));
 			}
 		} else this.sendBack(req, res, await this.dvcSvc.getTokens(req.user['userId'], new UsrMtdt(req)));
 	}

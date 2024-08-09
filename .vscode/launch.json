@@ -5,6 +5,12 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
+			"name": "Debug Jest tests",
+			"command": "npm run test:debug",
+			"request": "launch",
+			"type": "node-terminal"
+		},
+		{
 			"name": "Debug NestJS",
 			"command": "npm run start:dev",
 			"request": "launch",

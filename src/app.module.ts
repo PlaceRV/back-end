@@ -42,16 +42,19 @@ import { randomBytes } from 'crypto';
 				POSTGRES_DB: Joi.string().required(),
 				// Jwt secret
 				JWT_SECRET: Joi.string().required(),
-				JWT_EXPIRES: Joi.string() || '5m',
+				JWT_EXPIRES: Joi.string().default('5m'),
 				// Server secret
 				SERVER_SECRET: Joi.string().required(),
-				REFRESH_EXPIRE: Joi.string() || '366d',
-				REFRESH_USE: Joi.number() || 6,
-				PORT: Joi.number() || 3000,
+				REFRESH_EXPIRE: Joi.string().default('366d'),
+				REFRESH_USE: Joi.number().default(6),
+				PORT: Joi.number().default(3000),
 				// bcrypt secret
-				BCRYPT_SALT: Joi.number() || 6,
+				BCRYPT_SALT: Joi.number().default(6),
 				// AES secret
-				AES_ALGO: Joi.string() || 'aes-256-ctr',
+				AES_ALGO: Joi.string().default('aes-256-ctr'),
+				// Maxmind secret
+				MAXMIND_LICENSE_KEY: Joi.string().required(),
+				MAXMIND_ACCOUNT_ID: Joi.string().required(),
 				// Custom keys
 				REFRESH: Joi.string() || randomBytes(6).toString('hex'),
 				ACCESS: Joi.string() || randomBytes(6).toString('hex'),

@@ -5,10 +5,7 @@ import uaParserJs from 'ua-parser-js';
 import { compareSync } from 'bcrypt';
 import { AuthService } from './auth.service';
 import { ConfigService } from '@nestjs/config';
-
-function generateFingerprint(req: Request) {
-	return { ip: getClientIp(req), ua: uaParserJs.UAParser() };
-}
+import { lookup } from 'geoip-lite';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
@@ -18,18 +15,27 @@ export class AuthMiddleware implements NestMiddleware {
 	) {}
 	private readonly refreshUrl = '/auth/refreshToken';
 
-	use(req: Request, res: Response, next: NextFunction) {
-		req['fingerprint'] = generateFingerprint(req);
-		const refresh = req.url === this.refreshUrl;
+	generateFingerprint(req: Request) {
+		const ipAddress = getClientIp(req);
+		return {
+			ipAddress: ipAddress,
+			userAgent: uaParserJs.UAParser(),
+			maxmindData: lookup(ipAddress),
+		};
+	}
 
-		var tkn: string, rfrshTkn: string;
+	use(req: Request, res: Response, next: NextFunction) {
+		req['fingerprint'] = this.generateFingerprint(req);
+		const isRefresh = req.url === this.refreshUrl;
+
+		var acsTkn: string, rfsTkn: string;
 		for (const cki in req.cookies) {
-			if (compareSync(this.cfgSvc.get('REFRESH'), cki)) rfrshTkn = req.cookies[cki];
-			else if (compareSync(this.cfgSvc.get('ACCESS'), cki)) tkn = req.cookies[cki];
+			if (compareSync(this.cfgSvc.get('REFRESH'), cki)) rfsTkn = req.cookies[cki];
+			else if (compareSync(this.cfgSvc.get('ACCESS'), cki)) acsTkn = req.cookies[cki];
 		}
 
-		const tknPld = this.authSvc.decrypt(tkn);
-		req.headers.authorization = `Bearer ${refresh ? this.authSvc.decrypt(rfrshTkn, tknPld.split('.')[2]) : tknPld}`;
+		const tknPld = this.authSvc.decrypt(acsTkn);
+		req.headers.authorization = `Bearer ${isRefresh ? this.authSvc.decrypt(rfsTkn, tknPld.split('.')[2]) : tknPld}`;
 
 		next();
 	}

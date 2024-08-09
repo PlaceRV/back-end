@@ -2,7 +2,7 @@ import { ExecutionContext, Injectable, InternalServerErrorException } from '@nes
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { AuthGuard } from '@nestjs/passport';
-import { Role } from 'src/user/user.entity';
+import { Role, User } from 'src/user/user.entity';
 
 const matchRoles = (roles: Role[], userRoles: Role[]) => {
 	return roles.some((i) => userRoles.some((j) => i === j));
@@ -10,6 +10,10 @@ const matchRoles = (roles: Role[], userRoles: Role[]) => {
 
 export const Roles = Reflector.createDecorator<Role[]>(),
 	AllowPublic = Reflector.createDecorator<boolean>();
+
+class SeverContext extends GqlExecutionContext {
+	user: User;
+}
 
 @Injectable()
 export class RoleGuard extends AuthGuard('access') {
@@ -23,7 +27,7 @@ export class RoleGuard extends AuthGuard('access') {
 	 * @return {GqlExecutionContext} graphql's request
 	 * ! Cautious: Since using GraphQL, it's NOT recommend to DELETE this
 	 */
-	getRequest(context: ExecutionContext): GqlExecutionContext {
+	getRequest(context: ExecutionContext): SeverContext {
 		const ctx = GqlExecutionContext.create(context);
 		return ctx.getContext().req;
 	}
@@ -35,10 +39,10 @@ export class RoleGuard extends AuthGuard('access') {
 	 */
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		if (this.reflector.get(AllowPublic, context.getHandler())) return true;
-		await super.canActivate(context); // Check user's authencation via access-strategy
+		await super.canActivate(context); // ! Must run to check passport
 		const roles = this.reflector.get(Roles, context.getHandler());
 		if (roles) {
-			const req = context.switchToHttp().getNext().req,
+			const req = this.getRequest(context),
 				user = req.user;
 
 			return matchRoles(roles, user.roles);

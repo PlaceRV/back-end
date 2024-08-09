@@ -7,9 +7,9 @@ import { AuthService, PayLoad, UserMetadata } from 'src/auth/auth.service';
 import { ConfigService } from '@nestjs/config';
 
 export class UserRecieve {
-	constructor(tkn: string, rfshTkn: string) {
-		this.accessToken = tkn;
-		this.refreshToken = rfshTkn;
+	constructor(acsTkn: string, rfsTkn: string) {
+		this.accessToken = acsTkn;
+		this.refreshToken = rfsTkn;
 	}
 	accessToken: string;
 	refreshToken: string;
@@ -42,10 +42,10 @@ export class DeviceService {
 				hashedUserAgent: this.authSvc.hash(mtdt.toString()),
 				useTimeLeft: this.use,
 			}),
-			rfshTkn = this.refreshTokenSign(new PayLoad(session.id).toPlainObj()),
-			tkn = this.jwtSvc.sign(new PayLoad(usrId).toPlainObj());
+			rfsTkn = this.refreshTokenSign(new PayLoad(session.id).toPlainObj()),
+			acsTkn = this.jwtSvc.sign(new PayLoad(usrId).toPlainObj());
 
-		return new UserRecieve(tkn, rfshTkn);
+		return new UserRecieve(acsTkn, rfsTkn);
 	}
 
 	findOne(options?: FindOneOptions<DeviceSession>) {

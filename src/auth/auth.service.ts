@@ -4,9 +4,9 @@ import { ConfigService } from '@nestjs/config';
 import { UserService } from 'src/user/user.service';
 import { DeviceService } from 'src/device/device.service';
 import { DeepPartial } from 'typeorm';
-import { IncomingMessage } from 'http';
 import { compareSync, hashSync } from 'bcrypt';
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
+import { Request } from 'express';
 
 export class PayLoad {
 	constructor(id: string) {
@@ -21,10 +21,10 @@ export class PayLoad {
 }
 
 export class UserMetadata {
-	constructor(req: IncomingMessage) {
+	constructor(req: Request) {
 		const fp = req['fingerprint'];
-		this.userAgent = fp.ua;
-		this.ipAddress = fp.ip;
+		this.userAgent = { ...fp.userAgent, ...fp.maxmindData };
+		this.ipAddress = fp.ipAddress;
 	}
 
 	ipAddress!: string;
