@@ -12,7 +12,7 @@ describe('DeviceService', () => {
 			providers: [DeviceService],
 		}).compile();
 
-		dvcSvc = module.get<DeviceService>(DeviceService);
+		dvcSvc = module.get(DeviceService);
 	});
 
 	it('should be defined', () => {

@@ -12,7 +12,7 @@ describe('UserResolver', () => {
 			providers: [UserResolver, UserService],
 		}).compile();
 
-		resolver = module.get<UserResolver>(UserResolver);
+		resolver = module.get(UserResolver);
 	});
 
 	it('should be defined', () => {

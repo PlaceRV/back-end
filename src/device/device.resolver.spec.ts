@@ -13,7 +13,7 @@ describe('DeviceResolver', () => {
 			providers: [DeviceResolver, DeviceService],
 		}).compile();
 
-		resolver = module.get<DeviceResolver>(DeviceResolver);
+		resolver = module.get(DeviceResolver);
 	});
 
 	it('should be defined', () => {
