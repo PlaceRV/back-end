@@ -1,5 +1,5 @@
 import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
-import { LoginDto, SignUpDto } from './auth.dto';
+import { LogInDto, SignUpDto } from './auth.dto';
 import { AuthService, UserMetadata as UsrMtdt } from './auth.service';
 import { Request as Rqt, Response as Rsp } from 'express';
 import { CookieOptions } from 'express';
@@ -42,9 +42,9 @@ export class AuthController {
 			);
 	}
 
-	@Post('login')
-	async login(@Req() req: Rqt, @Body() dto: LoginDto, @Res({ passthrough: true }) res: Rsp) {
-		this.sendBack(req, res, await this.authSvc.login(dto, new UsrMtdt(req)));
+	@Post('logIn')
+	async logIn(@Req() req: Rqt, @Body() dto: LogInDto, @Res({ passthrough: true }) res: Rsp) {
+		this.sendBack(req, res, await this.authSvc.logIn(dto, new UsrMtdt(req)));
 	}
 
 	@Post('signup')

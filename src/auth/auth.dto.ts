@@ -10,7 +10,7 @@ export class SignUpDto {
 }
 
 @InputType()
-export class LoginDto {
+export class LogInDto {
 	@IsEmail() @Field({ nullable: false }) email!: string;
 	@IsNotEmpty() @Field({ nullable: false }) password!: string;
 }

@@ -11,7 +11,7 @@ const matchRoles = (roles: Role[], userRoles: Role[]) => {
 export const Roles = Reflector.createDecorator<Role[]>(),
 	AllowPublic = Reflector.createDecorator<boolean>();
 
-class SeverContext extends GqlExecutionContext {
+export class ServerContext extends GqlExecutionContext {
 	user: User;
 }
 
@@ -27,7 +27,7 @@ export class RoleGuard extends AuthGuard('access') {
 	 * @return {GqlExecutionContext} graphql's request
 	 * ! Cautious: Since using GraphQL, it's NOT recommend to DELETE this
 	 */
-	getRequest(context: ExecutionContext): SeverContext {
+	getRequest(context: ExecutionContext): ServerContext {
 		const ctx = GqlExecutionContext.create(context);
 		return ctx.getContext().req;
 	}

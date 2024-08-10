@@ -21,6 +21,6 @@ export class AccessStrategy extends PassportStrategy(Strategy, 'access') {
 	async validate(payload: PayLoad) {
 		const user = await this.usrSvc.findOne({ where: { id: payload.id } });
 		if (user) return user;
-		throw new UnauthorizedException('Login first to access this endpoint.');
+		throw new UnauthorizedException('LogIn first to access this endpoint.');
 	}
 }

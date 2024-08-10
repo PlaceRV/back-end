@@ -1,5 +1,5 @@
 import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
-import { LoginDto, SignUpDto } from './auth.dto';
+import { LogInDto, SignUpDto } from './auth.dto';
 import { ConfigService } from '@nestjs/config';
 import { UserService } from 'src/user/user.service';
 import { DeviceService } from 'src/device/device.service';
@@ -62,10 +62,10 @@ export class AuthService {
 		throw new BadRequestException('Email already assigned');
 	}
 
-	async login(loginDto: LoginDto, mtdt: UserMetadata) {
-		const user = await this.usrSvc.findOne({ where: { email: loginDto.email } });
+	async logIn(logInDto: LogInDto, mtdt: UserMetadata) {
+		const user = await this.usrSvc.findOne({ where: { email: logInDto.email } });
 		if (user) {
-			const isPasswordMatched = compareSync(loginDto.password, user.password);
+			const isPasswordMatched = compareSync(logInDto.password, user.password);
 			if (isPasswordMatched) return this.dvcSvc.getTokens(user.id, mtdt);
 		}
 		throw new BadRequestException('Invalid email or password');
