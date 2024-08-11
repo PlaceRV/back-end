@@ -22,7 +22,6 @@ import Joi from 'joi';
 				SERVER_SECRET: Joi.string().required(),
 				REFRESH_EXPIRE: Joi.string().default('366d'),
 				REFRESH_USE: Joi.number().default(6),
-				PORT: Joi.number().default(3000),
 				// bcrypt secret
 				BCRYPT_SALT: Joi.number().default(6),
 				// AES secret

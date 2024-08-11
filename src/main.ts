@@ -3,12 +3,21 @@ import { AppModule } from './app.module';
 import cookieParser from 'cookie-parser';
 import { ConfigService } from '@nestjs/config';
 import { exec } from 'child_process';
+import { readFileSync } from 'fs';
 
 async function bootstrap() {
-	const app = await NestFactory.create(AppModule, {
+	const httpsOptions = {
+			key: readFileSync('./secrets/key.pem'),
+			cert: readFileSync('./secrets/cert.pem'),
+		},
+		app = await NestFactory.create(AppModule, {
+			httpsOptions,
 			cors: {
-				origin: 'https://tmplrv.github.io',
-				methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+				origin: [
+					/anhvietnguyen\.id\.vn$/,
+					/((http([s]){0,1}:\/\/){0,1}(localhost|127.0.0.1){1}(([:]){0,1}[\0-9]{4}){0,1}\/{0,1}){1}/g,
+				],
+				methods: '*',
 				credentials: true,
 			},
 		}),
@@ -20,6 +29,6 @@ async function bootstrap() {
 			else console.error(error + stderr);
 		},
 	);
-	await app.use(cookieParser()).listen(cfgSvc.get('PORT'));
+	await app.use(cookieParser()).listen(443);
 }
 bootstrap();
