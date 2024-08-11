@@ -6,7 +6,10 @@ import { DeviceSession } from './device.entity';
 import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-	imports: [TypeOrmModule.forFeature([DeviceSession]), forwardRef(() => AuthModule)],
+	imports: [
+		TypeOrmModule.forFeature([DeviceSession]),
+		forwardRef(() => AuthModule),
+	],
 	providers: [DeviceResolver, DeviceService],
 	exports: [DeviceService],
 })

@@ -23,8 +23,10 @@ export class AuthController {
 
 	clearCookies(req: Rqt, res: Rsp, access = true, refresh = true) {
 		for (const cki in req.cookies)
-			if (compareSync(this.cfgSvc.get('ACCESS'), cki) && access) res.clearCookie(cki, this.ckiOpt);
-			else if (compareSync(this.cfgSvc.get('REFRESH'), cki) && refresh) res.clearCookie(cki, this.ckiOpt);
+			if (compareSync(this.cfgSvc.get('ACCESS'), cki) && access)
+				res.clearCookie(cki, this.ckiOpt);
+			else if (compareSync(this.cfgSvc.get('REFRESH'), cki) && refresh)
+				res.clearCookie(cki, this.ckiOpt);
 	}
 
 	sendBack(req: Rqt, res: Rsp, usrRcv: UserRecieve) {
@@ -37,18 +39,29 @@ export class AuthController {
 			)
 			.cookie(
 				this.authSvc.hash(this.cfgSvc.get('REFRESH')),
-				this.authSvc.encrypt(usrRcv.refreshToken, usrRcv.accessToken.split('.')[2]),
+				this.authSvc.encrypt(
+					usrRcv.refreshToken,
+					usrRcv.accessToken.split('.')[2],
+				),
 				this.ckiOpt,
 			);
 	}
 
 	@Post('logIn')
-	async logIn(@Req() req: Rqt, @Body() dto: LogInDto, @Res({ passthrough: true }) res: Rsp) {
+	async logIn(
+		@Req() req: Rqt,
+		@Body() dto: LogInDto,
+		@Res({ passthrough: true }) res: Rsp,
+	) {
 		this.sendBack(req, res, await this.authSvc.logIn(dto, new UsrMtdt(req)));
 	}
 
 	@Post('signup')
-	async signup(@Req() req: Rqt, @Body() dto: SignUpDto, @Res({ passthrough: true }) res: Rsp) {
+	async signup(
+		@Req() req: Rqt,
+		@Body() dto: SignUpDto,
+		@Res({ passthrough: true }) res: Rsp,
+	) {
 		this.sendBack(req, res, await this.authSvc.signUp(dto, new UsrMtdt(req)));
 	}
 
@@ -57,8 +70,17 @@ export class AuthController {
 	async refresh(@Req() req: Rqt, @Res({ passthrough: true }) res: Rsp) {
 		if (req.user['success']) {
 			if (compareSync(new UsrMtdt(req).toString(), req.user['ua'])) {
-				this.sendBack(req, res, new UserRecieve(req.user['acsTkn'], req.user['rfsTkn']));
+				this.sendBack(
+					req,
+					res,
+					new UserRecieve(req.user['acsTkn'], req.user['rfsTkn']),
+				);
 			}
-		} else this.sendBack(req, res, await this.dvcSvc.getTokens(req.user['userId'], new UsrMtdt(req)));
+		} else
+			this.sendBack(
+				req,
+				res,
+				await this.dvcSvc.getTokens(req.user['userId'], new UsrMtdt(req)),
+			);
 	}
 }

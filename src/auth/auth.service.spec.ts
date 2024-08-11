@@ -79,13 +79,17 @@ describe('AuthService', () => {
 			await authSvc.signUp(dto, mtdt);
 			const user = await usrRepo.findOne({ where: { email: dto.email } });
 
-			expect(usrSvc.findOne).toHaveBeenCalledWith({ where: { email: dto.email } });
+			expect(usrSvc.findOne).toHaveBeenCalledWith({
+				where: { email: dto.email },
+			});
 			expect(usrSvc.save).toHaveBeenCalledWith(dto);
 			expect(dvcSvc.getTokens).toHaveBeenCalledWith(user.id, mtdt);
 		});
 
 		it('should throw a BadRequestException if the email is already assigned', async () => {
-			await expect(authSvc.signUp(dto, mtdt)).rejects.toThrow(BadRequestException);
+			await expect(authSvc.signUp(dto, mtdt)).rejects.toThrow(
+				BadRequestException,
+			);
 		});
 	});
 
@@ -105,13 +109,17 @@ describe('AuthService', () => {
 			await authSvc.logIn(dto, mtdt);
 			const user = await usrRepo.findOne({ where: { email: dto.email } });
 
-			expect(usrSvc.findOne).toHaveBeenCalledWith({ where: { email: dto.email } });
+			expect(usrSvc.findOne).toHaveBeenCalledWith({
+				where: { email: dto.email },
+			});
 			expect(dvcSvc.getTokens).toHaveBeenCalledWith(user.id, mtdt);
 		});
 
 		it('should throw a BadRequestException for an invalid user', async () => {
 			dto.password += '0';
-			await expect(authSvc.logIn(dto, mtdt)).rejects.toThrow(BadRequestException);
+			await expect(authSvc.logIn(dto, mtdt)).rejects.toThrow(
+				BadRequestException,
+			);
 		});
 	});
 

@@ -49,14 +49,22 @@ describe('AuthMiddleware', () => {
 
 	describe('generateFingerprint', () => {
 		it('should generate a fingerprint object', () => {
-			expect(authMdw.generateFingerprint(req)).toEqual({ ipAddress: ip, userAgent: ua, maxmindData: geo });
+			expect(authMdw.generateFingerprint(req)).toEqual({
+				ipAddress: ip,
+				userAgent: ua,
+				maxmindData: geo,
+			});
 		});
 	});
 
 	describe('use', () => {
 		beforeEach(() => {
-			req.cookies[`${authSvc.hash(cfgSvc.get('REFRESH'))}`] = authSvc.encrypt(rfsTkn, acsTkn.split('.')[2]);
-			req.cookies[`${authSvc.hash(cfgSvc.get('ACCESS'))}`] = authSvc.encrypt(acsTkn);
+			req.cookies[`${authSvc.hash(cfgSvc.get('REFRESH'))}`] = authSvc.encrypt(
+				rfsTkn,
+				acsTkn.split('.')[2],
+			);
+			req.cookies[`${authSvc.hash(cfgSvc.get('ACCESS'))}`] =
+				authSvc.encrypt(acsTkn);
 		});
 
 		it('should set the request fingerprint and authorization header for refresh', () => {

@@ -21,6 +21,13 @@ export const SqlModule = (type: 'deploy' | 'test') =>
 				options: sqlOptions,
 				ifNotExist: true,
 			});
-			return { ...sqlOptions, entities: ['./src/**/*.entity.*'], synchronize: true };
+			if (type === 'deploy')
+				return { ...sqlOptions, autoLoadEntities: true, synchronize: true };
+			else
+				return {
+					...sqlOptions,
+					entities: ['./src/**/*.entity.*'],
+					synchronize: true,
+				};
 		},
 	});

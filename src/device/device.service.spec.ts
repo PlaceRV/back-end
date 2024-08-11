@@ -47,7 +47,12 @@ describe('DeviceService', () => {
 			(mtdt = new UserMetadata({
 				fingerprint: authMdw.generateFingerprint(createRequest()),
 			} as unknown as Request)),
-				(usr = await usrSvc.save({ lastName: 'a', firstName: 'a', email: 'a', password: 'a' }));
+				(usr = await usrSvc.save({
+					lastName: 'a',
+					firstName: 'a',
+					email: 'a',
+					password: 'a',
+				}));
 		});
 
 		it('should create a new device session and return tokens', async () => {
@@ -55,7 +60,10 @@ describe('DeviceService', () => {
 				accessToken = 'test-access-token',
 				refreshToken = 'test-refresh-token';
 
-			jest.spyOn(jwtSvc, 'sign').mockReturnValueOnce(refreshToken).mockReturnValueOnce(accessToken);
+			jest
+				.spyOn(jwtSvc, 'sign')
+				.mockReturnValueOnce(refreshToken)
+				.mockReturnValueOnce(accessToken);
 			jest.spyOn(authSvc, 'hash').mockReturnValue('test-hashed-user-agent');
 
 			const result = await dvcSvc.getTokens(userId, mtdt);

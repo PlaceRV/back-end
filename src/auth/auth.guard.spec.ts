@@ -28,7 +28,9 @@ describe('AuthGuard', () => {
 
 	describe('canActivate', () => {
 		beforeEach(() => {
-			jest.spyOn(AuthGuard('access').prototype, 'canActivate').mockImplementation(() => true);
+			jest
+				.spyOn(AuthGuard('access').prototype, 'canActivate')
+				.mockImplementation(() => true);
 		});
 
 		it('should allow access when AllowPublic is set', async () => {
@@ -37,21 +39,33 @@ describe('AuthGuard', () => {
 		});
 
 		it('should allow access when user roles match the required roles', async () => {
-			jest.spyOn(rflt, 'get').mockReturnValueOnce(false).mockReturnValueOnce([Role.ADMIN]);
 			const req = { user: { roles: [Role.ADMIN] } };
-			jest.spyOn(roleGrd, 'getRequest').mockReturnValueOnce(req as ServerContext);
+			jest
+				.spyOn(rflt, 'get')
+				.mockReturnValueOnce(false)
+				.mockReturnValueOnce([Role.ADMIN]);
+			jest
+				.spyOn(roleGrd, 'getRequest')
+				.mockReturnValueOnce(req as ServerContext);
 			expect(await roleGrd.canActivate(ctx)).toBe(true);
 		});
 
 		it('should not allow access when user roles not match the required roles', async () => {
-			jest.spyOn(rflt, 'get').mockReturnValueOnce(false).mockReturnValueOnce([Role.ADMIN]);
 			const req = { user: { roles: [Role.USER] } };
-			jest.spyOn(roleGrd, 'getRequest').mockReturnValueOnce(req as ServerContext);
+			jest
+				.spyOn(rflt, 'get')
+				.mockReturnValueOnce(false)
+				.mockReturnValueOnce([Role.ADMIN]);
+			jest
+				.spyOn(roleGrd, 'getRequest')
+				.mockReturnValueOnce(req as ServerContext);
 			expect(await roleGrd.canActivate(ctx)).toBe(false);
 		});
 
 		it('should throw an error when roles are not defined', async () => {
-			await expect(roleGrd.canActivate(ctx)).rejects.toThrow(InternalServerErrorException);
+			await expect(roleGrd.canActivate(ctx)).rejects.toThrow(
+				InternalServerErrorException,
+			);
 		});
 	});
 });

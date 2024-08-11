@@ -28,10 +28,12 @@ export class AuthMiddleware implements NestMiddleware {
 		req['fingerprint'] = this.generateFingerprint(req);
 		const isRefresh = req.url === this.refreshUrl;
 
-		var acsTkn: string, rfsTkn: string;
+		let acsTkn: string, rfsTkn: string;
 		for (const cki in req.cookies) {
-			if (compareSync(this.cfgSvc.get('REFRESH'), cki)) rfsTkn = req.cookies[cki];
-			else if (compareSync(this.cfgSvc.get('ACCESS'), cki)) acsTkn = req.cookies[cki];
+			if (compareSync(this.cfgSvc.get('REFRESH'), cki))
+				rfsTkn = req.cookies[cki];
+			else if (compareSync(this.cfgSvc.get('ACCESS'), cki))
+				acsTkn = req.cookies[cki];
 		}
 
 		const tknPld = this.authSvc.decrypt(acsTkn);

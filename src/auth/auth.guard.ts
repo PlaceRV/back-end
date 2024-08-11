@@ -1,4 +1,8 @@
-import { ExecutionContext, Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+	ExecutionContext,
+	Injectable,
+	InternalServerErrorException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { AuthGuard } from '@nestjs/passport';
@@ -47,6 +51,8 @@ export class RoleGuard extends AuthGuard('access') {
 
 			return matchRoles(roles, user.roles);
 		}
-		throw new InternalServerErrorException('Function not defined roles/permissions');
+		throw new InternalServerErrorException(
+			'Function not defined roles/permissions',
+		);
 	}
 }

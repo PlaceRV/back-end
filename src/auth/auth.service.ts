@@ -1,9 +1,13 @@
-import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
+import {
+	BadRequestException,
+	forwardRef,
+	Inject,
+	Injectable,
+} from '@nestjs/common';
 import { LogInDto, SignUpDto } from './auth.dto';
 import { ConfigService } from '@nestjs/config';
 import { UserService } from 'src/user/user.service';
 import { DeviceService } from 'src/device/device.service';
-import { DeepPartial } from 'typeorm';
 import { compareSync, hashSync } from 'bcrypt';
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 import { Request } from 'express';
@@ -14,10 +18,6 @@ export class PayLoad {
 	}
 
 	id!: string;
-
-	toPlainObj(): DeepPartial<PayLoad> {
-		return Object.assign({}, this);
-	}
 }
 
 export class UserMetadata {
@@ -52,7 +52,9 @@ export class AuthService {
 	private readonly svrScr = this.cfgSvc.get('SERVER_SECRET');
 
 	async signUp(signUpDto: SignUpDto, mtdt: UserMetadata) {
-		const user = await this.usrSvc.findOne({ where: { email: signUpDto.email } });
+		const user = await this.usrSvc.findOne({
+			where: { email: signUpDto.email },
+		});
 		if (!user) {
 			signUpDto.password = this.hash(signUpDto.password);
 
@@ -63,7 +65,9 @@ export class AuthService {
 	}
 
 	async logIn(logInDto: LogInDto, mtdt: UserMetadata) {
-		const user = await this.usrSvc.findOne({ where: { email: logInDto.email } });
+		const user = await this.usrSvc.findOne({
+			where: { email: logInDto.email },
+		});
 		if (user) {
 			const isPasswordMatched = compareSync(logInDto.password, user.password);
 			if (isPasswordMatched) return this.dvcSvc.getTokens(user.id, mtdt);
