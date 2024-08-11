@@ -48,8 +48,8 @@ export class DeviceService {
 				hashedUserAgent: this.authSvc.hash(mtdt.toString()),
 				useTimeLeft: this.use,
 			}),
-			rfsTkn = this.refreshTokenSign(new PayLoad(session.id)),
-			acsTkn = this.jwtSvc.sign(new PayLoad(usrId));
+			rfsTkn = this.refreshTokenSign(new PayLoad(session.id).toPlainObj()),
+			acsTkn = this.jwtSvc.sign(new PayLoad(usrId).toPlainObj());
 
 		return new UserRecieve(acsTkn, rfsTkn);
 	}

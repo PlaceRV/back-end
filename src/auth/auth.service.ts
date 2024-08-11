@@ -18,6 +18,10 @@ export class PayLoad {
 	}
 
 	id!: string;
+
+	toPlainObj() {
+		return Object.assign({}, this);
+	}
 }
 
 export class UserMetadata {
