@@ -26,7 +26,9 @@ describe('UserController', () => {
 
 		it('should return error', () => {
 			const req = createRequest();
-			expect(usrCon.getUser(req)).toThrow(BadRequestException);
+			expect(async () => usrCon.getUser(req)).rejects.toThrow(
+				BadRequestException,
+			);
 		});
 	});
 });

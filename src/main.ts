@@ -18,10 +18,7 @@ async function bootstrap() {
 		app = (
 			await NestFactory.create(AppModule, new ExpressAdapter(server), {
 				cors: {
-					origin: [
-						/anhvietnguyen\.id\.vn$/,
-						/((http([s]){0,1}:\/\/){0,1}(localhost|127.0.0.1){1}(([:]){0,1}[\0-9]{4}){0,1}\/{0,1}){1}/g,
-					],
+					origin: [/^https:\/\/([.\w]*)(anhvietnguyen.id.vn)(:[0-9]+)?\/?(\/[.\w]*)*$/],
 					methods: '*',
 					credentials: true,
 				},
@@ -41,6 +38,6 @@ async function bootstrap() {
 	// Init multiple connection type
 	await app.init();
 	http.createServer(server).listen(cfgSvc.get('PORT'));
-	https.createServer(httpsOptions, server).listen(443);
+	https.createServer(httpsOptions, server).listen(2053);
 }
 bootstrap();
