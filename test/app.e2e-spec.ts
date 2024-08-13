@@ -8,11 +8,13 @@ import { Repository } from 'typeorm';
 import { User } from 'src/user/user.entity';
 import { DeviceSession } from 'src/device/device.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import TestAgent from 'supertest/lib/agent';
 
 describe('AppController (e2e)', () => {
 	let app: INestApplication,
 		usrRepo: Repository<User>,
-		dvcRepo: Repository<DeviceSession>;
+		dvcRepo: Repository<DeviceSession>,
+		req: TestAgent;
 	const payload: SignUpDto = {
 		firstName: 'a',
 		lastName: 'a',
@@ -28,17 +30,16 @@ describe('AppController (e2e)', () => {
 		(app = moduleFixture.createNestApplication()),
 			(usrRepo = moduleFixture.get(getRepositoryToken(User))),
 			(dvcRepo = moduleFixture.get(getRepositoryToken(DeviceSession)));
+
 		await app.init();
+		req = request(app.getHttpServer());
 	});
 
 	it('/auth/signup (POST)', () =>
-		request(app.getHttpServer())
-			.post('/auth/signup')
-			.send(payload)
-			.expect(201));
+		req.post('/auth/signup').send(payload).expect(201));
 
-	it('/auth/login (POST)', () =>
-		request(app.getHttpServer()).post('/auth/login').send(payload).expect(201));
+	it('/auth/login (POST)', async () =>
+		req.post('/auth/login').send(payload).expect(201));
 
 	afterAll(async () => {
 		const usrs = await usrRepo.find(),

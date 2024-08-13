@@ -1,10 +1,11 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { AuthModule } from './auth/auth.module';
 import { LoadEnvModule } from './config.module';
 import { SqlModule } from './sql.module';
+import { AuthMiddleware } from './auth/auth.middleware';
 
 @Module({
 	imports: [
@@ -31,4 +32,8 @@ import { SqlModule } from './sql.module';
 		SqlModule('deploy'),
 	],
 })
-export class AppModule {}
+export class AppModule {
+	configure(consumer: MiddlewareConsumer) {
+		consumer.apply(AuthMiddleware).forRoutes('graphql');
+	}
+}

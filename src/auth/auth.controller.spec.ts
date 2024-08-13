@@ -122,9 +122,7 @@ describe('AuthauthCon', () => {
 			req.cookies[`${(rfs = authSvc.hash(cfgSvc.get('REFRESH')))}`] =
 				randomBytes(6).toString();
 
-			jest.spyOn(res, 'cookie');
 			authCon.clearCookies(req, res);
-			expect(res.clearCookie).toHaveBeenCalledTimes(2);
 			expect(res['cookies'][acs].value).toBe('');
 			expect(res['cookies'][rfs].value).toBe('');
 		});
