@@ -8,13 +8,10 @@ import { GqlExecutionContext } from '@nestjs/graphql';
 import { AuthGuard } from '@nestjs/passport';
 import { Role, User } from 'src/user/user.entity';
 
-const matchRoles = (roles: Role[], userRoles: Role[]) => {
-	return roles.some((i) => userRoles.some((j) => i === j));
-};
-
+const matchRoles = (roles: Role[], userRoles: Role[]) =>
+	roles.some((i) => userRoles.some((j) => i === j));
 export const Roles = Reflector.createDecorator<Role[]>(),
 	AllowPublic = Reflector.createDecorator<boolean>();
-
 export class ServerContext extends GqlExecutionContext {
 	user: User;
 }
