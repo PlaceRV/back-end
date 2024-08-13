@@ -10,10 +10,10 @@
 		"**/dist": true,
 		"**/*.spec*": true,
 		"**/*.example*": true,
-		"**/schema.gql": true,
+		"**/schema.gql": false,
 		"**/package-lock.json": true,
 		".vscode": true,
-		"secrets": false
+		"secrets": true
 	},
 	"todohighlight.keywords": [
 		{
