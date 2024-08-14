@@ -13,7 +13,10 @@ export class AuthMiddleware implements NestMiddleware {
 		private authSvc: AuthService,
 		private cfgSvc: ConfigService,
 	) {}
-	private readonly refreshUrl = '/auth/refreshToken';
+	private readonly rfsGrd = /\/?([.\w]*)\/(logout|refresh[tT]oken)/g;
+	private readonly ckiPfx = this.cfgSvc.get('SERVER_COOKIE_PREFIX');
+	private readonly rfsKey = this.cfgSvc.get('REFRESH_KEY');
+	private readonly acsKey = this.cfgSvc.get('ACCESS_KEY');
 
 	generateFingerprint(req: Request) {
 		const ipAddress = getClientIp(req);
@@ -26,15 +29,14 @@ export class AuthMiddleware implements NestMiddleware {
 
 	use(req: Request, res: Response, next: NextFunction) {
 		req['fingerprint'] = this.generateFingerprint(req);
-		const isRefresh = req.url === this.refreshUrl;
+		const isRefresh = req.url.match(this.rfsGrd);
 
 		let acsTkn: string, rfsTkn: string;
-		for (const cki in req.cookies) {
-			if (compareSync(this.cfgSvc.get('REFRESH'), cki))
+		for (const cki in req.cookies)
+			if (compareSync(this.rfsKey, cki.substring(this.ckiPfx.length)))
 				rfsTkn = req.cookies[cki];
-			else if (compareSync(this.cfgSvc.get('ACCESS'), cki))
+			else if (compareSync(this.acsKey, cki.substring(this.ckiPfx.length)))
 				acsTkn = req.cookies[cki];
-		}
 
 		const tknPld = this.authSvc.decrypt(acsTkn);
 		req.headers.authorization = `Bearer ${isRefresh ? this.authSvc.decrypt(rfsTkn, tknPld.split('.')[2]) : tknPld}`;

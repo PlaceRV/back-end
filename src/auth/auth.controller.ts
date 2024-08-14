@@ -15,17 +15,22 @@ export class AuthController {
 		private dvcSvc: DeviceService,
 		private cfgSvc: ConfigService,
 	) {}
+
 	private readonly ckiOpt: CookieOptions = {
 		httpOnly: true,
 		secure: true,
 		sameSite: 'lax',
 	};
+	private readonly ckiPfx = this.cfgSvc.get('SERVER_COOKIE_PREFIX');
+	private readonly rfsKey = this.cfgSvc.get('REFRESH_KEY');
+	private readonly acsKey = this.cfgSvc.get('ACCESS_KEY');
 
-	clearCookies(req: Rqt, res: Rsp, access = true, refresh = true) {
+	clearCookies(req: Rqt, res: Rsp, acs = true, rfs = true) {
 		for (const cki in req.cookies)
-			if (compareSync(this.cfgSvc.get('ACCESS'), cki) && access)
-				res.clearCookie(cki, this.ckiOpt);
-			else if (compareSync(this.cfgSvc.get('REFRESH'), cki) && refresh)
+			if (
+				(compareSync(this.acsKey, cki.substring(this.ckiPfx.length)) && acs) ||
+				(compareSync(this.rfsKey, cki.substring(this.ckiPfx.length)) && rfs)
+			)
 				res.clearCookie(cki, this.ckiOpt);
 	}
 
@@ -33,27 +38,29 @@ export class AuthController {
 		this.clearCookies(req, res);
 		res
 			.cookie(
-				this.authSvc.hash(this.cfgSvc.get('ACCESS')),
+				this.ckiPfx + this.authSvc.hash(this.acsKey),
 				this.authSvc.encrypt(usrRcv.accessToken),
 				this.ckiOpt,
 			)
 			.cookie(
-				this.authSvc.hash(this.cfgSvc.get('REFRESH')),
+				this.ckiPfx + this.authSvc.hash(this.rfsKey),
 				this.authSvc.encrypt(
 					usrRcv.refreshToken,
 					usrRcv.accessToken.split('.')[2],
 				),
 				this.ckiOpt,
 			);
+
+		res.send({ success: true });
 	}
 
-	@Post('logIn')
-	async logIn(
+	@Post('login')
+	async login(
 		@Req() req: Rqt,
 		@Body() dto: LogInDto,
 		@Res({ passthrough: true }) res: Rsp,
 	) {
-		this.sendBack(req, res, await this.authSvc.logIn(dto, new UsrMtdt(req)));
+		this.sendBack(req, res, await this.authSvc.login(dto, new UsrMtdt(req)));
 	}
 
 	@Post('signup')
@@ -62,24 +69,27 @@ export class AuthController {
 		@Body() dto: SignUpDto,
 		@Res({ passthrough: true }) res: Rsp,
 	) {
-		this.sendBack(req, res, await this.authSvc.signUp(dto, new UsrMtdt(req)));
+		this.sendBack(req, res, await this.authSvc.signup(dto, new UsrMtdt(req)));
+	}
+
+	@Post('logout')
+	@UseGuards(AuthGuard('refresh'))
+	async logout(@Req() req: Rqt, @Res({ passthrough: true }) res: Rsp) {
+		this.clearCookies(req, res);
+		await this.dvcSvc.delete({ id: req.user['id'] });
 	}
 
 	@Post('refreshToken')
 	@UseGuards(AuthGuard('refresh'))
 	async refresh(@Req() req: Rqt, @Res({ passthrough: true }) res: Rsp) {
-		if (req.user['success']) {
-			if (compareSync(new UsrMtdt(req).toString(), req.user['ua'])) {
-				this.sendBack(
-					req,
-					res,
-					new UserRecieve(req.user['acsTkn'], req.user['rfsTkn']),
-				);
-			}
+		const sendBack = (usrRcv: UserRecieve) => this.sendBack(req, res, usrRcv);
+		if (
+			req.user['success'] &&
+			compareSync(new UsrMtdt(req).toString(), req.user['ua'])
+		) {
+			sendBack(new UserRecieve(req.user['acsTkn'], req.user['rfsTkn']));
 		} else
-			this.sendBack(
-				req,
-				res,
+			sendBack(
 				await this.dvcSvc.getTokens(req.user['userId'], new UsrMtdt(req)),
 			);
 	}

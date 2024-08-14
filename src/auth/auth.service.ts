@@ -55,25 +55,25 @@ export class AuthService {
 	private readonly algorithm = this.cfgSvc.get('AES_ALGO');
 	private readonly svrScr = this.cfgSvc.get('SERVER_SECRET');
 
-	async signUp(signUpDto: SignUpDto, mtdt: UserMetadata) {
+	async signup(signupDto: SignUpDto, mtdt: UserMetadata) {
 		const user = await this.usrSvc.findOne({
-			where: { email: signUpDto.email },
+			where: { email: signupDto.email },
 		});
 		if (!user) {
-			signUpDto.password = this.hash(signUpDto.password);
+			signupDto.password = this.hash(signupDto.password);
 
-			const user = await this.usrSvc.save(signUpDto);
+			const user = await this.usrSvc.save(signupDto);
 			return this.dvcSvc.getTokens(user.id, mtdt);
 		}
 		throw new BadRequestException('Email already assigned');
 	}
 
-	async logIn(logInDto: LogInDto, mtdt: UserMetadata) {
+	async login(loginDto: LogInDto, mtdt: UserMetadata) {
 		const user = await this.usrSvc.findOne({
-			where: { email: logInDto.email },
+			where: { email: loginDto.email },
 		});
 		if (user) {
-			const isPasswordMatched = compareSync(logInDto.password, user.password);
+			const isPasswordMatched = compareSync(loginDto.password, user.password);
 			if (isPasswordMatched) return this.dvcSvc.getTokens(user.id, mtdt);
 		}
 		throw new BadRequestException('Invalid email or password');

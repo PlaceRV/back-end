@@ -62,7 +62,7 @@ describe('AuthService', () => {
 
 	it('should be defined', () => expect(authSvc).toBeDefined());
 
-	describe('signUp', () => {
+	describe('signup', () => {
 		let dto: SignUpDto, mtdt: UserMetadata;
 		beforeAll(() => {
 			(dto = { firstName, lastName, email, password }),
@@ -76,7 +76,7 @@ describe('AuthService', () => {
 			jest.spyOn(usrSvc, 'save');
 			jest.spyOn(dvcSvc, 'getTokens');
 
-			await authSvc.signUp(dto, mtdt);
+			await authSvc.signup(dto, mtdt);
 			const user = await usrRepo.findOne({ where: { email: dto.email } });
 
 			expect(usrSvc.findOne).toHaveBeenCalledWith({
@@ -87,13 +87,13 @@ describe('AuthService', () => {
 		});
 
 		it('should throw a BadRequestException if the email is already assigned', async () => {
-			await expect(authSvc.signUp(dto, mtdt)).rejects.toThrow(
+			await expect(authSvc.signup(dto, mtdt)).rejects.toThrow(
 				BadRequestException,
 			);
 		});
 	});
 
-	describe('logIn', () => {
+	describe('login', () => {
 		let dto: LogInDto, mtdt: UserMetadata;
 		beforeAll(() => {
 			(dto = { email, password }),
@@ -106,7 +106,7 @@ describe('AuthService', () => {
 			jest.spyOn(usrSvc, 'findOne');
 			jest.spyOn(dvcSvc, 'getTokens');
 
-			await authSvc.logIn(dto, mtdt);
+			await authSvc.login(dto, mtdt);
 			const user = await usrRepo.findOne({ where: { email: dto.email } });
 
 			expect(usrSvc.findOne).toHaveBeenCalledWith({
@@ -117,7 +117,7 @@ describe('AuthService', () => {
 
 		it('should throw a BadRequestException for an invalid user', async () => {
 			dto.password += '0';
-			await expect(authSvc.logIn(dto, mtdt)).rejects.toThrow(
+			await expect(authSvc.login(dto, mtdt)).rejects.toThrow(
 				BadRequestException,
 			);
 		});

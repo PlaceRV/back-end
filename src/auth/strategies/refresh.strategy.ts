@@ -16,7 +16,7 @@ export class RefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
 		super({
 			jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
 			ignoreExpiration: false,
-			secretOrKey: cfgSvc.get('SERVER_SECRET'),
+			secretOrKey: cfgSvc.get('REFRESH_SECRET'),
 		});
 	}
 
@@ -30,6 +30,7 @@ export class RefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
 				});
 				return {
 					success: true,
+					id: session.id,
 					ua: session.hashedUserAgent,
 					acsTkn: this.jwtSvc.sign(new PayLoad(session.userId).toPlainObj()),
 					rfsTkn: this.dvcSvc.refreshTokenSign(

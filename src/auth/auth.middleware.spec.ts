@@ -30,7 +30,10 @@ describe('AuthMiddleware', () => {
 		res: Response,
 		authMdw: AuthMiddleware,
 		authSvc: AuthService,
-		cfgSvc: ConfigService;
+		cfgSvc: ConfigService,
+		acsKey: string,
+		rfsKey: string,
+		ckiSfx: string;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -42,7 +45,12 @@ describe('AuthMiddleware', () => {
 			(authSvc = module.get(AuthService)),
 			(cfgSvc = module.get(ConfigService));
 
-		(req = createRequest()), (res = createResponse()), (next = jest.fn());
+		(req = createRequest()),
+			(res = createResponse()),
+			(next = jest.fn()),
+			(acsKey = cfgSvc.get('ACCESS_KEY')),
+			(rfsKey = cfgSvc.get('REFRESH_KEY')),
+			(ckiSfx = cfgSvc.get('SERVER_COOKIE_PREFIX'));
 	});
 
 	it('should be defined', () => expect(authMdw).toBeDefined());
@@ -59,12 +67,11 @@ describe('AuthMiddleware', () => {
 
 	describe('use', () => {
 		beforeEach(() => {
-			req.cookies[`${authSvc.hash(cfgSvc.get('REFRESH'))}`] = authSvc.encrypt(
+			req.cookies[`${ckiSfx + authSvc.hash(rfsKey)}`] = authSvc.encrypt(
 				rfsTkn,
 				acsTkn.split('.')[2],
 			);
-			req.cookies[`${authSvc.hash(cfgSvc.get('ACCESS'))}`] =
-				authSvc.encrypt(acsTkn);
+			req.cookies[`${ckiSfx + authSvc.hash(acsKey)}`] = authSvc.encrypt(acsTkn);
 		});
 
 		it('should set the request fingerprint and authorization header for refresh', () => {

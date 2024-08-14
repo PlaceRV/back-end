@@ -18,11 +18,11 @@ import { UserModule } from 'src/user/user.module';
 			global: true,
 			imports: [ConfigModule],
 			inject: [ConfigService],
-			useFactory: (cfg: ConfigService) => {
+			useFactory: (cfgSvc: ConfigService) => {
 				return {
-					secret: cfg.get('JWT_SECRET'),
+					secret: cfgSvc.get('ACCESS_SECRET'),
 					signOptions: {
-						expiresIn: cfg.get('JWT_EXPIRES'),
+						expiresIn: cfgSvc.get('ACCESS_EXPIRES'),
 					},
 				};
 			},

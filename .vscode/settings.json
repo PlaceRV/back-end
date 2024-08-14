@@ -10,7 +10,7 @@
 		"**/dist": true,
 		"**/*.spec*": true,
 		"**/*.example*": true,
-		"**/schema.gql": false,
+		"**/schema.gql": true,
 		"**/package-lock.json": true,
 		".vscode": true,
 		"secrets": true

@@ -23,7 +23,10 @@ describe('AuthauthCon', () => {
 		authMdw: AuthMiddleware,
 		cfgSvc: ConfigService,
 		req: Request,
-		res: Response;
+		res: Response,
+		acsKey: string,
+		rfsKey: string,
+		ckiSfx: string;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -36,20 +39,24 @@ describe('AuthauthCon', () => {
 			(dvcSvc = module.get(DeviceService)),
 			(authMdw = new AuthMiddleware(authSvc, cfgSvc));
 
-		(req = createRequest()), (res = createResponse());
+		(req = createRequest()),
+			(res = createResponse()),
+			(acsKey = cfgSvc.get('ACCESS_KEY')),
+			(rfsKey = cfgSvc.get('REFRESH_KEY')),
+			(ckiSfx = cfgSvc.get('SERVER_COOKIE_PREFIX'));
 	});
 
 	it('should be defined', () => expect(authCon).toBeDefined());
 
 	describe('signup', () => {
-		it('should call authSvc.signUp and sendBack', () => {
+		it('should call authSvc.signup and sendBack', () => {
 			const dto: SignUpDto = { email, password, firstName, lastName },
 				usrRcv = new UserRecieve('', ''),
 				next = async () => {
-					jest.spyOn(authSvc, 'signUp').mockResolvedValue(usrRcv);
+					jest.spyOn(authSvc, 'signup').mockResolvedValue(usrRcv);
 					jest.spyOn(authCon, 'sendBack').mockImplementation();
 					await authCon.signup(req, dto, res);
-					expect(authSvc.signUp).toHaveBeenCalledWith(
+					expect(authSvc.signup).toHaveBeenCalledWith(
 						dto,
 						expect.any(UserMetadata),
 					);
@@ -59,21 +66,32 @@ describe('AuthauthCon', () => {
 		});
 	});
 
-	describe('logIn', () => {
-		it('should call authSvc.logIn and sendBack', () => {
+	describe('login', () => {
+		it('should call authSvc.login and sendBack', () => {
 			const dto = { email, password },
 				usrRcv = new UserRecieve('', ''),
 				next = async () => {
-					jest.spyOn(authSvc, 'logIn').mockResolvedValue(usrRcv);
+					jest.spyOn(authSvc, 'login').mockResolvedValue(usrRcv);
 					jest.spyOn(authCon, 'sendBack').mockImplementation();
-					await authCon.logIn(req, dto, res);
-					expect(authSvc.logIn).toHaveBeenCalledWith(
+					await authCon.login(req, dto, res);
+					expect(authSvc.login).toHaveBeenCalledWith(
 						dto,
 						expect.any(UserMetadata),
 					);
 					expect(authCon.sendBack).toHaveBeenCalledWith(req, res, usrRcv);
 				};
 			authMdw.use(req, res, next);
+		});
+	});
+
+	describe('logout', () => {
+		it('should clear all cookies and delete device session from databse', async () => {
+			req.user = { id: 'a' };
+			jest.spyOn(authCon, 'clearCookies').mockImplementation();
+			jest.spyOn(dvcSvc, 'delete').mockImplementation();
+			await authCon.logout(req, res);
+			expect(authCon.clearCookies).toHaveBeenCalledWith(req, res);
+			expect(dvcSvc.delete).toHaveBeenCalledWith({ id: req.user['id'] });
 		});
 	});
 
@@ -117,9 +135,9 @@ describe('AuthauthCon', () => {
 	describe('clearCookies', () => {
 		it('should call res.clearCookie twice', () => {
 			let acs: string, rfs: string;
-			req.cookies[`${(acs = authSvc.hash(cfgSvc.get('ACCESS')))}`] =
+			req.cookies[`${(acs = ckiSfx + authSvc.hash(acsKey))}`] =
 				randomBytes(6).toString();
-			req.cookies[`${(rfs = authSvc.hash(cfgSvc.get('REFRESH')))}`] =
+			req.cookies[`${(rfs = ckiSfx + authSvc.hash(rfsKey))}`] =
 				randomBytes(6).toString();
 
 			authCon.clearCookies(req, res);

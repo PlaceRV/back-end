@@ -31,7 +31,7 @@ export class DeviceService {
 		private authSvc: AuthService,
 	) {}
 	// session secret
-	private readonly scr = this.cfgSvc.get('SERVER_SECRET');
+	private readonly scr = this.cfgSvc.get('REFRESH_SECRET');
 	private readonly exp = this.cfgSvc.get('REFRESH_EXPIRE');
 	private readonly use = this.cfgSvc.get('REFRESH_USE');
 

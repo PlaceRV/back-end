@@ -3,18 +3,18 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSourceOptions } from 'typeorm';
 import { createPostgresDatabase } from 'typeorm-extension';
 
-export const SqlModule = (type: 'deploy' | 'test') =>
+export const SqlModule = (type: 'deploy' | 'test' | string) =>
 	TypeOrmModule.forRootAsync({
 		imports: [ConfigModule],
 		inject: [ConfigService],
-		useFactory: async (configService: ConfigService) => {
+		useFactory: async (cfgSvc: ConfigService) => {
 			const sqlOptions: DataSourceOptions = {
 				type: 'postgres',
-				host: configService.get('POSTGRES_HOST'),
-				port: configService.get('POSTGRES_PORT'),
-				username: configService.get('POSTGRES_USER'),
-				password: configService.get('POSTGRES_PASS'),
-				database: type === 'deploy' ? configService.get('POSTGRES_DB') : type,
+				host: cfgSvc.get('POSTGRES_HOST'),
+				port: cfgSvc.get('POSTGRES_PORT'),
+				username: cfgSvc.get('POSTGRES_USER'),
+				password: cfgSvc.get('POSTGRES_PASS'),
+				database: type === 'deploy' ? cfgSvc.get('POSTGRES_DB') : type,
 				synchronize: true,
 			};
 			await createPostgresDatabase({

@@ -2,7 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import cookieParser from 'cookie-parser';
 import { ConfigService } from '@nestjs/config';
-import { exec } from 'child_process';
 import { readFileSync } from 'fs';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import express from 'express';
@@ -18,22 +17,15 @@ async function bootstrap() {
 		app = (
 			await NestFactory.create(AppModule, new ExpressAdapter(server), {
 				cors: {
-					origin: [/^https:\/\/([.\w]*)(anhvietnguyen.id.vn)(:[0-9]+)?\/?(\/[.\w]*)*$/],
+					origin: [
+						/^https:\/\/([.\w]*)(anhvietnguyen.id.vn)(:[0-9]+)?\/?(\/[.\w]*)*$/,
+					],
 					methods: '*',
 					credentials: true,
 				},
 			})
 		).use(cookieParser()),
 		cfgSvc = app.get(ConfigService);
-
-	// Update geoip databases
-	exec(
-		`node ./node_modules/geoip-lite/scripts/updatedb.js license_key=${cfgSvc.get('MAXMIND_LICENSE_KEY')}`,
-		async (error, stdout, stderr) => {
-			if (stdout) console.log("Update geoip's databases successfully");
-			else console.error(error + stderr);
-		},
-	);
 
 	// Init multiple connection type
 	await app.init();
