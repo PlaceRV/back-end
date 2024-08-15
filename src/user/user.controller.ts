@@ -14,10 +14,7 @@ export class UserController {
 	@Get('')
 	@UseGuards(AuthGuard('access'))
 	getUser(@Req() req: Request) {
-		if (req.user) {
-			const { firstName, lastName, email } = req.user as unknown as User;
-			return { firstName, lastName, email };
-		}
+		if (req.user) return (req.user as User).info;
 		throw new BadRequestException('User not valid/found');
 	}
 }

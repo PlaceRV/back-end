@@ -11,6 +11,8 @@ import { DeviceService } from 'src/device/device.service';
 import { compareSync, hashSync } from 'bcrypt';
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 import { Request } from 'express';
+import { createRequest } from 'node-mocks-http';
+import { generateFingerprint } from './auth.middleware';
 
 export class PayLoad {
 	constructor(id: string) {
@@ -40,6 +42,12 @@ export class UserMetadata {
 				.map((key) => `${key}:${obj[key] ? this.toString(obj[key]) : '~'}`)
 				.join(',')}}`;
 		} else return JSON.stringify(obj);
+	}
+
+	static get test() {
+		return new UserMetadata({
+			fingerprint: generateFingerprint(createRequest()),
+		} as unknown as Request);
 	}
 }
 

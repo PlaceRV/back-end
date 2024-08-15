@@ -7,6 +7,15 @@ import { AuthService } from './auth.service';
 import { ConfigService } from '@nestjs/config';
 import { lookup } from 'geoip-lite';
 
+export function generateFingerprint(req: Request) {
+	const ipAddress = getClientIp(req);
+	return {
+		ipAddress: ipAddress,
+		userAgent: uaParserJs.UAParser(),
+		maxmindData: lookup(ipAddress),
+	};
+}
+
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
 	constructor(
@@ -18,17 +27,8 @@ export class AuthMiddleware implements NestMiddleware {
 	private readonly rfsKey = this.cfgSvc.get('REFRESH_KEY');
 	private readonly acsKey = this.cfgSvc.get('ACCESS_KEY');
 
-	generateFingerprint(req: Request) {
-		const ipAddress = getClientIp(req);
-		return {
-			ipAddress: ipAddress,
-			userAgent: uaParserJs.UAParser(),
-			maxmindData: lookup(ipAddress),
-		};
-	}
-
 	use(req: Request, res: Response, next: NextFunction) {
-		req['fingerprint'] = this.generateFingerprint(req);
+		req['fingerprint'] = generateFingerprint(req);
 		const isRefresh = req.url.match(this.rfsGrd);
 
 		let acsTkn: string, rfsTkn: string;

@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
 import { DeviceService, UserRecieve } from 'src/device/device.service';
-import { SignUpDto } from './auth.dto';
+import { LogInDto, SignUpDto } from './auth.dto';
 import { TestModule } from 'test/test.module';
 import { AuthService, UserMetadata } from './auth.service';
 import { AuthMiddleware } from './auth.middleware';
@@ -10,12 +10,10 @@ import { ConfigService } from '@nestjs/config';
 import { createRequest, createResponse } from 'node-mocks-http';
 import { randomBytes } from 'crypto';
 import { Request, Response } from 'express';
+import { User } from 'src/user/user.entity';
 
 describe('AuthauthCon', () => {
-	const firstName = 'dsaphfijpadhf',
-		lastName = 'ewrohqpewor',
-		password = 'sdfoewqropiur',
-		email = 'oieuwpqoru@gmail.com';
+	const { email, password, firstName, lastName } = User.test;
 
 	let authCon: AuthController,
 		authSvc: AuthService,
@@ -50,17 +48,17 @@ describe('AuthauthCon', () => {
 
 	describe('signup', () => {
 		it('should call authSvc.signup and sendBack', () => {
-			const dto: SignUpDto = { email, password, firstName, lastName },
-				usrRcv = new UserRecieve('', ''),
+			const dto = new SignUpDto({ email, password, lastName, firstName }),
+				usrRcv = UserRecieve.test,
 				next = async () => {
-					jest.spyOn(authSvc, 'signup').mockResolvedValue(usrRcv);
-					jest.spyOn(authCon, 'sendBack').mockImplementation();
-					await authCon.signup(req, dto, res);
-					expect(authSvc.signup).toHaveBeenCalledWith(
-						dto,
-						expect.any(UserMetadata),
-					);
-					expect(authCon.sendBack).toHaveBeenCalledWith(req, res, usrRcv);
+					jest.spyOn(authSvc, 'signup').mockResolvedValue(usrRcv),
+						jest.spyOn(authCon, 'sendBack').mockImplementation();
+					await authCon.signup(req, dto, res),
+						expect(authSvc.signup).toHaveBeenCalledWith(
+							dto,
+							expect.any(UserMetadata),
+						),
+						expect(authCon.sendBack).toHaveBeenCalledWith(req, res, usrRcv);
 				};
 			authMdw.use(req, res, next);
 		});
@@ -68,17 +66,17 @@ describe('AuthauthCon', () => {
 
 	describe('login', () => {
 		it('should call authSvc.login and sendBack', () => {
-			const dto = { email, password },
-				usrRcv = new UserRecieve('', ''),
+			const dto = new LogInDto({ email, password }),
+				usrRcv = UserRecieve.test,
 				next = async () => {
-					jest.spyOn(authSvc, 'login').mockResolvedValue(usrRcv);
-					jest.spyOn(authCon, 'sendBack').mockImplementation();
-					await authCon.login(req, dto, res);
-					expect(authSvc.login).toHaveBeenCalledWith(
-						dto,
-						expect.any(UserMetadata),
-					);
-					expect(authCon.sendBack).toHaveBeenCalledWith(req, res, usrRcv);
+					jest.spyOn(authSvc, 'login').mockResolvedValue(usrRcv),
+						jest.spyOn(authCon, 'sendBack').mockImplementation();
+					await authCon.login(req, dto, res),
+						expect(authSvc.login).toHaveBeenCalledWith(
+							dto,
+							expect.any(UserMetadata),
+						),
+						expect(authCon.sendBack).toHaveBeenCalledWith(req, res, usrRcv);
 				};
 			authMdw.use(req, res, next);
 		});
@@ -87,28 +85,29 @@ describe('AuthauthCon', () => {
 	describe('logout', () => {
 		it('should clear all cookies and delete device session from databse', async () => {
 			req.user = { id: 'a' };
-			jest.spyOn(authCon, 'clearCookies').mockImplementation();
-			jest.spyOn(dvcSvc, 'delete').mockImplementation();
-			await authCon.logout(req, res);
-			expect(authCon.clearCookies).toHaveBeenCalledWith(req, res);
-			expect(dvcSvc.delete).toHaveBeenCalledWith({ id: req.user['id'] });
+
+			jest.spyOn(authCon, 'clearCookies').mockImplementation(),
+				jest.spyOn(dvcSvc, 'delete').mockImplementation();
+			await authCon.logout(req, res),
+				expect(authCon.clearCookies).toHaveBeenCalledWith(req, res),
+				expect(dvcSvc.delete).toHaveBeenCalledWith({ id: req.user['id'] });
 		});
 	});
 
 	describe('refresh', () => {
 		it('should call dvcSvc.getTokens and sendBack if req.user.success is false', () => {
-			const usrRcv = new UserRecieve('', ''),
+			const usrRcv = UserRecieve.test,
 				next = async () => {
 					req.user = { success: false, userId: 'user_id' };
 
-					jest.spyOn(dvcSvc, 'getTokens').mockResolvedValue(usrRcv);
-					jest.spyOn(authCon, 'sendBack').mockImplementation();
-					await authCon.refresh(req, res);
-					expect(dvcSvc.getTokens).toHaveBeenCalledWith(
-						req.user['userId'],
-						expect.any(UserMetadata),
-					);
-					expect(authCon.sendBack).toHaveBeenCalledWith(req, res, usrRcv);
+					jest.spyOn(dvcSvc, 'getTokens').mockResolvedValue(usrRcv),
+						jest.spyOn(authCon, 'sendBack').mockImplementation();
+					await authCon.refresh(req, res),
+						expect(dvcSvc.getTokens).toHaveBeenCalledWith(
+							req.user['userId'],
+							expect.any(UserMetadata),
+						),
+						expect(authCon.sendBack).toHaveBeenCalledWith(req, res, usrRcv);
 				};
 			authMdw.use(req, res, next);
 		});
@@ -121,12 +120,12 @@ describe('AuthauthCon', () => {
 				};
 
 				jest.spyOn(authCon, 'sendBack').mockImplementation();
-				await authCon.refresh(req, res);
-				expect(authCon.sendBack).toHaveBeenCalledWith(
-					req,
-					res,
-					expect.any(UserRecieve),
-				);
+				await authCon.refresh(req, res),
+					expect(authCon.sendBack).toHaveBeenCalledWith(
+						req,
+						res,
+						expect.any(UserRecieve),
+					);
 			};
 			authMdw.use(req, res, next);
 		});
@@ -140,19 +139,22 @@ describe('AuthauthCon', () => {
 			req.cookies[`${(rfs = ckiSfx + authSvc.hash(rfsKey))}`] =
 				randomBytes(6).toString();
 
-			authCon.clearCookies(req, res);
-			expect(res['cookies'][acs].value).toBe('');
-			expect(res['cookies'][rfs].value).toBe('');
+			jest.spyOn(res, 'clearCookie');
+			authCon.clearCookies(req, res),
+				expect(res['cookies'][acs].value).toBe(''),
+				expect(res['cookies'][rfs].value).toBe(''),
+				expect(res.clearCookie).toHaveBeenCalledTimes(2);
 		});
 	});
 
 	describe('sendBack', () => {
 		it('should call clearCookies once and res.cookie twice', () => {
-			jest.spyOn(authCon, 'clearCookies').mockImplementation();
-			jest.spyOn(res, 'cookie');
-			authCon.sendBack(req, res, new UserRecieve('', ''));
-			expect(authCon.clearCookies).toHaveBeenCalledWith(req, res);
-			expect(res.cookie).toHaveBeenCalledTimes(2);
+			jest.spyOn(authCon, 'clearCookies').mockImplementation(),
+				jest.spyOn(res, 'cookie');
+			authCon.sendBack(req, res, new UserRecieve('', '')),
+				expect(authCon.clearCookies).toHaveBeenCalledWith(req, res),
+				expect(res.cookie).toHaveBeenCalledTimes(2),
+				expect(res['cookies']).toBeDefined();
 		});
 	});
 });

@@ -43,10 +43,10 @@ describe('AuthGuard', () => {
 			jest
 				.spyOn(rflt, 'get')
 				.mockReturnValueOnce(false)
-				.mockReturnValueOnce([Role.ADMIN]);
-			jest
-				.spyOn(roleGrd, 'getRequest')
-				.mockReturnValueOnce(req as ServerContext);
+				.mockReturnValueOnce([Role.ADMIN]),
+				jest
+					.spyOn(roleGrd, 'getRequest')
+					.mockReturnValueOnce(req as ServerContext);
 			expect(await roleGrd.canActivate(ctx)).toBe(true);
 		});
 

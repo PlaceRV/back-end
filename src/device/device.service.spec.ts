@@ -5,8 +5,6 @@ import { DeviceModule } from './device.module';
 import { AuthService, UserMetadata } from 'src/auth/auth.service';
 import { AuthMiddleware } from 'src/auth/auth.middleware';
 import { ConfigService } from '@nestjs/config';
-import { Request } from 'express';
-import { createRequest } from 'node-mocks-http';
 import { JwtService } from '@nestjs/jwt';
 import { DeepPartial, Repository } from 'typeorm';
 import { DeviceSession } from './device.entity';
@@ -44,34 +42,24 @@ describe('DeviceService', () => {
 	describe('getTokens', () => {
 		let mtdt: UserMetadata, usr: DeepPartial<User>;
 		beforeAll(async () => {
-			(mtdt = new UserMetadata({
-				fingerprint: authMdw.generateFingerprint(createRequest()),
-			} as unknown as Request)),
-				(usr = await usrSvc.save({
-					lastName: 'a',
-					firstName: 'a',
-					email: 'a',
-					password: 'a',
-				}));
+			(mtdt = UserMetadata.test), (usr = await usrSvc.save(User.test));
 		});
 
 		it('should create a new device session and return tokens', async () => {
-			const userId = usr.id,
-				accessToken = 'test-access-token',
-				refreshToken = 'test-refresh-token';
+			const usrRcv = UserRecieve.test;
 
-			jest
-				.spyOn(jwtSvc, 'sign')
-				.mockReturnValueOnce(refreshToken)
-				.mockReturnValueOnce(accessToken);
-			jest.spyOn(authSvc, 'hash').mockReturnValue('test-hashed-user-agent');
+			jest.spyOn(authSvc, 'hash'),
+				jest
+					.spyOn(jwtSvc, 'sign')
+					.mockReturnValueOnce(usrRcv.refreshToken)
+					.mockReturnValueOnce(usrRcv.accessToken);
 
-			const result = await dvcSvc.getTokens(userId, mtdt);
+			const result = await dvcSvc.getTokens(usr.id, mtdt);
 
-			expect(jwtSvc.sign).toHaveBeenCalledTimes(2);
-			expect(authSvc.hash).toHaveBeenCalledWith(mtdt.toString());
-			expect(result).toEqual(new UserRecieve(accessToken, refreshToken));
-			expect((await dvcRepo.find()).length).toBe(1);
+			expect(jwtSvc.sign).toHaveBeenCalledTimes(2),
+				expect(authSvc.hash).toHaveBeenCalledWith(mtdt.toString()),
+				expect(result).toEqual(usrRcv),
+				expect((await dvcRepo.find()).length).toBe(1);
 		});
 
 		afterAll(async () => {

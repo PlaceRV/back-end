@@ -11,14 +11,20 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { AuthService, PayLoad, UserMetadata } from 'src/auth/auth.service';
 import { ConfigService } from '@nestjs/config';
+import { Str } from 'src/utils';
 
 export class UserRecieve {
 	constructor(acsTkn: string, rfsTkn: string) {
 		this.accessToken = acsTkn;
 		this.refreshToken = rfsTkn;
 	}
+
 	accessToken: string;
 	refreshToken: string;
+
+	static get test() {
+		return new UserRecieve(Str.random(), Str.random());
+	}
 }
 
 @Injectable()

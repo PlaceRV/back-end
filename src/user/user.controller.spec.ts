@@ -19,9 +19,9 @@ describe('UserController', () => {
 
 	describe('getUser', () => {
 		it("should return user's infomation", () => {
-			const user = { firstName: 'a', lastName: 'a', email: 'a' } as User,
+			const user = User.test,
 				req = createRequest({ user });
-			expect(usrCon.getUser(req)).toEqual(user);
+			expect(usrCon.getUser(req)).toEqual(user.info);
 		});
 
 		it('should return error', () => {

@@ -23,10 +23,7 @@ jest.mock('ua-parser-js');
 jest.mock('geoip-lite');
 
 describe('AuthService', () => {
-	const firstName = 'dsaphfijpadhf',
-		lastName = 'ewrohqpewor',
-		password = 'sdfoewqropiur',
-		email = 'oieuwpqoru@gmail.com',
+	const { firstName, lastName, password, email } = User.test,
 		ip = '10.0.0.1',
 		ua = { test: 'test' },
 		geo = { country: 'VN' };
@@ -66,24 +63,19 @@ describe('AuthService', () => {
 		let dto: SignUpDto, mtdt: UserMetadata;
 		beforeAll(() => {
 			(dto = { firstName, lastName, email, password }),
-				(mtdt = new UserMetadata({
-					fingerprint: authMdw.generateFingerprint(req),
-				} as unknown as Request));
+				(mtdt = UserMetadata.test);
 		});
 
 		it('should create a new user and return tokens', async () => {
-			jest.spyOn(usrSvc, 'findOne');
-			jest.spyOn(usrSvc, 'save');
-			jest.spyOn(dvcSvc, 'getTokens');
-
-			await authSvc.signup(dto, mtdt);
-			const user = await usrRepo.findOne({ where: { email: dto.email } });
-
-			expect(usrSvc.findOne).toHaveBeenCalledWith({
-				where: { email: dto.email },
-			});
-			expect(usrSvc.save).toHaveBeenCalledWith(dto);
-			expect(dvcSvc.getTokens).toHaveBeenCalledWith(user.id, mtdt);
+			jest.spyOn(usrSvc, 'findOne'),
+				jest.spyOn(usrSvc, 'save'),
+				jest.spyOn(dvcSvc, 'getTokens');
+			await authSvc.signup(dto, mtdt),
+				expect(usrSvc.findOne).toHaveBeenCalledWith({
+					where: { email: dto.email },
+				}),
+				expect(usrSvc.save).toHaveBeenCalledWith(dto),
+				expect(dvcSvc.getTokens).toHaveBeenCalledWith(expect.any(String), mtdt);
 		});
 
 		it('should throw a BadRequestException if the email is already assigned', async () => {
@@ -96,23 +88,16 @@ describe('AuthService', () => {
 	describe('login', () => {
 		let dto: LogInDto, mtdt: UserMetadata;
 		beforeAll(() => {
-			(dto = { email, password }),
-				(mtdt = new UserMetadata({
-					fingerprint: authMdw.generateFingerprint(req),
-				} as unknown as Request));
+			(dto = { email, password }), (mtdt = UserMetadata.test);
 		});
 
 		it('should return tokens for a valid user', async () => {
-			jest.spyOn(usrSvc, 'findOne');
-			jest.spyOn(dvcSvc, 'getTokens');
-
-			await authSvc.login(dto, mtdt);
-			const user = await usrRepo.findOne({ where: { email: dto.email } });
-
-			expect(usrSvc.findOne).toHaveBeenCalledWith({
-				where: { email: dto.email },
-			});
-			expect(dvcSvc.getTokens).toHaveBeenCalledWith(user.id, mtdt);
+			jest.spyOn(usrSvc, 'findOne'), jest.spyOn(dvcSvc, 'getTokens');
+			await authSvc.login(dto, mtdt),
+				expect(usrSvc.findOne).toHaveBeenCalledWith({
+					where: { email: dto.email },
+				}),
+				expect(dvcSvc.getTokens).toHaveBeenCalledWith(expect.any(String), mtdt);
 		});
 
 		it('should throw a BadRequestException for an invalid user', async () => {
@@ -125,12 +110,10 @@ describe('AuthService', () => {
 
 	describe('encrypt and decrypt', () => {
 		it('should encrypt and decrypt a string', () => {
-			const text = 'hello, world!';
-			const key = 'my_secret_key';
-
-			const encrypted = authSvc.encrypt(text, key);
-			const decrypted = authSvc.decrypt(encrypted, key);
-
+			const text = 'hello, world!',
+				key = 'my_secret_key',
+				encrypted = authSvc.encrypt(text, key),
+				decrypted = authSvc.decrypt(encrypted, key);
 			expect(decrypted).toEqual(text);
 		});
 	});

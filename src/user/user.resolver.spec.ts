@@ -21,15 +21,7 @@ describe('UserResolver', () => {
 
 	describe('findOne', () => {
 		it('should return a user', async () => {
-			const user: User = {
-				id: '1',
-				firstName: 'a',
-				lastName: 'a',
-				roles: [Role.USER],
-				password: 'a',
-				deviceSessions: [],
-				email: 'a',
-			};
+			const user = User.test;
 			jest.spyOn(usrSvc, 'findOne').mockResolvedValue(user);
 			expect(await usrRsv.findOne('1')).toEqual(user);
 			expect(usrSvc.findOne).toHaveBeenCalledWith({ where: { id: '1' } });
@@ -53,6 +45,7 @@ describe('UserResolver', () => {
 					deviceSessions: [],
 					lastName: 'a',
 					email: 'a',
+					info: undefined,
 				},
 				{
 					id: '2',
@@ -62,6 +55,7 @@ describe('UserResolver', () => {
 					deviceSessions: [],
 					lastName: 'b',
 					email: 'b',
+					info: undefined,
 				},
 			];
 			jest.spyOn(usrSvc, 'find').mockResolvedValue(users);

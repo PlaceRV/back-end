@@ -50,8 +50,6 @@ export class AuthController {
 				),
 				this.ckiOpt,
 			);
-
-		res.send({ success: true });
 	}
 
 	@Post('login')

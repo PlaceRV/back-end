@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthMiddleware } from './auth.middleware';
+import { AuthMiddleware, generateFingerprint } from './auth.middleware';
 import { AuthService } from './auth.service';
 import { ConfigService } from '@nestjs/config';
 import { Request, Response, NextFunction } from 'express';
@@ -57,7 +57,7 @@ describe('AuthMiddleware', () => {
 
 	describe('generateFingerprint', () => {
 		it('should generate a fingerprint object', () => {
-			expect(authMdw.generateFingerprint(req)).toEqual({
+			expect(generateFingerprint(req)).toEqual({
 				ipAddress: ip,
 				userAgent: ua,
 				maxmindData: geo,
@@ -76,15 +76,15 @@ describe('AuthMiddleware', () => {
 
 		it('should set the request fingerprint and authorization header for refresh', () => {
 			req.url = '/auth/refreshToken';
-			authMdw.use(req, res, next);
-			expect(req.headers.authorization).toBe(`Bearer ${rfsTkn}`);
-			expect(next).toHaveBeenCalled();
+			authMdw.use(req, res, next),
+				expect(req.headers.authorization).toBe(`Bearer ${rfsTkn}`),
+				expect(next).toHaveBeenCalled();
 		});
 
 		it('should set the request fingerprint and authorization header for access', () => {
-			authMdw.use(req, res, next);
-			expect(req.headers.authorization).toBe(`Bearer ${acsTkn}`);
-			expect(next).toHaveBeenCalled();
+			authMdw.use(req, res, next),
+				expect(req.headers.authorization).toBe(`Bearer ${acsTkn}`),
+				expect(next).toHaveBeenCalled();
 		});
 	});
 });
