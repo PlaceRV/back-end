@@ -10,11 +10,11 @@ import Joi from 'joi';
 			isGlobal: true,
 			validationSchema: Joi.object({
 				// Postgres
-				POSTGRES_HOST: Joi.string().required(),
-				POSTGRES_PORT: Joi.string().required(),
-				POSTGRES_USER: Joi.string().required(),
+				POSTGRES_HOST: Joi.string().default('localhost'),
+				POSTGRES_PORT: Joi.number().default(5432),
+				POSTGRES_USER: Joi.string().default('postgres'),
+				POSTGRES_DB: Joi.string().default('tmplrv'),
 				POSTGRES_PASS: Joi.string().required(),
-				POSTGRES_DB: Joi.string().required(),
 				// Access token
 				ACCESS_SECRET: Joi.string().required(),
 				ACCESS_EXPIRES: Joi.string().default('5m'),

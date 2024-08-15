@@ -1,24 +1,23 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 import { getClientIp } from 'request-ip';
 import uaParserJs from 'ua-parser-js';
 import { compareSync } from 'bcrypt';
 import { AuthService } from './auth.service';
 import { ConfigService } from '@nestjs/config';
-import { lookup } from 'geoip-lite';
 
 export function generateFingerprint(req: Request) {
 	const ipAddress = getClientIp(req);
 	return {
 		ipAddress: ipAddress,
 		userAgent: uaParserJs.UAParser(),
-		maxmindData: lookup(ipAddress),
 	};
 }
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
 	constructor(
+		@Inject(forwardRef(() => AuthService))
 		private authSvc: AuthService,
 		private cfgSvc: ConfigService,
 	) {}
