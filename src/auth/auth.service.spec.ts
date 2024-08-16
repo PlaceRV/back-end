@@ -4,8 +4,6 @@ import { TestModule } from 'test/test.module';
 import { AuthModule } from './auth.module';
 import { Request } from 'express';
 import { LogInDto, SignUpDto } from './auth.dto';
-import { getClientIp } from 'request-ip';
-import { lookup } from 'geoip-lite';
 import UAParser from 'ua-parser-js';
 import { AuthMiddleware } from './auth.middleware';
 import { createRequest } from 'node-mocks-http';
@@ -18,19 +16,13 @@ import { DeviceService } from 'src/device/device.service';
 import { ConfigService } from '@nestjs/config';
 import { DeviceSession } from 'src/device/device.entity';
 
-jest.mock('request-ip');
 jest.mock('ua-parser-js');
-jest.mock('geoip-lite');
 
 describe('AuthService', () => {
 	const { firstName, lastName, password, email } = User.test,
-		ip = '10.0.0.1',
-		ua = { test: 'test' },
-		geo = { country: 'VN' };
+		ua = { test: 'test' };
 
-	(getClientIp as jest.Mock).mockReturnValue(ip),
-		(UAParser.UAParser as unknown as jest.Mock).mockReturnValue(ua),
-		(lookup as jest.Mock).mockReturnValue(geo);
+	(UAParser.UAParser as unknown as jest.Mock).mockReturnValue(ua);
 
 	let authSvc: AuthService,
 		authMdw: AuthMiddleware,

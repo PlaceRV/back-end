@@ -3,27 +3,19 @@ import { AuthMiddleware, generateFingerprint } from './auth.middleware';
 import { AuthService } from './auth.service';
 import { ConfigService } from '@nestjs/config';
 import { Request, Response, NextFunction } from 'express';
-import { getClientIp } from 'request-ip';
 import uaParserJs from 'ua-parser-js';
-import { lookup } from 'geoip-lite';
 import { TestModule } from 'test/test.module';
 import { AuthModule } from './auth.module';
 import { createRequest, createResponse } from 'node-mocks-http';
 
-jest.mock('request-ip');
 jest.mock('ua-parser-js');
-jest.mock('geoip-lite');
 
 describe('AuthMiddleware', () => {
-	const ip = '10.0.0.1',
-		ua = { test: 'test' },
-		geo = { country: 'VN' },
+	const ua = { test: 'test' },
 		acsTkn = '..access-token',
 		rfsTkn = 'refresh-token';
 
-	(getClientIp as jest.Mock).mockReturnValue(ip),
-		(uaParserJs.UAParser as unknown as jest.Mock).mockReturnValue(ua),
-		(lookup as jest.Mock).mockReturnValue(geo);
+	(uaParserJs.UAParser as unknown as jest.Mock).mockReturnValue(ua);
 
 	let next: NextFunction,
 		req: Request,
@@ -58,9 +50,7 @@ describe('AuthMiddleware', () => {
 	describe('generateFingerprint', () => {
 		it('should generate a fingerprint object', () => {
 			expect(generateFingerprint(req)).toEqual({
-				ipAddress: ip,
 				userAgent: ua,
-				maxmindData: geo,
 			});
 		});
 	});
