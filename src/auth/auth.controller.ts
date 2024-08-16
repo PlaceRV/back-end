@@ -49,7 +49,8 @@ export class AuthController {
 					usrRcv.accessToken.split('.')[2],
 				),
 				this.ckiOpt,
-			);
+			)
+			.send({ success: true });
 	}
 
 	@Post('login')
