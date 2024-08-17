@@ -3,30 +3,24 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 import { UserService } from 'src/user/user.service';
+import { PayLoad } from '../auth.service';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class AccessStrategy extends PassportStrategy(Strategy, 'access') {
 	constructor(
-		private cfgSvc: ConfigService,
+		cfgSvc: ConfigService,
 		private usrSvc: UserService,
 	) {
 		super({
 			jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-			secretOrKey: cfgSvc.get('JWT_SECRET'),
+			secretOrKey: cfgSvc.get('ACCESS_SECRET'),
+			ignoreExpiration: false,
 		});
 	}
 
-	async validate(payload: { id: string }) {
-		const { id } = payload,
-			user = await this.usrSvc.find({
-				where: {
-					id: id,
-				},
-			});
-
-		if (user) {
-			return user;
-		}
+	async validate(payload: PayLoad) {
+		const user = await this.usrSvc.findOne({ where: { id: payload.id } });
+		if (user) return user;
 		throw new UnauthorizedException('Login first to access this endpoint.');
 	}
 }

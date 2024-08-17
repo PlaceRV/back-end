@@ -11,7 +11,9 @@
 		"**/*.spec*": true,
 		"**/*.example*": true,
 		"**/schema.gql": true,
-		"**/package-lock.json": true
+		"**/package-lock.json": true,
+		".vscode": true,
+		"secrets": true
 	},
 	"todohighlight.keywords": [
 		{

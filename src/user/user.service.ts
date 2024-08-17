@@ -1,20 +1,35 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
-import { DeepPartial, FindManyOptions, Repository, SaveOptions } from 'typeorm';
+import {
+	DeepPartial,
+	FindManyOptions,
+	FindOneOptions,
+	FindOptionsWhere,
+	Repository,
+	SaveOptions,
+} from 'typeorm';
 
 @Injectable()
 export class UserService {
-	constructor(
-		@InjectRepository(User)
-		private usrRepo: Repository<User>,
-	) {}
+	constructor(@InjectRepository(User) private repo: Repository<User>) {}
 
-	async find(options?: FindManyOptions<User>): Promise<User[]> {
-		return await this.usrRepo.find(options);
+	find(options?: FindManyOptions<User>): Promise<User[]> {
+		return this.repo.find(options);
 	}
 
-	async save<T extends DeepPartial<User>>(entities: T, options?: SaveOptions & { reload: false }): Promise<User> {
-		return (await this.usrRepo.save(entities, options)) as User;
+	findOne(options?: FindOneOptions<User>): Promise<User> {
+		return this.repo.findOne(options);
+	}
+
+	save(
+		entities: DeepPartial<User>,
+		options?: SaveOptions & { reload: false },
+	): Promise<DeepPartial<User>> {
+		return this.repo.save(entities, options);
+	}
+
+	delete(criteria: FindOptionsWhere<User>) {
+		return this.repo.delete(criteria);
 	}
 }

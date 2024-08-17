@@ -1,24 +1,25 @@
 import { Resolver, Query, Args } from '@nestjs/graphql';
 import { Role, User } from './user.entity';
-import { UseGuards } from '@nestjs/common';
-import { AllowPublic, AuthGuard, Roles } from 'src/auth/auth.guard';
+import { BadRequestException, UseGuards } from '@nestjs/common';
+import { AllowPublic, RoleGuard, Roles } from 'src/auth/auth.guard';
 import { UserService } from './user.service';
 
 @Resolver(() => User)
-export class UserResolv {
+@UseGuards(RoleGuard)
+export class UserResolver {
 	constructor(private usrSvc: UserService) {}
 
 	// Queries
 	@Query(() => User)
-	@UseGuards(AuthGuard)
-	@AllowPublic()
+	@AllowPublic(true)
 	async findOne(@Args('id') id: string) {
-		return (await this.usrSvc.find({ where: { id: id } }))[0];
+		const user = await this.usrSvc.findOne({ where: { id } });
+		if (user) return user;
+		throw new BadRequestException('User not found');
 	}
 
 	@Query(() => [User])
-	@UseGuards(AuthGuard)
-	@Roles(Role.ADMIN, Role.USER)
+	@Roles([Role.ADMIN, Role.USER])
 	findAll() {
 		return this.usrSvc.find();
 	}
