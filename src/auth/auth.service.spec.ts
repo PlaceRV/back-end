@@ -1,20 +1,20 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AuthService, UserMetadata } from './auth.service';
-import { TestModule } from 'test/test.module';
-import { AuthModule } from './auth.module';
-import { Request } from 'express';
-import { LogInDto, SignUpDto } from './auth.dto';
-import UAParser from 'ua-parser-js';
-import { AuthMiddleware } from './auth.middleware';
-import { createRequest } from 'node-mocks-http';
-import { UserService } from 'src/user/user.service';
-import { User } from 'src/user/user.entity';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { BadRequestException } from '@nestjs/common';
-import { DeviceService } from 'src/device/device.service';
 import { ConfigService } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Request } from 'express';
+import { createRequest } from 'node-mocks-http';
 import { DeviceSession } from 'src/device/device.entity';
+import { DeviceService } from 'src/device/device.service';
+import { User } from 'src/user/user.entity';
+import { UserService } from 'src/user/user.service';
+import { TestModule } from 'test/test.module';
+import { Repository } from 'typeorm';
+import UAParser from 'ua-parser-js';
+import { LogInDto, SignUpDto } from './auth.dto';
+import { AuthMiddleware } from './auth.middleware';
+import { AuthModule } from './auth.module';
+import { AuthService, UserMetadata } from './auth.service';
 
 jest.mock('ua-parser-js');
 

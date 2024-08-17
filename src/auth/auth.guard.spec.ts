@@ -1,11 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { RoleGuard } from './auth.guard';
-import { TestModule } from 'test/test.module';
-import { Reflector } from '@nestjs/core';
 import { ExecutionContext, InternalServerErrorException } from '@nestjs/common';
-import { Role } from 'src/user/user.entity';
-import { ServerContext } from './auth.guard';
+import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Role } from 'src/user/user.entity';
+import { TestModule } from 'test/test.module';
+import { RoleGuard, ServerContext } from './auth.guard';
 import { AuthModule } from './auth.module';
 
 describe('AuthGuard', () => {

@@ -7,6 +7,8 @@ import { ExpressAdapter } from '@nestjs/platform-express';
 import express from 'express';
 import http from 'http';
 import https from 'https';
+import AdminJS from 'adminjs';
+import AdminJSExpress from '@adminjs/express';
 
 async function bootstrap() {
 	const httpsOptions = {
@@ -25,10 +27,21 @@ async function bootstrap() {
 				},
 			})
 		).use(cookieParser()),
-		cfgSvc = app.get(ConfigService);
+		cfgSvc = app.get(ConfigService),
+		admin = new AdminJS({}),
+		adminRouter = AdminJSExpress.buildAuthenticatedRouter(admin, {
+			authenticate(email, password, context) {
+				return email === cfgSvc.get('ADMIN_EMAIL') &&
+					password === cfgSvc.get('ADMIN_PASSWORD')
+					? Promise.resolve({ email, password })
+					: null;
+			},
+			cookieName: 'adminjs',
+			cookiePassword: 'sessionsecret',
+		});
 
 	// Init multiple connection type
-	await app.init();
+	await app.use(admin.options.rootPath, adminRouter).init();
 	http.createServer(server).listen(cfgSvc.get('PORT'));
 	https.createServer(httpsOptions, server).listen(2053);
 }

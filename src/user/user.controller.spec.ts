@@ -1,8 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { UserController } from './user.controller';
-import { createRequest } from 'node-mocks-http';
-import { User } from './user.entity';
 import { BadRequestException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { createRequest } from 'node-mocks-http';
+import { UserController } from './user.controller';
+import { User } from './user.entity';
 
 describe('UserController', () => {
 	let usrCon: UserController;

@@ -1,14 +1,14 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import request from 'supertest';
-import { SignUpDto } from 'src/auth/auth.dto';
-import { TestModule } from './test.module';
-import { AuthModule } from 'src/auth/auth.module';
-import { Repository } from 'typeorm';
-import { User } from 'src/user/user.entity';
-import { DeviceSession } from 'src/device/device.entity';
+import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { SignUpDto } from 'src/auth/auth.dto';
+import { AuthModule } from 'src/auth/auth.module';
+import { DeviceSession } from 'src/device/device.entity';
+import { User } from 'src/user/user.entity';
+import request from 'supertest';
 import TestAgent from 'supertest/lib/agent';
+import { Repository } from 'typeorm';
+import { TestModule } from './test.module';
 
 describe('AppController (e2e)', () => {
 	let app: INestApplication,

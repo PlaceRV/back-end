@@ -1,10 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { UserResolver } from './user.resolver';
-import { TestModule } from 'test/test.module';
-import { UserModule } from './user.module';
-import { Role, User } from './user.entity';
-import { UserService } from './user.service';
 import { BadRequestException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { TestModule } from 'test/test.module';
+import { User } from './user.entity';
+import { UserModule } from './user.module';
+import { UserResolver } from './user.resolver';
+import { UserService } from './user.service';
 
 describe('UserResolver', () => {
 	let usrRsv: UserResolver, usrSvc: UserService;

@@ -1,16 +1,16 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AuthController } from './auth.controller';
-import { DeviceService, UserRecieve } from 'src/device/device.service';
-import { LogInDto, SignUpDto } from './auth.dto';
-import { TestModule } from 'test/test.module';
-import { AuthService, UserMetadata } from './auth.service';
-import { AuthMiddleware } from './auth.middleware';
-import { AuthModule } from './auth.module';
 import { ConfigService } from '@nestjs/config';
-import { createRequest, createResponse } from 'node-mocks-http';
+import { Test, TestingModule } from '@nestjs/testing';
 import { randomBytes } from 'crypto';
 import { Request, Response } from 'express';
+import { createRequest, createResponse } from 'node-mocks-http';
+import { DeviceService, UserRecieve } from 'src/device/device.service';
 import { User } from 'src/user/user.entity';
+import { TestModule } from 'test/test.module';
+import { AuthController } from './auth.controller';
+import { LogInDto, SignUpDto } from './auth.dto';
+import { AuthMiddleware } from './auth.middleware';
+import { AuthModule } from './auth.module';
+import { AuthService, UserMetadata } from './auth.service';
 
 describe('AuthauthCon', () => {
 	const { email, password, firstName, lastName } = User.test;

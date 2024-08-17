@@ -1,12 +1,11 @@
 import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { AuthGuard } from '@nestjs/passport';
+import { compareSync } from 'bcrypt';
+import { CookieOptions, Request as Rqt, Response as Rsp } from 'express';
+import { DeviceService, UserRecieve } from 'src/device/device.service';
 import { LogInDto, SignUpDto } from './auth.dto';
 import { AuthService, UserMetadata as UsrMtdt } from './auth.service';
-import { Request as Rqt, Response as Rsp } from 'express';
-import { CookieOptions } from 'express';
-import { DeviceService, UserRecieve } from 'src/device/device.service';
-import { compareSync } from 'bcrypt';
-import { AuthGuard } from '@nestjs/passport';
-import { ConfigService } from '@nestjs/config';
 
 @Controller('auth')
 export class AuthController {

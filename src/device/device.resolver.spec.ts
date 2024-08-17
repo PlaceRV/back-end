@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { DeviceResolver } from './device.resolver';
 import { TestModule } from 'test/test.module';
 import { DeviceModule } from './device.module';
+import { DeviceResolver } from './device.resolver';
 
 describe('DeviceResolver', () => {
 	let resolver: DeviceResolver;

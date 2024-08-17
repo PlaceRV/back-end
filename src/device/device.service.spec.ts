@@ -1,14 +1,14 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { DeviceService, UserRecieve } from './device.service';
-import { TestModule } from 'test/test.module';
-import { DeviceModule } from './device.module';
-import { AuthService, UserMetadata } from 'src/auth/auth.service';
-import { AuthMiddleware } from 'src/auth/auth.middleware';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { DeepPartial, Repository } from 'typeorm';
+import { Test, TestingModule } from '@nestjs/testing';
+import { AuthMiddleware } from 'src/auth/auth.middleware';
+import { AuthService, UserMetadata } from 'src/auth/auth.service';
 import { User } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
+import { TestModule } from 'test/test.module';
+import { DeepPartial } from 'typeorm';
+import { DeviceModule } from './device.module';
+import { DeviceService, UserRecieve } from './device.service';
 
 describe('DeviceService', () => {
 	let dvcSvc: DeviceService,

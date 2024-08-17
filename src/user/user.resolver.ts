@@ -1,7 +1,7 @@
-import { Resolver, Query, Args } from '@nestjs/graphql';
-import { Role, User } from './user.entity';
 import { BadRequestException, UseGuards } from '@nestjs/common';
+import { Args, Query, Resolver } from '@nestjs/graphql';
 import { AllowPublic, RoleGuard, Roles } from 'src/auth/auth.guard';
+import { Role, User } from './user.entity';
 import { UserService } from './user.service';
 
 @Resolver(() => User)
