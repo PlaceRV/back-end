@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DeviceSession } from './device.entity';
 import {
 	DeepPartial,
+	FindManyOptions,
 	FindOneOptions,
 	FindOptionsWhere,
 	Repository,
@@ -58,6 +59,10 @@ export class DeviceService {
 			acsTkn = this.jwtSvc.sign(new PayLoad(usrId).toPlainObj());
 
 		return new UserRecieve(acsTkn, rfsTkn);
+	}
+
+	find(options?: FindManyOptions<DeviceSession>): Promise<DeviceSession[]> {
+		return this.repo.find(options);
 	}
 
 	findOne(options?: FindOneOptions<DeviceSession>) {

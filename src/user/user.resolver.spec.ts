@@ -29,35 +29,14 @@ describe('UserResolver', () => {
 
 		it('should throw a BadRequestException if user not found', async () => {
 			jest.spyOn(usrSvc, 'findOne').mockResolvedValue(null);
-			await expect(usrRsv.findOne('1')).rejects.toThrow(BadRequestException);
-			expect(usrSvc.findOne).toHaveBeenCalledWith({ where: { id: '1' } });
+			await expect(usrRsv.findOne('1')).rejects.toThrow(BadRequestException),
+				expect(usrSvc.findOne).toHaveBeenCalledWith({ where: { id: '1' } });
 		});
 	});
 
 	describe('findAll', () => {
 		it('should return all users', async () => {
-			const users: User[] = [
-				{
-					id: '1',
-					firstName: 'a',
-					roles: [Role.USER],
-					password: 'a',
-					deviceSessions: [],
-					lastName: 'a',
-					email: 'a',
-					info: undefined,
-				},
-				{
-					id: '2',
-					firstName: 'b',
-					roles: [Role.ADMIN],
-					password: 'b',
-					deviceSessions: [],
-					lastName: 'b',
-					email: 'b',
-					info: undefined,
-				},
-			];
+			const users: User[] = [User.test, User.test];
 			jest.spyOn(usrSvc, 'find').mockResolvedValue(users);
 			expect(await usrRsv.findAll()).toEqual(users);
 			expect(usrSvc.find).toHaveBeenCalled();

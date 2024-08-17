@@ -5,6 +5,7 @@ import {
 	DeepPartial,
 	FindManyOptions,
 	FindOneOptions,
+	FindOptionsWhere,
 	Repository,
 	SaveOptions,
 } from 'typeorm';
@@ -26,5 +27,9 @@ export class UserService {
 		options?: SaveOptions & { reload: false },
 	): Promise<DeepPartial<User>> {
 		return this.repo.save(entities, options);
+	}
+
+	delete(criteria: FindOptionsWhere<User>) {
+		return this.repo.delete(criteria);
 	}
 }

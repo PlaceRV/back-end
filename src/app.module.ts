@@ -26,7 +26,7 @@ import { AuthMiddleware } from './auth/auth.middleware';
 			includeStacktraceInErrorResponses: false,
 			inheritResolversFromInterfaces: false,
 		}),
-		// Load sub modules
+		// Sub modules
 		AuthModule,
 		LoadEnvModule,
 		SqlModule('deploy'),
