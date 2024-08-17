@@ -15,7 +15,7 @@ import { AuthMiddleware } from './auth/auth.middleware';
 			// Avoid deprecated
 			subscriptions: {
 				'graphql-ws': true,
-				'subscriptions-transport-ws': true,
+				'subscriptions-transport-ws': false,
 			},
 			// Code first
 			autoSchemaFile: './src/schema.gql',
