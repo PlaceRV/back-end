@@ -7,7 +7,7 @@ import { UserModule } from 'src/user/user.module';
 import { AuthController } from './auth.controller';
 import { AuthMiddleware } from './auth.middleware';
 import { AuthService } from './auth.service';
-import { AccessStrategy } from './strategies/access.stategy';
+import { AccessStrategy } from './strategies/access.strategy';
 import { RefreshStrategy } from './strategies/refresh.strategy';
 
 @Module({
