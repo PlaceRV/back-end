@@ -1,5 +1,6 @@
 {
   "name": "tmpl-backend",
+  "type": "commonjs",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -49,12 +50,15 @@
     "rxjs": "^7.8.1",
     "typeorm": "^0.3.20",
     "typeorm-extension": "^3.6.0",
-    "ua-parser-js": "^1.0.38"
+    "ua-parser-js": "^1.0.38",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
     "@nestjs/schematics": "^10.0.0",
     "@nestjs/testing": "^10.0.0",
+    "@swc/cli": "^0.4.0",
+    "@swc/core": "^1.7.11",
     "@types/bcrypt": "^5.0.2",
     "@types/cookie-parser": "^1.4.7",
     "@types/express": "^4.17.17",
@@ -66,6 +70,7 @@
     "@types/request-ip": "^0.0.41",
     "@types/supertest": "^6.0.0",
     "@types/ua-parser-js": "^0.7.39",
+    "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
     "eslint": "^8.42.0",

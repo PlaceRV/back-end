@@ -24,13 +24,13 @@ describe('UserResolver', () => {
 			const user = User.test;
 			jest.spyOn(usrSvc, 'findOne').mockResolvedValue(user);
 			expect(await usrRsv.findOne('1')).toEqual(user);
-			expect(usrSvc.findOne).toHaveBeenCalledWith({ where: { id: '1' } });
+			expect(usrSvc.findOne).toHaveBeenCalledWith({ id: '1' });
 		});
 
 		it('should throw a BadRequestException if user not found', async () => {
 			jest.spyOn(usrSvc, 'findOne').mockResolvedValue(null);
 			await expect(usrRsv.findOne('1')).rejects.toThrow(BadRequestException),
-				expect(usrSvc.findOne).toHaveBeenCalledWith({ where: { id: '1' } });
+				expect(usrSvc.findOne).toHaveBeenCalledWith({ id: '1' });
 		});
 	});
 

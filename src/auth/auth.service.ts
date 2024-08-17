@@ -64,9 +64,7 @@ export class AuthService {
 	private readonly svrScr = this.cfgSvc.get('SERVER_SECRET');
 
 	async signup(signupDto: SignUpDto, mtdt: UserMetadata) {
-		const user = await this.usrSvc.findOne({
-			where: { email: signupDto.email },
-		});
+		const user = await this.usrSvc.findOne({ email: signupDto.email });
 		if (!user) {
 			signupDto.password = this.hash(signupDto.password);
 
@@ -77,9 +75,7 @@ export class AuthService {
 	}
 
 	async login(loginDto: LogInDto, mtdt: UserMetadata) {
-		const user = await this.usrSvc.findOne({
-			where: { email: loginDto.email },
-		});
+		const user = await this.usrSvc.findOne({ email: loginDto.email });
 		if (user) {
 			const isPasswordMatched = compareSync(loginDto.password, user.password);
 			if (isPasswordMatched) return this.dvcSvc.getTokens(user.id, mtdt);

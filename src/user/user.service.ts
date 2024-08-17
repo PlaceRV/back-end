@@ -14,12 +14,12 @@ import {
 export class UserService {
 	constructor(@InjectRepository(User) private repo: Repository<User>) {}
 
-	find(options?: FindManyOptions<User>): Promise<User[]> {
-		return this.repo.find(options);
+	find(options?: FindOptionsWhere<User>): Promise<User[]> {
+		return this.repo.find({ where: options, relations: ['deviceSessions'] });
 	}
 
-	findOne(options?: FindOneOptions<User>): Promise<User> {
-		return this.repo.findOne(options);
+	findOne(options?: FindOptionsWhere<User>) {
+		return this.repo.findOne({ where: options, relations: ['deviceSessions'] });
 	}
 
 	save(

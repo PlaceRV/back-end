@@ -13,7 +13,7 @@ export class UserResolver {
 	@Query(() => User)
 	@AllowPublic(true)
 	async findOne(@Args('id') id: string) {
-		const user = await this.usrSvc.findOne({ where: { id } });
+		const user = await this.usrSvc.findOne({ id });
 		if (user) return user;
 		throw new BadRequestException('User not found');
 	}

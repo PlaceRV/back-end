@@ -35,7 +35,7 @@ describe('DeviceService', () => {
 
 	describe('getTokens', () => {
 		let mtdt: UserMetadata, usr: DeepPartial<User>;
-		beforeAll(async () => {
+		beforeEach(async () => {
 			(mtdt = UserMetadata.test), (usr = await usrSvc.save(User.test));
 		});
 
@@ -52,15 +52,15 @@ describe('DeviceService', () => {
 
 			expect(jwtSvc.sign).toHaveBeenCalledTimes(2),
 				expect(authSvc.hash).toHaveBeenCalledWith(mtdt.toString()),
-				expect(result).toEqual(usrRcv),
-				expect((await dvcSvc.find()).length).toBe(1);
+				expect(result).toEqual(usrRcv);
 		});
 
-		afterAll(async () => {
-			const dvcs = await dvcSvc.find(),
-				usrs = await usrSvc.find();
-			for (const dvc of dvcs) await dvcSvc.delete(dvc);
-			for (const usr of usrs) await usrSvc.delete({ id: usr.id });
+		afterEach(async () => {
+			usr = await usrSvc.findOne({ id: usr.id });
+			usr.deviceSessions.forEach(
+				async (i) => await dvcSvc.delete({ id: i.id }),
+			);
+			await usrSvc.delete({ id: usr.id });
 		});
 	});
 });

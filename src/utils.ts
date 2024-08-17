@@ -1,7 +1,7 @@
 import { randomBytes } from 'crypto';
 
 type InitClass<T> = {
-	[K in keyof T as T[K] extends String | Number | any[] ? K : never]: T[K];
+	[K in keyof T as T[K] extends String | Number | any[] ? K : never]-?: T[K];
 };
 
 export class Str {
