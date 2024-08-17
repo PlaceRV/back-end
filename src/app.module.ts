@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { LoadEnvModule } from './config.module';
 import { SqlModule } from './sql.module';
 import { AuthMiddleware } from './auth/auth.middleware';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
 	imports: [
@@ -26,6 +27,37 @@ import { AuthMiddleware } from './auth/auth.middleware';
 			includeStacktraceInErrorResponses: false,
 			inheritResolversFromInterfaces: false,
 		}),
+		// Admin panel module
+		import('@adminjs/nestjs').then(({ AdminModule }) =>
+			AdminModule.createAdminAsync({
+				imports: [ConfigModule],
+				inject: [ConfigService],
+				useFactory: async (cfgSvc: ConfigService) => ({
+					adminJsOptions: {
+						rootPath: '/admin',
+						resources: [],
+					},
+					auth: {
+						authenticate(email, password, ctx) {
+							return email === cfgSvc.get('ADMIN_EMAIL') &&
+								password === cfgSvc.get('ADMIN_PASSWORD')
+								? Promise.resolve({
+										email: cfgSvc.get('ADMIN_EMAIL'),
+										password: cfgSvc.get('ADMIN_PASSWORD'),
+									})
+								: null;
+						},
+						cookieName: 'adminjs',
+						cookiePassword: 'secret',
+					},
+					sessionOptions: {
+						resave: true,
+						saveUninitialized: true,
+						secret: 'secret',
+					},
+				}),
+			}),
+		),
 		// Sub modules
 		AuthModule,
 		LoadEnvModule,

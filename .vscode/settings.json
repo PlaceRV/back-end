@@ -13,7 +13,10 @@
 		"**/schema.gql": true,
 		"**/package-lock.json": true,
 		".vscode": true,
-		"secrets": true
+		"secrets": true,
+		".adminjs": true,
+		"**/.gitignore": true,
+		"coverage": true
 	},
 	"todohighlight.keywords": [
 		{

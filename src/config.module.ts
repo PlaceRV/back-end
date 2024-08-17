@@ -33,6 +33,9 @@ import Joi from 'joi';
 				BCRYPT_SALT: Joi.number().default(6),
 				// AES
 				AES_ALGO: Joi.string().default('aes-256-ctr'),
+				// ADMIN
+				ADMIN_EMAIL: Joi.string().default('admin'),
+				ADMIN_PASSWORD: Joi.string().default('admin'),
 				// Custom keys
 				REFRESH_KEY: Joi.string().default(randomBytes(6).toString('hex')),
 				ACCESS_KEY: Joi.string().default(randomBytes(6).toString('hex')),
