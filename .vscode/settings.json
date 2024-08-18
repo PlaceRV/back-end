@@ -14,7 +14,8 @@
 		"**/package-lock.json": true,
 		".vscode": true,
 		"secrets": true,
-		"**/.gitignore": true
+		"**/.gitignore": true,
+		"**/.adminjs": true
 	},
 	"todohighlight.keywords": [
 		{
