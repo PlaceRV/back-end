@@ -8,7 +8,6 @@ import { ConfigService } from '@nestjs/config';
 import { compareSync, hashSync } from 'bcrypt';
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 import { Request } from 'express';
-import { createRequest } from 'node-mocks-http';
 import { DeviceService } from 'src/device/device.service';
 import { UserService } from 'src/user/user.service';
 import { LogInDto, SignUpDto } from './auth.dto';
