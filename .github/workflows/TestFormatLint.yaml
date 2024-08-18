@@ -58,5 +58,5 @@ jobs:
         if: always()
         with:
           path: './node_modules'
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}
+          key: npm-${{ hashFiles('**/package.json') }}
           
