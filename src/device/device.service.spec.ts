@@ -54,13 +54,5 @@ describe('DeviceService', () => {
 				expect(authSvc.hash).toHaveBeenCalledWith(mtdt.toString()),
 				expect(result).toEqual(usrRcv);
 		});
-
-		afterEach(async () => {
-			usr = await usrSvc.findOne({ id: usr.id });
-			usr.deviceSessions.forEach(
-				async (i) => await dvcSvc.delete({ id: i.id }),
-			);
-			await usrSvc.delete({ id: usr.id });
-		});
 	});
 });

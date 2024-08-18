@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  test:
+  TestFormatLint:
     runs-on: ubuntu-latest
 
     services:

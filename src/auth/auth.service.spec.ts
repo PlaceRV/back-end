@@ -74,14 +74,6 @@ describe('AuthService', () => {
 				BadRequestException,
 			);
 		});
-
-		afterEach(async () => {
-			usr = await usrSvc.findOne({ id: usr.id });
-			usr.deviceSessions.forEach(
-				async (i) => await dvcSvc.delete({ id: i.id }),
-			);
-			await usrSvc.delete({ id: usr.id });
-		});
 	});
 
 	describe('login', () => {
@@ -105,14 +97,6 @@ describe('AuthService', () => {
 			await expect(authSvc.login(dto, mtdt)).rejects.toThrow(
 				BadRequestException,
 			);
-		});
-
-		afterEach(async () => {
-			usr = await usrSvc.findOne({ id: usr.id });
-			usr.deviceSessions.forEach(
-				async (i) => await dvcSvc.delete({ id: i.id }),
-			);
-			await usrSvc.delete({ id: usr.id });
 		});
 	});
 

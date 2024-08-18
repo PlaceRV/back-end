@@ -40,11 +40,4 @@ describe('AppController (e2e)', () => {
 
 	it('/auth/login (POST)', async () =>
 		req.post('/auth/login').send(payload).expect(201));
-
-	afterAll(async () => {
-		const usrs = await usrRepo.find(),
-			dvcs = await dvcRepo.find();
-		for (const dvc of dvcs) await dvcRepo.delete(dvc);
-		for (const usr of usrs) await usrRepo.delete({ id: usr.id });
-	});
 });
