@@ -49,7 +49,7 @@ describe('AuthMiddleware', () => {
 
 	describe('generateFingerprint', () => {
 		it('should generate a fingerprint object', () => {
-			expect(generateFingerprint(req)).toEqual({
+			expect(generateFingerprint()).toEqual({
 				userAgent: ua,
 			});
 		});

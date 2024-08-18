@@ -46,7 +46,7 @@ export class UserMetadata {
 
 	static get test() {
 		return new UserMetadata({
-			fingerprint: generateFingerprint(createRequest()),
+			fingerprint: generateFingerprint(),
 		} as unknown as Request);
 	}
 }
