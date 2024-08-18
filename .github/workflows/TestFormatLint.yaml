@@ -32,8 +32,7 @@ jobs:
 
       - uses: actions/setup-node@v4
 
-      - uses: actions/cache/save@v3
-        if: always()
+      - uses: actions/cache/restore@v3
         with:
           path: '~/.npm'
           key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}
@@ -56,3 +55,10 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           branch: ${{ github.head_ref }}
+      
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: '~/.npm'
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}
+          

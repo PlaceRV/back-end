@@ -1,20 +1,13 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { SignUpDto } from 'src/auth/auth.dto';
 import { AuthModule } from 'src/auth/auth.module';
-import { DeviceSession } from 'src/device/device.entity';
-import { User } from 'src/user/user.entity';
 import request from 'supertest';
 import TestAgent from 'supertest/lib/agent';
-import { Repository } from 'typeorm';
 import { TestModule } from './test.module';
 
 describe('AppController (e2e)', () => {
-	let app: INestApplication,
-		usrRepo: Repository<User>,
-		dvcRepo: Repository<DeviceSession>,
-		req: TestAgent;
+	let app: INestApplication, req: TestAgent;
 	const payload: SignUpDto = {
 		firstName: 'a',
 		lastName: 'a',
@@ -27,9 +20,7 @@ describe('AppController (e2e)', () => {
 			imports: [TestModule, AuthModule],
 		}).compile();
 
-		(app = moduleFixture.createNestApplication()),
-			(usrRepo = moduleFixture.get(getRepositoryToken(User))),
-			(dvcRepo = moduleFixture.get(getRepositoryToken(DeviceSession)));
+		app = moduleFixture.createNestApplication();
 
 		await app.init();
 		req = request(app.getHttpServer());

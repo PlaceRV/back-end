@@ -2,7 +2,7 @@ import { randomBytes } from 'crypto';
 import { BaseEntity } from 'typeorm';
 
 type InitClass<T> = {
-	[K in keyof T as T[K] extends String | Number | any[] ? K : never]-?: T[K];
+	[K in keyof T as T[K] extends string | number | any[] ? K : never]-?: T[K];
 };
 
 export class Str {
