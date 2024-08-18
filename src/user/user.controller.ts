@@ -1,7 +1,7 @@
 import {
 	BadRequestException,
 	Controller,
-	Get,
+	Post,
 	Req,
 	UseGuards,
 } from '@nestjs/common';
@@ -11,7 +11,7 @@ import { User } from './user.entity';
 
 @Controller('user')
 export class UserController {
-	@Get('')
+	@Post('')
 	@UseGuards(AuthGuard('access'))
 	getUser(@Req() req: Request) {
 		if (req.user) return (req.user as User).info;

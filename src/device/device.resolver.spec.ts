@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TestModule } from 'test/test.module';
+import { TestModule } from '@backend/test';
 import { DeviceModule } from './device.module';
 import { DeviceResolver } from './device.resolver';
 

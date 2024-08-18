@@ -6,7 +6,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { AuthGuard } from '@nestjs/passport';
-import { Role, User } from 'src/user/user.entity';
+import { Role, User } from '@backend/user/user.entity';
 
 const matchRoles = (roles: Role[], userRoles: Role[]) =>
 	roles.some((i) => userRoles.some((j) => i === j));

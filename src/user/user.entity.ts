@@ -1,6 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { DeviceSession } from 'src/device/device.entity';
-import { EntityBase, Str } from 'src/utils';
+import { DeviceSession } from '@backend/device/device.entity';
+import { EntityBase, Str } from '@backend/utils';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -16,7 +16,7 @@ export class User extends EntityBase<User> {
 	// Sensitive infomation
 	@PrimaryGeneratedColumn('uuid') id?: string;
 	@Column('text', { nullable: false }) password!: string;
-	@OneToMany(() => DeviceSession, (deviceSessions) => deviceSessions.user)
+	@OneToMany(() => DeviceSession, (dvcSess: DeviceSession) => dvcSess.user)
 	deviceSessions?: DeviceSession[];
 
 	// Basic infomation

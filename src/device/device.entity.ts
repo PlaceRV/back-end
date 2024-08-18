@@ -1,5 +1,5 @@
-import { User } from 'src/user/user.entity';
-import { EntityBase } from 'src/utils';
+import { User } from '@backend/user/user.entity';
+import { EntityBase } from '@backend/utils';
 import {
 	Column,
 	Entity,
