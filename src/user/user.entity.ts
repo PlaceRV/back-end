@@ -1,6 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { DeviceSession } from 'src/device/device.entity';
-import { Base, Str } from 'src/utils';
+import { EntityBase, Str } from 'src/utils';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -11,7 +11,7 @@ export enum Role {
 
 @ObjectType()
 @Entity()
-export class User extends Base<User> {
+export class User extends EntityBase<User> {
 	// Sensitive infomation
 	@PrimaryGeneratedColumn('uuid') id?: string;
 	@Column('text', { nullable: false }) password!: string;

@@ -7,6 +7,9 @@ import { ExpressAdapter } from '@nestjs/platform-express';
 import express from 'express';
 import http from 'http';
 import https from 'https';
+import { User } from './user/user.entity';
+import { validate } from 'class-validator';
+import { DeviceSession } from './device/device.entity';
 
 async function bootstrap() {
 	const httpsOptions = {
@@ -15,6 +18,7 @@ async function bootstrap() {
 		},
 		{ AdminJS } = await import('adminjs'),
 		{ buildAuthenticatedRouter } = await import('@adminjs/express'),
+		{ Database, Resource } = await import('@adminjs/typeorm'),
 		server = express(),
 		app = (
 			await NestFactory.create(AppModule, new ExpressAdapter(server), {
@@ -27,8 +31,10 @@ async function bootstrap() {
 				},
 			})
 		).use(cookieParser()),
-		cfgSvc = app.get(ConfigService),
-		admin = new AdminJS({}),
+		cfgSvc = app.get(ConfigService);
+	Resource.validate = validate;
+	AdminJS.registerAdapter({ Resource, Database });
+	const admin = new AdminJS({ resources: [User, DeviceSession] }),
 		adminRouter = buildAuthenticatedRouter(
 			admin,
 			{

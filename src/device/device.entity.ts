@@ -1,4 +1,5 @@
 import { User } from 'src/user/user.entity';
+import { EntityBase } from 'src/utils';
 import {
 	Column,
 	Entity,
@@ -8,7 +9,7 @@ import {
 } from 'typeorm';
 
 @Entity()
-export class DeviceSession {
+export class DeviceSession extends EntityBase<DeviceSession> {
 	@PrimaryGeneratedColumn('uuid') id: string;
 	@ManyToOne(() => User, (user) => user.deviceSessions)
 	@JoinColumn({ name: 'userId' })

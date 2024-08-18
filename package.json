@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@adminjs/express": "^6.1.0",
+    "@adminjs/typeorm": "^5.0.1",
     "@apollo/server": "^4.10.5",
     "@nestjs/apollo": "^12.2.0",
     "@nestjs/common": "^10.0.0",
