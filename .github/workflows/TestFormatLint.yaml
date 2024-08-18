@@ -39,6 +39,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - run: "npm install && npm run build"
+      - run: "npm install"
 
       - run: npm run test && npm run format && npm run lint
+        env:
+          ACCESS_SECRET: a
+          REFRESH_SECRET: a
