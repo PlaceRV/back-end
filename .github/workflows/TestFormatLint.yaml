@@ -27,21 +27,31 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-
-      - name: Cache npm dependencies
-        uses: actions/cache@v2
         with:
-          path: "~/.npm"
+          ref: ${{ github.head_ref }}
+
+      - uses: actions/setup-node@v4
+
+      - uses: actions/cache@v2
+        with:
+          path: '~/.npm'
           key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - run: "npm install"
+      - run: 'npm install'
 
       - run: npm run test && npm run format && npm run lint
         env:
           ACCESS_SECRET: a
           REFRESH_SECRET: a
+
+      - name: Commit files
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git commit -a -m "Add changes"
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          branch: ${{ github.head_ref }}
