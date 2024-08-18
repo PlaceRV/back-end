@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSourceOptions } from 'typeorm';
 import { createPostgresDatabase } from 'typeorm-extension';
 
-export const sqlOptions = (
+const sqlOptions = (
 	type: 'deploy' | 'test',
 	cfgSvc: ConfigService,
 ): DataSourceOptions => ({
