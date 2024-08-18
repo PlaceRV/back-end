@@ -38,7 +38,7 @@ async function bootstrap() {
 		adminRouter = buildAuthenticatedRouter(
 			admin,
 			{
-				authenticate(email, password, context) {
+				authenticate(email, password) {
 					return email === cfgSvc.get('ADMIN_EMAIL') &&
 						password === cfgSvc.get('ADMIN_PASSWORD')
 						? Promise.resolve({ email, password })

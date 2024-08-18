@@ -14,7 +14,7 @@ import Joi from 'joi';
 				POSTGRES_PORT: Joi.number().default(5432),
 				POSTGRES_USER: Joi.string().default('postgres'),
 				POSTGRES_DB: Joi.string().default('tmplrv'),
-				POSTGRES_PASS: Joi.string().required(),
+				POSTGRES_PASS: Joi.string().default('postgres'),
 				// Access token
 				ACCESS_SECRET: Joi.string().required(),
 				ACCESS_EXPIRES: Joi.string().default('5m'),

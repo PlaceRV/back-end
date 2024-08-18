@@ -1,18 +1,11 @@
 import { BadRequestException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Request } from 'express';
-import { createRequest } from 'node-mocks-http';
-import { DeviceSession } from 'src/device/device.entity';
 import { DeviceService } from 'src/device/device.service';
 import { User } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
 import { TestModule } from 'test/test.module';
-import { Repository } from 'typeorm';
 import UAParser from 'ua-parser-js';
 import { LogInDto, SignUpDto } from './auth.dto';
-import { AuthMiddleware } from './auth.middleware';
 import { AuthModule } from './auth.module';
 import { AuthService, UserMetadata } from './auth.service';
 
@@ -23,14 +16,7 @@ describe('AuthService', () => {
 
 	(UAParser.UAParser as unknown as jest.Mock).mockReturnValue(ua);
 
-	let authSvc: AuthService,
-		authMdw: AuthMiddleware,
-		usrSvc: UserService,
-		req: Request,
-		dvcSvc: DeviceService,
-		cfgSvc: ConfigService,
-		dvcRepo: Repository<DeviceSession>,
-		usrRepo: Repository<User>;
+	let authSvc: AuthService, usrSvc: UserService, dvcSvc: DeviceService;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -38,14 +24,8 @@ describe('AuthService', () => {
 		}).compile();
 
 		(authSvc = module.get(AuthService)),
-			(cfgSvc = module.get(ConfigService)),
-			(authMdw = new AuthMiddleware(authSvc, cfgSvc)),
 			(usrSvc = module.get(UserService)),
-			(dvcSvc = module.get(DeviceService)),
-			(dvcRepo = module.get(getRepositoryToken(DeviceSession))),
-			(usrRepo = module.get(getRepositoryToken(User)));
-
-		req = createRequest();
+			(dvcSvc = module.get(DeviceService));
 	});
 
 	it('should be defined', () => expect(authSvc).toBeDefined());
@@ -74,14 +54,6 @@ describe('AuthService', () => {
 				BadRequestException,
 			);
 		});
-
-		afterEach(async () => {
-			usr = await usrSvc.findOne({ id: usr.id });
-			usr.deviceSessions.forEach(
-				async (i) => await dvcSvc.delete({ id: i.id }),
-			);
-			await usrSvc.delete({ id: usr.id });
-		});
 	});
 
 	describe('login', () => {
@@ -105,14 +77,6 @@ describe('AuthService', () => {
 			await expect(authSvc.login(dto, mtdt)).rejects.toThrow(
 				BadRequestException,
 			);
-		});
-
-		afterEach(async () => {
-			usr = await usrSvc.findOne({ id: usr.id });
-			usr.deviceSessions.forEach(
-				async (i) => await dvcSvc.delete({ id: i.id }),
-			);
-			await usrSvc.delete({ id: usr.id });
 		});
 	});
 

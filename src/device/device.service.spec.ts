@@ -1,7 +1,5 @@
-import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthMiddleware } from 'src/auth/auth.middleware';
 import { AuthService, UserMetadata } from 'src/auth/auth.service';
 import { User } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
@@ -12,8 +10,6 @@ import { DeviceService, UserRecieve } from './device.service';
 
 describe('DeviceService', () => {
 	let dvcSvc: DeviceService,
-		authMdw: AuthMiddleware,
-		cfgSvc: ConfigService,
 		authSvc: AuthService,
 		jwtSvc: JwtService,
 		usrSvc: UserService;
@@ -24,9 +20,7 @@ describe('DeviceService', () => {
 		}).compile();
 
 		(dvcSvc = module.get(DeviceService)),
-			(cfgSvc = module.get(ConfigService)),
 			(authSvc = module.get(AuthService)),
-			(authMdw = new AuthMiddleware(authSvc, cfgSvc)),
 			(jwtSvc = module.get(JwtService)),
 			(usrSvc = module.get(UserService));
 	});
@@ -53,14 +47,6 @@ describe('DeviceService', () => {
 			expect(jwtSvc.sign).toHaveBeenCalledTimes(2),
 				expect(authSvc.hash).toHaveBeenCalledWith(mtdt.toString()),
 				expect(result).toEqual(usrRcv);
-		});
-
-		afterEach(async () => {
-			usr = await usrSvc.findOne({ id: usr.id });
-			usr.deviceSessions.forEach(
-				async (i) => await dvcSvc.delete({ id: i.id }),
-			);
-			await usrSvc.delete({ id: usr.id });
 		});
 	});
 });

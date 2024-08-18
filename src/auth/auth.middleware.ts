@@ -5,7 +5,7 @@ import { NextFunction, Request, Response } from 'express';
 import uaParserJs from 'ua-parser-js';
 import { AuthService } from './auth.service';
 
-export function generateFingerprint(req: Request) {
+export function generateFingerprint() {
 	return {
 		userAgent: uaParserJs.UAParser(),
 	};
@@ -24,7 +24,7 @@ export class AuthMiddleware implements NestMiddleware {
 	private readonly acsKey = this.cfgSvc.get('ACCESS_KEY');
 
 	use(req: Request, res: Response, next: NextFunction) {
-		req['fingerprint'] = generateFingerprint(req);
+		req['fingerprint'] = generateFingerprint();
 		const isRefresh = req.url.match(this.rfsGrd);
 
 		let acsTkn: string, rfsTkn: string;
