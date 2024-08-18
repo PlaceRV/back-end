@@ -13,7 +13,9 @@
 		"**/schema.gql": true,
 		"**/package-lock.json": true,
 		".vscode": true,
-		"secrets": true
+		"secrets": true,
+		"**/.gitignore": true,
+		"**/.adminjs": true
 	},
 	"todohighlight.keywords": [
 		{

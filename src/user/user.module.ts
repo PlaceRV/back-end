@@ -1,12 +1,12 @@
 import { forwardRef, MiddlewareConsumer, Module } from '@nestjs/common';
-import { UserResolver } from './user.resolver';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Role, User } from './user.entity';
 import { registerEnumType } from '@nestjs/graphql';
-import { UserService } from './user.service';
-import { UserController } from './user.controller';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthMiddleware } from 'src/auth/auth.middleware';
 import { AuthModule } from 'src/auth/auth.module';
+import { UserController } from './user.controller';
+import { Role, User } from './user.entity';
+import { UserResolver } from './user.resolver';
+import { UserService } from './user.service';
 
 @Module({
 	imports: [TypeOrmModule.forFeature([User]), forwardRef(() => AuthModule)],

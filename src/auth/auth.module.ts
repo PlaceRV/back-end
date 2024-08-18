@@ -1,14 +1,14 @@
 import { forwardRef, MiddlewareConsumer, Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { PassportModule } from '@nestjs/passport';
-import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AccessStrategy } from './strategies/access.stategy';
-import { AuthController } from './auth.controller';
-import { AuthMiddleware } from './auth.middleware';
-import { RefreshStrategy } from './strategies/refresh.strategy';
+import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
 import { DeviceModule } from 'src/device/device.module';
 import { UserModule } from 'src/user/user.module';
+import { AuthController } from './auth.controller';
+import { AuthMiddleware } from './auth.middleware';
+import { AuthService } from './auth.service';
+import { AccessStrategy } from './strategies/access.strategy';
+import { RefreshStrategy } from './strategies/refresh.strategy';
 
 @Module({
 	imports: [

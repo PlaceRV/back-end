@@ -1,26 +1,25 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AuthService, UserMetadata } from './auth.service';
-import { TestModule } from 'test/test.module';
-import { AuthModule } from './auth.module';
-import { Request } from 'express';
-import { LogInDto, SignUpDto } from './auth.dto';
-import UAParser from 'ua-parser-js';
-import { AuthMiddleware } from './auth.middleware';
-import { createRequest } from 'node-mocks-http';
-import { UserService } from 'src/user/user.service';
-import { User } from 'src/user/user.entity';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { BadRequestException } from '@nestjs/common';
-import { DeviceService } from 'src/device/device.service';
 import { ConfigService } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Request } from 'express';
+import { createRequest } from 'node-mocks-http';
 import { DeviceSession } from 'src/device/device.entity';
+import { DeviceService } from 'src/device/device.service';
+import { User } from 'src/user/user.entity';
+import { UserService } from 'src/user/user.service';
+import { TestModule } from 'test/test.module';
+import { Repository } from 'typeorm';
+import UAParser from 'ua-parser-js';
+import { LogInDto, SignUpDto } from './auth.dto';
+import { AuthMiddleware } from './auth.middleware';
+import { AuthModule } from './auth.module';
+import { AuthService, UserMetadata } from './auth.service';
 
 jest.mock('ua-parser-js');
 
 describe('AuthService', () => {
-	const { firstName, lastName, password, email } = User.test,
-		ua = { test: 'test' };
+	const ua = { test: 'test' };
 
 	(UAParser.UAParser as unknown as jest.Mock).mockReturnValue(ua);
 
@@ -52,9 +51,10 @@ describe('AuthService', () => {
 	it('should be defined', () => expect(authSvc).toBeDefined());
 
 	describe('signup', () => {
-		let dto: SignUpDto, mtdt: UserMetadata;
-		beforeAll(() => {
-			(dto = { firstName, lastName, email, password }),
+		let dto: SignUpDto, mtdt: UserMetadata, usr: User;
+		beforeEach(() => {
+			(usr = User.test),
+				(dto = new SignUpDto({ ...usr })),
 				(mtdt = UserMetadata.test);
 		});
 
@@ -63,32 +63,40 @@ describe('AuthService', () => {
 				jest.spyOn(usrSvc, 'save'),
 				jest.spyOn(dvcSvc, 'getTokens');
 			await authSvc.signup(dto, mtdt),
-				expect(usrSvc.findOne).toHaveBeenCalledWith({
-					where: { email: dto.email },
-				}),
+				expect(usrSvc.findOne).toHaveBeenCalledWith({ email: dto.email }),
 				expect(usrSvc.save).toHaveBeenCalledWith(dto),
 				expect(dvcSvc.getTokens).toHaveBeenCalledWith(expect.any(String), mtdt);
 		});
 
 		it('should throw a BadRequestException if the email is already assigned', async () => {
+			await authSvc.signup(dto, mtdt);
 			await expect(authSvc.signup(dto, mtdt)).rejects.toThrow(
 				BadRequestException,
 			);
 		});
+
+		afterEach(async () => {
+			usr = await usrSvc.findOne({ id: usr.id });
+			usr.deviceSessions.forEach(
+				async (i) => await dvcSvc.delete({ id: i.id }),
+			);
+			await usrSvc.delete({ id: usr.id });
+		});
 	});
 
 	describe('login', () => {
-		let dto: LogInDto, mtdt: UserMetadata;
-		beforeAll(() => {
-			(dto = { email, password }), (mtdt = UserMetadata.test);
+		let dto: LogInDto, mtdt: UserMetadata, usr: User;
+		beforeEach(async () => {
+			(usr = User.test),
+				(dto = new LogInDto({ ...usr })),
+				(mtdt = UserMetadata.test);
+			await authSvc.signup(new SignUpDto({ ...usr }), mtdt);
 		});
 
 		it('should return tokens for a valid user', async () => {
 			jest.spyOn(usrSvc, 'findOne'), jest.spyOn(dvcSvc, 'getTokens');
 			await authSvc.login(dto, mtdt),
-				expect(usrSvc.findOne).toHaveBeenCalledWith({
-					where: { email: dto.email },
-				}),
+				expect(usrSvc.findOne).toHaveBeenCalledWith({ email: dto.email }),
 				expect(dvcSvc.getTokens).toHaveBeenCalledWith(expect.any(String), mtdt);
 		});
 
@@ -97,6 +105,14 @@ describe('AuthService', () => {
 			await expect(authSvc.login(dto, mtdt)).rejects.toThrow(
 				BadRequestException,
 			);
+		});
+
+		afterEach(async () => {
+			usr = await usrSvc.findOne({ id: usr.id });
+			usr.deviceSessions.forEach(
+				async (i) => await dvcSvc.delete({ id: i.id }),
+			);
+			await usrSvc.delete({ id: usr.id });
 		});
 	});
 
@@ -108,12 +124,5 @@ describe('AuthService', () => {
 				decrypted = authSvc.decrypt(encrypted, key);
 			expect(decrypted).toEqual(text);
 		});
-	});
-
-	afterAll(async () => {
-		const usrs = await usrRepo.find(),
-			dvcs = await dvcRepo.find();
-		for (const dvc of dvcs) await dvcRepo.delete(dvc);
-		for (const usr of usrs) await usrRepo.delete({ id: usr.id });
 	});
 });

@@ -1,12 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AuthMiddleware, generateFingerprint } from './auth.middleware';
-import { AuthService } from './auth.service';
 import { ConfigService } from '@nestjs/config';
-import { Request, Response, NextFunction } from 'express';
-import uaParserJs from 'ua-parser-js';
-import { TestModule } from 'test/test.module';
-import { AuthModule } from './auth.module';
+import { Test, TestingModule } from '@nestjs/testing';
+import { NextFunction, Request, Response } from 'express';
 import { createRequest, createResponse } from 'node-mocks-http';
+import { TestModule } from 'test/test.module';
+import uaParserJs from 'ua-parser-js';
+import { AuthMiddleware, generateFingerprint } from './auth.middleware';
+import { AuthModule } from './auth.module';
+import { AuthService } from './auth.service';
 
 jest.mock('ua-parser-js');
 

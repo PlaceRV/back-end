@@ -1,9 +1,9 @@
 import { forwardRef, Inject, Injectable, NestMiddleware } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { compareSync } from 'bcrypt';
 import { NextFunction, Request, Response } from 'express';
 import uaParserJs from 'ua-parser-js';
-import { compareSync } from 'bcrypt';
 import { AuthService } from './auth.service';
-import { ConfigService } from '@nestjs/config';
 
 export function generateFingerprint(req: Request) {
 	return {
@@ -35,7 +35,9 @@ export class AuthMiddleware implements NestMiddleware {
 				acsTkn = req.cookies[cki];
 
 		const tknPld = this.authSvc.decrypt(acsTkn);
-		req.headers.authorization = `Bearer ${isRefresh ? this.authSvc.decrypt(rfsTkn, tknPld.split('.')[2]) : tknPld}`;
+		req.headers.authorization = `Bearer ${
+			isRefresh ? this.authSvc.decrypt(rfsTkn, tknPld.split('.')[2]) : tknPld
+		}`;
 
 		next();
 	}

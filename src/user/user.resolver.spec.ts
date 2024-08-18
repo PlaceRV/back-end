@@ -1,10 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { UserResolver } from './user.resolver';
-import { TestModule } from 'test/test.module';
-import { UserModule } from './user.module';
-import { Role, User } from './user.entity';
-import { UserService } from './user.service';
 import { BadRequestException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { TestModule } from 'test/test.module';
+import { User } from './user.entity';
+import { UserModule } from './user.module';
+import { UserResolver } from './user.resolver';
+import { UserService } from './user.service';
 
 describe('UserResolver', () => {
 	let usrRsv: UserResolver, usrSvc: UserService;
@@ -24,13 +24,13 @@ describe('UserResolver', () => {
 			const user = User.test;
 			jest.spyOn(usrSvc, 'findOne').mockResolvedValue(user);
 			expect(await usrRsv.findOne('1')).toEqual(user);
-			expect(usrSvc.findOne).toHaveBeenCalledWith({ where: { id: '1' } });
+			expect(usrSvc.findOne).toHaveBeenCalledWith({ id: '1' });
 		});
 
 		it('should throw a BadRequestException if user not found', async () => {
 			jest.spyOn(usrSvc, 'findOne').mockResolvedValue(null);
 			await expect(usrRsv.findOne('1')).rejects.toThrow(BadRequestException),
-				expect(usrSvc.findOne).toHaveBeenCalledWith({ where: { id: '1' } });
+				expect(usrSvc.findOne).toHaveBeenCalledWith({ id: '1' });
 		});
 	});
 
