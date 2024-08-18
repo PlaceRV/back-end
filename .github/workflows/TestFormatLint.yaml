@@ -10,7 +10,15 @@ on:
 
 jobs:
   TestFormatLint:
+    name: "Test Format Lint"
+
     runs-on: ubuntu-latest
+
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the
+      # added or changed files to the repository.
+      contents: write
+
 
     services:
       postgres:
@@ -46,15 +54,7 @@ jobs:
           ACCESS_SECRET: a
           REFRESH_SECRET: a
 
-      - name: Commit files
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git commit -a -m "Add changes"
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          branch: ${{ github.head_ref }}
+      - uses: stefanzweifel/git-auto-commit-action@v5
       
       - uses: actions/cache/save@v4
         if: always()
