@@ -32,7 +32,8 @@ jobs:
 
       - uses: actions/setup-node@v4
 
-      - uses: actions/cache@v2
+      - uses: actions/cache/save@v3
+        if: always()
         with:
           path: '~/.npm'
           key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}
