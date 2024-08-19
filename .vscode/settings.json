@@ -8,14 +8,15 @@
 		"**/Thumbs.db": true,
 		"**/node_modules": true,
 		"**/dist": true,
-		"**/*.spec*": false,
+		"**/*.spec*": true,
 		"**/*.example*": true,
 		"**/schema.gql": true,
 		"**/package-lock.json": true,
 		".vscode": true,
 		"secrets": true,
 		"**/.gitignore": true,
-		"**/.adminjs": true
+		"**/.adminjs": true,
+		".github": true
 	},
 	"todohighlight.keywords": [
 		{
@@ -31,5 +32,6 @@
 			"isWholeLine": true
 		}
 	],
-	"explorerExclude.backup": {}
+	"explorerExclude.backup": {},
+	"files.eol": "\n"
 }

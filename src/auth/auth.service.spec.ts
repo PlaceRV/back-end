@@ -34,7 +34,7 @@ describe('AuthService', () => {
 		let dto: SignUpDto, mtdt: UserMetadata, usr: User;
 		beforeEach(() => {
 			(usr = User.test),
-				(dto = new SignUpDto({ ...usr })),
+				(dto = new SignUpDto({ ...usr } as Required<SignUpDto>)),
 				(mtdt = UserMetadata.test);
 		});
 
@@ -60,9 +60,12 @@ describe('AuthService', () => {
 		let dto: LogInDto, mtdt: UserMetadata, usr: User;
 		beforeEach(async () => {
 			(usr = User.test),
-				(dto = new LogInDto({ ...usr })),
+				(dto = new LogInDto({ ...usr } as Required<LogInDto>)),
 				(mtdt = UserMetadata.test);
-			await authSvc.signup(new SignUpDto({ ...usr }), mtdt);
+			await authSvc.signup(
+				new SignUpDto({ ...usr } as Required<SignUpDto>),
+				mtdt,
+			);
 		});
 
 		it('should return tokens for a valid user', async () => {

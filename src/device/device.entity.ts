@@ -1,6 +1,7 @@
 import { User } from '@backend/user/user.entity';
-import { EntityBase } from '@backend/utils';
+import { InitClass } from '@backend/utils';
 import {
+	BaseEntity,
 	Column,
 	Entity,
 	JoinColumn,
@@ -9,9 +10,14 @@ import {
 } from 'typeorm';
 
 @Entity()
-export class DeviceSession extends EntityBase<DeviceSession> {
+export class DeviceSession extends BaseEntity {
+	constructor(payload: InitClass<DeviceSession>) {
+		super();
+		Object.assign(this, payload);
+	}
+
 	@PrimaryGeneratedColumn('uuid') id: string;
-	@ManyToOne(() => User, (user) => user.deviceSessions)
+	@ManyToOne(() => User, (user: User) => user.deviceSessions)
 	@JoinColumn({ name: 'userId' })
 	user: User;
 	@Column() userId: string;
