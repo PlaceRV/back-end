@@ -1,8 +1,13 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { DeviceSession } from '@backend/device/device.entity';
-import { EntityBase, Str } from '@backend/utils';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { v4 as uuidv4 } from 'uuid';
+import { InitClass, Str } from '@backend/utils';
+import {
+	BaseEntity,
+	Column,
+	Entity,
+	OneToMany,
+	PrimaryGeneratedColumn,
+} from 'typeorm';
 
 export enum Role {
 	USER = 'USER',
@@ -12,10 +17,15 @@ export enum Role {
 
 @ObjectType()
 @Entity()
-export class User extends EntityBase<User> {
+export class User extends BaseEntity {
+	constructor(payload: InitClass<User>) {
+		super();
+		Object.assign(this, payload);
+	}
+
 	// Sensitive infomation
 	@PrimaryGeneratedColumn('uuid') id?: string;
-	@Column('text', { nullable: false }) password!: string;
+	@Column('text', { nullable: false }) password?: string;
 	@OneToMany(() => DeviceSession, (dvcSess: DeviceSession) => dvcSess.user)
 	deviceSessions?: DeviceSession[];
 
@@ -40,8 +50,6 @@ export class User extends EntityBase<User> {
 
 	static get test() {
 		return new User({
-			id: uuidv4(),
-			deviceSessions: null,
 			email: Str.random(),
 			password: Str.random(),
 			firstName: Str.random(),
