@@ -8,8 +8,8 @@ import { ConfigService } from '@nestjs/config';
 import { compareSync, hashSync } from 'bcrypt';
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 import { Request } from 'express';
-import { DeviceService } from 'backend/device/device.service';
-import { UserService } from 'backend/user/user.service';
+import { DeviceService } from '@backend/device/device.service';
+import { UserService } from '@backend/user/user.service';
 import { LogInDto, SignUpDto } from './auth.dto';
 import { generateFingerprint } from './auth.middleware';
 

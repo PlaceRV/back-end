@@ -1,6 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { DeviceSession } from 'backend/device/device.entity';
-import { InitClass, Str } from 'backend/utils';
+import { DeviceSession } from '@backend/device/device.entity';
+import { InitClass, Str } from '@backend/utils';
 import {
 	BaseEntity,
 	Column,
