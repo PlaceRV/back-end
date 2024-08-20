@@ -24,9 +24,7 @@ export class AuthMiddleware implements NestMiddleware {
 
 	use(req: Request, res: Response, next: NextFunction) {
 		req['fingerprint'] = generateFingerprint();
-		const isRefresh = req.url.match(
-			/((http([s]){0,1}:\/\/)?\w+\.\w+(([:]){0,1}[\0-9]{4})?\/(logout|refreshtoken)){1}/gi,
-		);
+		const isRefresh = req.url.match(/\/(auth){1}\/(logout|refreshtoken){1}/gi);
 
 		let acsTkn: string, rfsTkn: string;
 		for (const cki in req.cookies)
