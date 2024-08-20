@@ -2,8 +2,8 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AuthService, PayLoad, UserMetadata } from 'backend/auth/auth.service';
-import { Str } from 'backend/utils';
+import { AuthService, PayLoad, UserMetadata } from '@backend/auth/auth.service';
+import { Str } from '@backend/utils';
 import {
 	DeepPartial,
 	FindManyOptions,

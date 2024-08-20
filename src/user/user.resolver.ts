@@ -1,6 +1,6 @@
 import { BadRequestException, UseGuards } from '@nestjs/common';
 import { Args, Query, Resolver } from '@nestjs/graphql';
-import { AllowPublic, RoleGuard, Roles } from 'backend/auth/auth.guard';
+import { AllowPublic, RoleGuard, Roles } from '@backend/auth/auth.guard';
 import { Role, User } from './user.entity';
 import { UserService } from './user.service';
 
