@@ -1,6 +1,6 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
-import { Base } from '@backend/utils';
+import { Base } from 'backend/utils';
 
 @InputType()
 export class SignUpDto extends Base<SignUpDto> {

@@ -21,8 +21,8 @@
 		"esModuleInterop": true,
 		"useDefineForClassFields": false,
 		"paths": {
-			"@backend/*": ["./src/*"],
-			"@backend/test": ["./test/test.module.ts"]
+			"backend/*": ["./src/*"],
+			"backend/test": ["./test/test.module.ts"]
 		}
 	}
 }
