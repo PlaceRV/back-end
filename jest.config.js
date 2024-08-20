@@ -6,8 +6,8 @@ module.exports = {
 	},
 	rootDir: '.',
 	moduleNameMapper: {
-		'@backend/test': '<rootDir>/test/test.module.ts',
-		'@backend/(.*)': '<rootDir>/src/$1',
+		'backend/test': '<rootDir>/test/test.module.ts',
+		'backend/(.*)': '<rootDir>/src/$1',
 	},
 	detectOpenHandles: true,
 };
