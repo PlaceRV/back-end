@@ -9,6 +9,9 @@ import {
 	PrimaryGeneratedColumn,
 } from 'typeorm';
 
+export const isMatchRoles = (roles: Role[], userRoles: Role[]) =>
+	roles.some((i) => userRoles.some((j) => i === j));
+
 export enum Role {
 	USER = 'USER',
 	ADMIN = 'ADMIN',

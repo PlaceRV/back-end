@@ -6,10 +6,8 @@ import {
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { AuthGuard } from '@nestjs/passport';
-import { Role, User } from '@backend/user/user.entity';
+import { isMatchRoles, Role, User } from '@backend/user/user.entity';
 
-const matchRoles = (roles: Role[], userRoles: Role[]) =>
-	roles.some((i) => userRoles.some((j) => i === j));
 export const Roles = Reflector.createDecorator<Role[]>(),
 	AllowPublic = Reflector.createDecorator<boolean>();
 export class ServerContext extends GqlExecutionContext {
@@ -46,7 +44,7 @@ export class RoleGuard extends AuthGuard('access') {
 			const req = this.getRequest(context),
 				user = req.user;
 
-			return matchRoles(roles, user.roles);
+			return isMatchRoles(roles, user.roles);
 		}
 		throw new InternalServerErrorException(
 			'Function not defined roles/permissions',

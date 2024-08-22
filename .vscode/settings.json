@@ -1,37 +1,40 @@
 {
-	"files.exclude": {
-		"**/.git": true,
-		"**/.svn": true,
-		"**/.hg": true,
-		"**/CVS": true,
-		"**/.DS_Store": true,
-		"**/Thumbs.db": true,
-		"**/node_modules": true,
-		"**/dist": true,
-		"**/*.spec*": true,
-		"**/*.example*": true,
-		"**/schema.gql": true,
-		"**/package-lock.json": true,
-		".vscode": true,
-		"secrets": true,
-		"**/.gitignore": true,
-		"**/.adminjs": true,
-		".github": false
-	},
-	"todohighlight.keywords": [
-		{
-			"text": "Queries",
-			"color": "#4b3621",
-			"backgroundColor": "#00bfff",
-			"isWholeLine": true
-		},
-		{
-			"text": "Mutations",
-			"color": "#e3a857",
-			"backgroundColor": "#69359c",
-			"isWholeLine": true
-		}
-	],
-	"explorerExclude.backup": {},
-	"files.eol": "\n"
+  "explorerExclude.backup": {},
+  "files.eol": "\n",
+  "files.exclude": {
+    "**/*.example*": true,
+    "**/*.spec*": true,
+    "**/.DS_Store": true,
+    "**/.adminjs": true,
+    "**/.git": true,
+    "**/.gitignore": true,
+    "**/.hg": true,
+    "**/.svn": true,
+    "**/CVS": true,
+    "**/Thumbs.db": true,
+    "**/dist": true,
+    "**/node_modules": true,
+    "**/package-lock.json": true,
+    "**/schema.gql": true,
+    ".github": true,
+    ".prettierrc": true,
+    ".vscode": true,
+    "LICENSE": true,
+    "nest-cli.json": true,
+    "secrets": true
+  },
+  "todohighlight.keywords": [
+    {
+      "backgroundColor": "#00bfff",
+      "color": "#4b3621",
+      "isWholeLine": true,
+      "text": "Queries"
+    },
+    {
+      "backgroundColor": "#69359c",
+      "color": "#e3a857",
+      "isWholeLine": true,
+      "text": "Mutations"
+    }
+  ]
 }
