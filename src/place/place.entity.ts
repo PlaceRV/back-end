@@ -13,7 +13,7 @@ import {
 
 export type PlaceType = 'Temple' | 'Church';
 
-// ! INSTALL PostGIS required 
+// ! INSTALL PostGIS required
 @ObjectType()
 @Entity()
 export class Place extends BaseEntity {
