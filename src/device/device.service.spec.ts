@@ -4,7 +4,6 @@ import { AuthService, UserMetadata } from '@backend/auth/auth.service';
 import { User } from '@backend/user/user.entity';
 import { UserService } from '@backend/user/user.service';
 import { TestModule } from '@backend/test';
-import { DeepPartial } from 'typeorm';
 import { DeviceModule } from './device.module';
 import { DeviceService, UserRecieve } from './device.service';
 
