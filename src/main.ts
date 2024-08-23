@@ -53,7 +53,7 @@ async function bootstrap() {
 
 	// Init multiple connection type
 	await app.use(admin.options.rootPath, adminRouter).init();
-	http.createServer(server).listen(cfgSvc.get('PORT'));
+	http.createServer(server).listen(cfgSvc.get('SERVER_PORT'));
 	https.createServer(httpsOptions, server).listen(2053);
 }
 

@@ -23,11 +23,11 @@ export class PlaceService {
 
 	// Database requests
 	find(options?: FindOptionsWhere<Place>): Promise<Place[]> {
-		return this.repo.find({ where: options, relations: ['deviceSessions'] });
+		return this.repo.find({ where: options, relations: ['createdBy'] });
 	}
 
 	findOne(options?: FindOptionsWhere<Place>) {
-		return this.repo.findOne({ where: options, relations: ['deviceSessions'] });
+		return this.repo.findOne({ where: options, relations: ['createdBy'] });
 	}
 
 	save(

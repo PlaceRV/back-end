@@ -6,8 +6,6 @@ import { AuthService, PayLoad, UserMetadata } from '@backend/auth/auth.service';
 import { Str } from '@backend/utils';
 import {
 	DeepPartial,
-	FindManyOptions,
-	FindOneOptions,
 	FindOptionsWhere,
 	Repository,
 	SaveOptions,
@@ -63,12 +61,12 @@ export class DeviceService {
 	}
 
 	// Database requests
-	find(options?: FindManyOptions<Device>): Promise<Device[]> {
-		return this.repo.find(options);
+	find(options?: FindOptionsWhere<Device>): Promise<Device[]> {
+		return this.repo.find({ where: options, relations: ['owner'] });
 	}
 
-	findOne(options?: FindOneOptions<Device>): Promise<Device> {
-		return this.repo.findOne(options);
+	findOne(options?: FindOptionsWhere<Device>): Promise<Device> {
+		return this.repo.findOne({ where: options, relations: ['owner'] });
 	}
 
 	save(

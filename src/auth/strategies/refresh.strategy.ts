@@ -21,7 +21,7 @@ export class RefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
 	}
 
 	async validate(payload: PayLoad) {
-		const session = await this.dvcSvc.findOne({ where: { id: payload.id } });
+		const session = await this.dvcSvc.findOne({ id: payload.id });
 		if (session) {
 			if (session.useTimeLeft - 1 > 0) {
 				await this.dvcSvc.save({

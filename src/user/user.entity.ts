@@ -32,9 +32,9 @@ export class User extends BaseEntity {
 	@Column('text', { nullable: false }) password?: string;
 
 	// Relationships
-	@OneToMany(() => Device, (_: Device) => _.owner)
+	@OneToMany(() => Device, (_: Device) => _.owner, { eager: true })
 	sessions?: Device[];
-	@OneToMany(() => Place, (_: Place) => _.createdBy)
+	@OneToMany(() => Place, (_: Place) => _.createdBy, { eager: true })
 	placesAssigned?: Place[];
 
 	// Basic infomation

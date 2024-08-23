@@ -6,6 +6,7 @@ import { AuthMiddleware } from './auth/auth.middleware';
 import { AuthModule } from './auth/auth.module';
 import { LoadEnvModule } from './config.module';
 import { SqlModule } from './sql.module';
+import { CustomPointScalar } from './place/place.entity';
 
 @Module({
 	imports: [
@@ -25,6 +26,8 @@ import { SqlModule } from './sql.module';
 			plugins: [ApolloServerPluginLandingPageLocalDefault()],
 			includeStacktraceInErrorResponses: false,
 			inheritResolversFromInterfaces: false,
+			// Custom scalar
+			resolvers: { Point: CustomPointScalar },
 		}),
 		// Sub modules
 		AuthModule,

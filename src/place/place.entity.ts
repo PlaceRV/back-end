@@ -1,11 +1,11 @@
 import { User } from '@backend/user/user.entity';
 import { InitClass } from '@backend/utils';
 import { Field, ObjectType } from '@nestjs/graphql';
+import { GraphQLScalarType } from 'graphql';
 import {
 	BaseEntity,
 	Column,
 	Entity,
-	JoinColumn,
 	ManyToOne,
 	Point,
 	PrimaryGeneratedColumn,
@@ -24,7 +24,6 @@ export class Place extends BaseEntity {
 
 	// Relationships
 	@ManyToOne(() => User, (_: User) => _.placesAssigned)
-	@JoinColumn({ name: 'Writer' })
 	createdBy: User;
 
 	// Sensitive infomation
