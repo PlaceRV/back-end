@@ -28,7 +28,7 @@ describe('DeviceService', () => {
 	it('should be defined', () => expect(dvcSvc).toBeDefined());
 
 	describe('getTokens', () => {
-		let mtdt: UserMetadata, usr: DeepPartial<User>;
+		let mtdt: UserMetadata, usr: User;
 		beforeEach(async () => {
 			(mtdt = UserMetadata.test), (usr = await usrSvc.save(User.test));
 		});
@@ -42,7 +42,7 @@ describe('DeviceService', () => {
 					.mockReturnValueOnce(usrRcv.refreshToken)
 					.mockReturnValueOnce(usrRcv.accessToken);
 
-			const result = await dvcSvc.getTokens(usr.id, mtdt);
+			const result = await dvcSvc.getTokens(usr, mtdt);
 
 			expect(jwtSvc.sign).toHaveBeenCalledTimes(2),
 				expect(authSvc.hash).toHaveBeenCalledWith(mtdt.toString()),

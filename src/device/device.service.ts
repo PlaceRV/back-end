@@ -12,7 +12,8 @@ import {
 	Repository,
 	SaveOptions,
 } from 'typeorm';
-import { DeviceSession } from './device.entity';
+import { Device } from './device.entity';
+import { User } from '@backend/user/user.entity';
 
 export class UserRecieve {
 	constructor(acsTkn: string, rfsTkn: string) {
@@ -31,7 +32,7 @@ export class UserRecieve {
 @Injectable()
 export class DeviceService {
 	constructor(
-		@InjectRepository(DeviceSession) private repo: Repository<DeviceSession>,
+		@InjectRepository(Device) private repo: Repository<Device>,
 		private jwtSvc: JwtService,
 		private cfgSvc: ConfigService,
 		@Inject(forwardRef(() => AuthService))
@@ -49,34 +50,35 @@ export class DeviceService {
 		});
 	}
 
-	async getTokens(usrId: string, mtdt: UserMetadata) {
+	async getTokens(user: User, mtdt: UserMetadata) {
 		const session = await this.save({
-				userId: usrId,
+				owner: user,
 				hashedUserAgent: this.authSvc.hash(mtdt.toString()),
 				useTimeLeft: this.use,
 			}),
 			rfsTkn = this.refreshTokenSign(new PayLoad(session.id).toPlainObj()),
-			acsTkn = this.jwtSvc.sign(new PayLoad(usrId).toPlainObj());
+			acsTkn = this.jwtSvc.sign(new PayLoad(user.id).toPlainObj());
 
 		return new UserRecieve(acsTkn, rfsTkn);
 	}
 
-	find(options?: FindManyOptions<DeviceSession>): Promise<DeviceSession[]> {
+	// Database requests
+	find(options?: FindManyOptions<Device>): Promise<Device[]> {
 		return this.repo.find(options);
 	}
 
-	findOne(options?: FindOneOptions<DeviceSession>) {
+	findOne(options?: FindOneOptions<Device>): Promise<Device> {
 		return this.repo.findOne(options);
 	}
 
 	save(
-		entities: DeepPartial<DeviceSession>,
+		entities: DeepPartial<Device>,
 		options?: SaveOptions & { reload: false },
 	) {
-		return this.repo.save(entities, options);
+		return this.repo.save(entities, options) as Promise<Device>;
 	}
 
-	delete(criteria: FindOptionsWhere<DeviceSession>) {
+	delete(criteria: FindOptionsWhere<Device>) {
 		return this.repo.delete(criteria);
 	}
 }

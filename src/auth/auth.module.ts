@@ -9,6 +9,7 @@ import { AuthMiddleware } from './auth.middleware';
 import { AuthService } from './auth.service';
 import { AccessStrategy } from './strategies/access.strategy';
 import { RefreshStrategy } from './strategies/refresh.strategy';
+import { PlaceModule } from '@backend/place/place.module';
 
 @Module({
 	imports: [
@@ -30,6 +31,7 @@ import { RefreshStrategy } from './strategies/refresh.strategy';
 		// Foreign modules
 		forwardRef(() => DeviceModule),
 		forwardRef(() => UserModule),
+		PlaceModule,
 	],
 	providers: [
 		AuthService,

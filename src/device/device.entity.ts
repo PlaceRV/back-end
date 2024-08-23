@@ -4,23 +4,23 @@ import {
 	BaseEntity,
 	Column,
 	Entity,
-	JoinColumn,
 	ManyToOne,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
 
 @Entity()
-export class DeviceSession extends BaseEntity {
-	constructor(payload: InitClass<DeviceSession>) {
+export class Device extends BaseEntity {
+	constructor(payload: InitClass<Device>) {
 		super();
 		Object.assign(this, payload);
 	}
 
+	// Relationships
+	@ManyToOne(() => User, (_: User) => _.sessions)
+	owner: User;
+
+	// Sensitive infomation
 	@PrimaryGeneratedColumn('uuid') id: string;
-	@ManyToOne(() => User, (user: User) => user.deviceSessions)
-	@JoinColumn({ name: 'userId' })
-	user: User;
-	@Column() userId: string;
 	@Column() hashedUserAgent: string;
 	@Column() useTimeLeft: number;
 }

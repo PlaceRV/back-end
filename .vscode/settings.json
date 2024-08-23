@@ -1,40 +1,70 @@
 {
-  "explorerExclude.backup": {},
-  "files.eol": "\n",
-  "files.exclude": {
-    "**/*.example*": true,
-    "**/*.spec*": true,
-    "**/.DS_Store": true,
-    "**/.adminjs": true,
-    "**/.git": true,
-    "**/.gitignore": true,
-    "**/.hg": true,
-    "**/.svn": true,
-    "**/CVS": true,
-    "**/Thumbs.db": true,
-    "**/dist": true,
-    "**/node_modules": true,
-    "**/package-lock.json": true,
-    "**/schema.gql": true,
-    ".github": true,
-    ".prettierrc": true,
-    ".vscode": true,
-    "LICENSE": true,
-    "nest-cli.json": true,
-    "secrets": true
-  },
-  "todohighlight.keywords": [
-    {
-      "backgroundColor": "#00bfff",
-      "color": "#4b3621",
-      "isWholeLine": true,
-      "text": "Queries"
-    },
-    {
-      "backgroundColor": "#69359c",
-      "color": "#e3a857",
-      "isWholeLine": true,
-      "text": "Mutations"
-    }
-  ]
+	"explorerExclude.backup": {},
+	"files.eol": "\n",
+	"files.exclude": {
+		"**/.git": true,
+		"**/.svn": true,
+		"**/.hg": true,
+		"**/CVS": true,
+		"**/.DS_Store": true,
+		"**/Thumbs.db": true,
+		"**/*.example*": true,
+		"**/*.spec*": false,
+		"**/.adminjs": true,
+		"**/.gitignore": true,
+		"**/dist": true,
+		"**/node_modules": true,
+		"**/package-lock.json": true,
+		"**/schema.gql": true,
+		".github": true,
+		".prettierrc": true,
+		".vscode": false,
+		"LICENSE": true,
+		"nest-cli.json": true,
+		"secrets": true
+	},
+	"todohighlight.keywords": [
+		{
+			"backgroundColor": "#00bfff",
+			"color": "#4b3621",
+			"isWholeLine": true,
+			"text": "Queries"
+		},
+		{
+			"backgroundColor": "#69359c",
+			"color": "#e3a857",
+			"isWholeLine": true,
+			"text": "Mutations"
+		},
+		{
+			"text": "Relationships",
+			"isWholeLine": true,
+			"color": "#1C110A",
+			"backgroundColor": "#E4D6A7"
+		},
+		{
+			"text": "Basic infomation",
+			"isWholeLine": true,
+			"backgroundColor": "#CDE7B0",
+			"color": "#BE6E46"
+		},
+		{
+			"text": "Sensitive infomation",
+			"isWholeLine": true,
+			"backgroundColor": "#FF3366",
+			"color": "#011627"
+		},
+		{
+			"text": "Methods",
+			"isWholeLine": true,
+			"backgroundColor": "#4464AD",
+			"color": "#FFC759"
+		},
+		{
+			"text": "Database requests",
+			"isWholeLine": true,
+			"color": "#FFC1CF",
+			"backgroundColor": "#420039"
+		}
+	]
 }

@@ -45,7 +45,10 @@ describe('AuthService', () => {
 			await authSvc.signup(dto, mtdt),
 				expect(usrSvc.findOne).toHaveBeenCalledWith({ email: dto.email }),
 				expect(usrSvc.save).toHaveBeenCalledWith(dto),
-				expect(dvcSvc.getTokens).toHaveBeenCalledWith(expect.any(String), mtdt);
+				expect(dvcSvc.getTokens).toHaveBeenCalledWith(
+					expect.objectContaining(usr.info),
+					mtdt,
+				);
 		});
 
 		it('should throw a BadRequestException if the email is already assigned', async () => {
@@ -72,7 +75,10 @@ describe('AuthService', () => {
 			jest.spyOn(usrSvc, 'findOne'), jest.spyOn(dvcSvc, 'getTokens');
 			await authSvc.login(dto, mtdt),
 				expect(usrSvc.findOne).toHaveBeenCalledWith({ email: dto.email }),
-				expect(dvcSvc.getTokens).toHaveBeenCalledWith(expect.any(String), mtdt);
+				expect(dvcSvc.getTokens).toHaveBeenCalledWith(
+					expect.objectContaining(usr.info),
+					mtdt,
+				);
 		});
 
 		it('should throw a BadRequestException for an invalid user', async () => {

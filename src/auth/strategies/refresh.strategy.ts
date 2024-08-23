@@ -32,14 +32,14 @@ export class RefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
 					success: true,
 					id: session.id,
 					ua: session.hashedUserAgent,
-					acsTkn: this.jwtSvc.sign(new PayLoad(session.userId).toPlainObj()),
+					acsTkn: this.jwtSvc.sign(new PayLoad(session.owner.id).toPlainObj()),
 					rfsTkn: this.dvcSvc.refreshTokenSign(
 						new PayLoad(payload.id).toPlainObj(),
 					),
 				};
 			} else {
 				await this.dvcSvc.delete({ id: session.id });
-				return { success: false, userId: session.userId };
+				return { success: false, userId: session.owner.id };
 			}
 		}
 		throw new UnauthorizedException('Invalid refresh token');

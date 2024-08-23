@@ -1,5 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { DeviceSession } from '@backend/device/device.entity';
+import { Device } from '@backend/device/device.entity';
 import { InitClass, Str } from '@backend/utils';
 import {
 	BaseEntity,
@@ -8,6 +8,7 @@ import {
 	OneToMany,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Place } from '@backend/place/place.entity';
 
 export const isMatchRoles = (roles: Role[], userRoles: Role[]) =>
 	roles.some((i) => userRoles.some((j) => i === j));
@@ -29,11 +30,17 @@ export class User extends BaseEntity {
 	// Sensitive infomation
 	@PrimaryGeneratedColumn('uuid') id?: string;
 	@Column('text', { nullable: false }) password?: string;
-	@OneToMany(() => DeviceSession, (dvcSess: DeviceSession) => dvcSess.user)
-	deviceSessions?: DeviceSession[];
+
+	// Relationships
+	@OneToMany(() => Device, (_: Device) => _.owner)
+	sessions?: Device[];
+	@OneToMany(() => Place, (_: Place) => _.createdBy)
+	placesAssigned?: Place[];
 
 	// Basic infomation
-	@Field() @Column({ length: 15, nullable: false }) firstName!: string;
+	@Field()
+	@Column({ length: 15, nullable: false })
+	firstName!: string;
 	@Field() @Column({ length: 15, nullable: false }) lastName!: string;
 	@Field()
 	@Column({ length: 128, nullable: false, unique: true })
@@ -42,6 +49,7 @@ export class User extends BaseEntity {
 	@Column({ type: 'enum', enum: Role, array: true, default: [Role.USER] })
 	roles!: Role[];
 
+	// Methods
 	get info() {
 		return {
 			firstName: this.firstName,

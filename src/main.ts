@@ -9,7 +9,7 @@ import http from 'http';
 import https from 'https';
 import { User } from './user/user.entity';
 import { validate } from 'class-validator';
-import { DeviceSession } from './device/device.entity';
+import { Device } from './device/device.entity';
 
 async function bootstrap() {
 	const httpsOptions = {
@@ -34,7 +34,7 @@ async function bootstrap() {
 		cfgSvc = app.get(ConfigService);
 	Resource.validate = validate;
 	AdminJS.registerAdapter({ Resource, Database });
-	const admin = new AdminJS({ resources: [User, DeviceSession] }),
+	const admin = new AdminJS({ resources: [User, Device] }),
 		adminRouter = buildAuthenticatedRouter(
 			admin,
 			{

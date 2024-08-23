@@ -68,7 +68,7 @@ export class AuthService {
 			signupDto.password = this.hash(signupDto.password);
 
 			const user = await this.usrSvc.save(signupDto);
-			return this.dvcSvc.getTokens(user.id, mtdt);
+			return this.dvcSvc.getTokens(user, mtdt);
 		}
 		throw new BadRequestException('Email already assigned');
 	}
@@ -77,7 +77,7 @@ export class AuthService {
 		const user = await this.usrSvc.findOne({ email: loginDto.email });
 		if (user) {
 			const isPasswordMatched = compareSync(loginDto.password, user.password);
-			if (isPasswordMatched) return this.dvcSvc.getTokens(user.id, mtdt);
+			if (isPasswordMatched) return this.dvcSvc.getTokens(user, mtdt);
 		}
 		throw new BadRequestException('Invalid email or password');
 	}
