@@ -1,15 +1,16 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import cookieParser from 'cookie-parser';
-import { ConfigService } from '@nestjs/config';
 import { readFileSync } from 'fs';
-import { ExpressAdapter } from '@nestjs/platform-express';
-import express from 'express';
 import http from 'http';
 import https from 'https';
-import { User } from './user/user.entity';
+import { ConfigService } from '@nestjs/config';
+import { NestFactory } from '@nestjs/core';
+import { ExpressAdapter } from '@nestjs/platform-express';
 import { validate } from 'class-validator';
+import cookieParser from 'cookie-parser';
+import express from 'express';
+import { AppModule } from './app.module';
 import { Device } from './device/device.entity';
+import { Place } from './place/place.entity';
+import { User } from './user/user.entity';
 
 async function bootstrap() {
 	const httpsOptions = {
@@ -34,7 +35,7 @@ async function bootstrap() {
 		cfgSvc = app.get(ConfigService);
 	Resource.validate = validate;
 	AdminJS.registerAdapter({ Resource, Database });
-	const admin = new AdminJS({ resources: [User, Device] }),
+	const admin = new AdminJS({ resources: [User, Device, Place] }),
 		adminRouter = buildAuthenticatedRouter(
 			admin,
 			{

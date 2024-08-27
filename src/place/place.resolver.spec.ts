@@ -1,7 +1,7 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { PlaceResolver } from './place.resolver';
-import { PlaceModule } from './place.module';
 import { TestModule } from '@backend/test';
+import { Test, TestingModule } from '@nestjs/testing';
+import { PlaceModule } from './place.module';
+import { PlaceResolver } from './place.resolver';
 
 describe('PlaceResolver', () => {
 	let resolver: PlaceResolver;

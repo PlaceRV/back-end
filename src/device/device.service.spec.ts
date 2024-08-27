@@ -1,9 +1,9 @@
-import { JwtService } from '@nestjs/jwt';
-import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService, UserMetadata } from '@backend/auth/auth.service';
+import { TestModule } from '@backend/test';
 import { User } from '@backend/user/user.entity';
 import { UserService } from '@backend/user/user.service';
-import { TestModule } from '@backend/test';
+import { JwtService } from '@nestjs/jwt';
+import { Test, TestingModule } from '@nestjs/testing';
 import { DeviceModule } from './device.module';
 import { DeviceService, UserRecieve } from './device.service';
 

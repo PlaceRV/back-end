@@ -1,7 +1,7 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { PlaceService } from './place.service';
-import { PlaceModule } from './place.module';
 import { TestModule } from '@backend/test';
+import { Test, TestingModule } from '@nestjs/testing';
+import { PlaceModule } from './place.module';
+import { PlaceService } from './place.service';
 
 describe('PlaceService', () => {
 	let service: PlaceService;

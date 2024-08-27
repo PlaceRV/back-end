@@ -1,6 +1,6 @@
+import { TestModule } from '@backend/test';
 import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TestModule } from '@backend/test';
 import { User } from './user.entity';
 import { UserModule } from './user.module';
 import { UserResolver } from './user.resolver';

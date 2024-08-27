@@ -1,4 +1,6 @@
+import { isMatchRoles, Role, User } from '@backend/user/user.entity';
 import {
+	createParamDecorator,
 	ExecutionContext,
 	Injectable,
 	InternalServerErrorException,
@@ -6,13 +8,18 @@ import {
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { AuthGuard } from '@nestjs/passport';
-import { isMatchRoles, Role, User } from '@backend/user/user.entity';
 
 export const Roles = Reflector.createDecorator<Role[]>(),
 	AllowPublic = Reflector.createDecorator<boolean>();
 export class ServerContext extends GqlExecutionContext {
 	user: User;
 }
+export const CurrentUser = createParamDecorator(
+	(data: unknown, context: ExecutionContext) => {
+		const ctx = GqlExecutionContext.create(context);
+		return ctx.getContext().req.user;
+	},
+);
 
 @Injectable()
 export class RoleGuard extends AuthGuard('access') {

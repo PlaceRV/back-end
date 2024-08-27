@@ -1,5 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { TestModule } from '@backend/test';
+import { Test, TestingModule } from '@nestjs/testing';
 import { UserModule } from './user.module';
 import { UserService } from './user.service';
 

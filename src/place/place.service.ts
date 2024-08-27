@@ -1,14 +1,14 @@
+import { User } from '@backend/user/user.entity';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { Place } from './place.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 import {
 	DeepPartial,
 	FindOptionsWhere,
 	Repository,
 	SaveOptions,
 } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
 import { PlaceAssign } from './place.dto';
-import { User } from '@backend/user/user.entity';
+import { Place } from './place.entity';
 
 @Injectable()
 export class PlaceService {
@@ -18,7 +18,7 @@ export class PlaceService {
 		if (user) {
 			return await this.save({ ...placeAssign, createdBy: user });
 		}
-		throw new BadRequestException('Invalid user');
+		throw new BadRequestException('Invalid input');
 	}
 
 	// Database requests

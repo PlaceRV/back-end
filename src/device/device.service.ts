@@ -1,9 +1,10 @@
+import { AuthService, PayLoad, UserMetadata } from '@backend/auth/auth.service';
+import { User } from '@backend/user/user.entity';
+import { Str } from '@backend/utils';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AuthService, PayLoad, UserMetadata } from '@backend/auth/auth.service';
-import { Str } from '@backend/utils';
 import {
 	DeepPartial,
 	FindOptionsWhere,
@@ -11,7 +12,6 @@ import {
 	SaveOptions,
 } from 'typeorm';
 import { Device } from './device.entity';
-import { User } from '@backend/user/user.entity';
 
 export class UserRecieve {
 	constructor(acsTkn: string, rfsTkn: string) {

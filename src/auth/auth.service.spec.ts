@@ -1,9 +1,9 @@
-import { BadRequestException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
 import { DeviceService } from '@backend/device/device.service';
+import { TestModule } from '@backend/test';
 import { User } from '@backend/user/user.entity';
 import { UserService } from '@backend/user/user.service';
-import { TestModule } from '@backend/test';
+import { BadRequestException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 import UAParser from 'ua-parser-js';
 import { LogInDto, SignUpDto } from './auth.dto';
 import { AuthModule } from './auth.module';

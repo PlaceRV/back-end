@@ -1,15 +1,16 @@
 import { User } from '@backend/user/user.entity';
 import { InitClass } from '@backend/utils';
 import { Field, ObjectType } from '@nestjs/graphql';
-import { GraphQLScalarType } from 'graphql';
+import { Point } from 'geojson';
 import {
 	BaseEntity,
 	Column,
 	Entity,
+	Index,
 	ManyToOne,
-	Point,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
+import { CustomPointScalar } from './place.scalar';
 
 export type PlaceType = 'Temple' | 'Church';
 
@@ -32,6 +33,9 @@ export class Place extends BaseEntity {
 	// Basic infomation
 	@Field() @Column() name: string;
 	@Field() @Column() type: PlaceType;
-	@Field() @Column({ type: 'geometry' }) location!: Point;
+	@Field(() => CustomPointScalar)
+	@Index({ spatial: true })
+	@Column({ type: 'geography', spatialFeatureType: 'Point' })
+	location: Point;
 	@Field() @Column() description?: string;
 }
