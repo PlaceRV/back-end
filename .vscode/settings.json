@@ -21,7 +21,8 @@
 		".vscode": true,
 		"LICENSE": true,
 		"nest-cli.json": true,
-		"secrets": true
+		"secrets": true,
+		"coverage": true
 	},
 	"todohighlight.keywords": [
 		{

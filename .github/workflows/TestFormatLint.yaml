@@ -7,7 +7,7 @@ on:
 
 jobs:
   TestFormatLint:
-    name: "Build & Test & Format & Lint"
+    name: 'Build & Test & Format & Lint'
 
     runs-on: ubuntu-latest
 
@@ -16,10 +16,9 @@ jobs:
       # added or changed files to the repository.
       contents: write
 
-
     services:
       postgres:
-        image: postgres:12
+        image: postgis/postgis
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -52,10 +51,9 @@ jobs:
           REFRESH_SECRET: a
 
       - uses: stefanzweifel/git-auto-commit-action@v5
-      
+
       - uses: actions/cache/save@v4
         if: always()
         with:
           path: './node_modules'
           key: ${{ runner.os }}-node-${{ hashFiles('./package.json') }}
-          
