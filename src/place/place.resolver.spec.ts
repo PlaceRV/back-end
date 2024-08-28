@@ -1,17 +1,17 @@
 import { TestModule } from '@backend/test';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DeviceModule } from './device.module';
-import { DeviceResolver } from './device.resolver';
+import { PlaceModule } from './place.module';
+import { PlaceResolver } from './place.resolver';
 
-describe('DeviceResolver', () => {
-	let resolver: DeviceResolver;
+describe('PlaceResolver', () => {
+	let resolver: PlaceResolver;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [TestModule, DeviceModule],
+			imports: [TestModule, PlaceModule],
 		}).compile();
 
-		resolver = module.get(DeviceResolver);
+		resolver = module.get<PlaceResolver>(PlaceResolver);
 	});
 
 	it('be defined', () => expect(resolver).toBeDefined());

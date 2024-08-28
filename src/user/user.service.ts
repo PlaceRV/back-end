@@ -12,19 +12,16 @@ import { User } from './user.entity';
 export class UserService {
 	constructor(@InjectRepository(User) private repo: Repository<User>) {}
 
-	find(options?: FindOptionsWhere<User>): Promise<User[]> {
-		return this.repo.find({ where: options, relations: ['deviceSessions'] });
+	find(options?: FindOptionsWhere<User>) {
+		return this.repo.find({ where: options });
 	}
 
 	findOne(options?: FindOptionsWhere<User>) {
-		return this.repo.findOne({ where: options, relations: ['deviceSessions'] });
+		return this.repo.findOne({ where: options });
 	}
 
-	save(
-		entities: DeepPartial<User>,
-		options?: SaveOptions & { reload: false },
-	): Promise<DeepPartial<User>> {
-		return this.repo.save(entities, options);
+	save(entities: DeepPartial<User>, options?: SaveOptions & { reload: false }) {
+		return this.repo.save(entities, options) as Promise<User>;
 	}
 
 	delete(criteria: FindOptionsWhere<User>) {

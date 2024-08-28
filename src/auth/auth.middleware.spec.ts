@@ -1,8 +1,8 @@
+import { TestModule } from '@backend/test';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NextFunction, Request, Response } from 'express';
 import { createRequest, createResponse } from 'node-mocks-http';
-import { TestModule } from '@backend/test';
 import uaParserJs from 'ua-parser-js';
 import { AuthMiddleware, generateFingerprint } from './auth.middleware';
 import { AuthModule } from './auth.module';
@@ -45,10 +45,10 @@ describe('AuthMiddleware', () => {
 			(ckiSfx = cfgSvc.get('SERVER_COOKIE_PREFIX'));
 	});
 
-	it('should be defined', () => expect(authMdw).toBeDefined());
+	it('be defined', () => expect(authMdw).toBeDefined());
 
 	describe('generateFingerprint', () => {
-		it('should generate a fingerprint object', () => {
+		it('generate a fingerprint object', () => {
 			expect(generateFingerprint()).toEqual({
 				userAgent: ua,
 			});
@@ -64,14 +64,14 @@ describe('AuthMiddleware', () => {
 			req.cookies[`${ckiSfx + authSvc.hash(acsKey)}`] = authSvc.encrypt(acsTkn);
 		});
 
-		it('should set the request fingerprint and authorization header for refresh', () => {
+		it('set the request fingerprint and authorization header for refresh', () => {
 			req.url = '/auth/refreshToken';
 			authMdw.use(req, res, next),
 				expect(req.headers.authorization).toBe(`Bearer ${rfsTkn}`),
 				expect(next).toHaveBeenCalled();
 		});
 
-		it('should set the request fingerprint and authorization header for access', () => {
+		it('set the request fingerprint and authorization header for access', () => {
 			authMdw.use(req, res, next),
 				expect(req.headers.authorization).toBe(`Bearer ${acsTkn}`),
 				expect(next).toHaveBeenCalled();

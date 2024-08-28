@@ -1,3 +1,6 @@
+import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
+import { DeviceService } from '@backend/device/device.service';
+import { UserService } from '@backend/user/user.service';
 import {
 	BadRequestException,
 	forwardRef,
@@ -6,10 +9,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { compareSync, hashSync } from 'bcrypt';
-import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 import { Request } from 'express';
-import { DeviceService } from '@backend/device/device.service';
-import { UserService } from '@backend/user/user.service';
 import { LogInDto, SignUpDto } from './auth.dto';
 import { generateFingerprint } from './auth.middleware';
 
@@ -68,7 +68,7 @@ export class AuthService {
 			signupDto.password = this.hash(signupDto.password);
 
 			const user = await this.usrSvc.save(signupDto);
-			return this.dvcSvc.getTokens(user.id, mtdt);
+			return this.dvcSvc.getTokens(user, mtdt);
 		}
 		throw new BadRequestException('Email already assigned');
 	}
@@ -77,7 +77,7 @@ export class AuthService {
 		const user = await this.usrSvc.findOne({ email: loginDto.email });
 		if (user) {
 			const isPasswordMatched = compareSync(loginDto.password, user.password);
-			if (isPasswordMatched) return this.dvcSvc.getTokens(user.id, mtdt);
+			if (isPasswordMatched) return this.dvcSvc.getTokens(user, mtdt);
 		}
 		throw new BadRequestException('Invalid email or password');
 	}

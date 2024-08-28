@@ -1,4 +1,6 @@
 {
+	"explorerExclude.backup": {},
+	"files.eol": "\n",
 	"files.exclude": {
 		"**/.git": true,
 		"**/.svn": true,
@@ -6,32 +8,73 @@
 		"**/CVS": true,
 		"**/.DS_Store": true,
 		"**/Thumbs.db": true,
-		"**/node_modules": true,
-		"**/dist": true,
-		"**/*.spec*": true,
 		"**/*.example*": true,
-		"**/schema.gql": true,
-		"**/package-lock.json": true,
-		".vscode": true,
-		"secrets": true,
-		"**/.gitignore": true,
+		"**/*.spec*": true,
 		"**/.adminjs": true,
-		".github": false
+		"**/.gitignore": true,
+		"**/dist": true,
+		"**/node_modules": true,
+		"**/package-lock.json": true,
+		"**/schema.gql": true,
+		".github": true,
+		".prettierrc": true,
+		".vscode": true,
+		"LICENSE": true,
+		"nest-cli.json": true,
+		"secrets": true,
+		"coverage": true
 	},
 	"todohighlight.keywords": [
 		{
-			"text": "Queries",
-			"color": "#4b3621",
 			"backgroundColor": "#00bfff",
-			"isWholeLine": true
+			"color": "#4b3621",
+			"isWholeLine": true,
+			"text": "Queries"
 		},
 		{
-			"text": "Mutations",
-			"color": "#e3a857",
 			"backgroundColor": "#69359c",
-			"isWholeLine": true
+			"color": "#e3a857",
+			"isWholeLine": true,
+			"text": "Mutations"
+		},
+		{
+			"text": "Relationships",
+			"isWholeLine": true,
+			"color": "#1C110A",
+			"backgroundColor": "#E4D6A7"
+		},
+		{
+			"text": "Basic infomation",
+			"isWholeLine": true,
+			"backgroundColor": "#CDE7B0",
+			"color": "#BE6E46"
+		},
+		{
+			"text": "Sensitive infomation",
+			"isWholeLine": true,
+			"backgroundColor": "#FF3366",
+			"color": "#011627"
+		},
+		{
+			"text": "Methods",
+			"isWholeLine": true,
+			"backgroundColor": "#4464AD",
+			"color": "#FFC759"
+		},
+		{
+			"text": "Database requests",
+			"isWholeLine": true,
+			"color": "#FFC1CF",
+			"backgroundColor": "#420039"
 		}
 	],
-	"explorerExclude.backup": {},
-	"files.eol": "\n"
+	"jest.outputConfig": {
+		"clearOnRun": "terminal"
+	},
+	"testing.openTesting": "neverOpen",
+	"jest.runMode": {
+		"type": "on-demand",
+		"coverage": true,
+		"showInlineError": true
+	}
 }

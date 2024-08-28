@@ -1,6 +1,6 @@
+import { randomBytes } from 'crypto';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { randomBytes } from 'crypto';
 import Joi from 'joi';
 
 @Module({
@@ -17,7 +17,7 @@ import Joi from 'joi';
 				POSTGRES_PASS: Joi.string().default('postgres'),
 				// Access token
 				ACCESS_SECRET: Joi.string().required(),
-				ACCESS_EXPIRES: Joi.string().default('5m'),
+				ACCESS_EXPIRE: Joi.string().default('5m'),
 				// Refresh token
 				REFRESH_SECRET: Joi.string().required(),
 				REFRESH_EXPIRE: Joi.string().default('366d'),

@@ -5,6 +5,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { AuthMiddleware } from './auth/auth.middleware';
 import { AuthModule } from './auth/auth.module';
 import { LoadEnvModule } from './config.module';
+import { CustomPointScalar } from './place/place.scalar';
 import { SqlModule } from './sql.module';
 
 @Module({
@@ -25,6 +26,8 @@ import { SqlModule } from './sql.module';
 			plugins: [ApolloServerPluginLandingPageLocalDefault()],
 			includeStacktraceInErrorResponses: false,
 			inheritResolversFromInterfaces: false,
+			// Custom scalar
+			resolvers: { Point: CustomPointScalar },
 		}),
 		// Sub modules
 		AuthModule,

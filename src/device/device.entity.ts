@@ -1,26 +1,31 @@
 import { User } from '@backend/user/user.entity';
-import { InitClass } from '@backend/utils';
 import {
 	BaseEntity,
 	Column,
 	Entity,
-	JoinColumn,
 	ManyToOne,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
 
+export interface IDevice {
+	owner: User;
+	hashedUserAgent: string;
+	useTimeLeft: number;
+}
+
 @Entity()
-export class DeviceSession extends BaseEntity {
-	constructor(payload: InitClass<DeviceSession>) {
+export class Device extends BaseEntity {
+	constructor(payload: IDevice) {
 		super();
 		Object.assign(this, payload);
 	}
 
+	// Relationships
+	@ManyToOne(() => User, (_: User) => _.sessions)
+	owner: User;
+
+	// Sensitive infomation
 	@PrimaryGeneratedColumn('uuid') id: string;
-	@ManyToOne(() => User, (user: User) => user.deviceSessions)
-	@JoinColumn({ name: 'userId' })
-	user: User;
-	@Column() userId: string;
 	@Column() hashedUserAgent: string;
 	@Column() useTimeLeft: number;
 }

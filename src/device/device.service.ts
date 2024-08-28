@@ -1,18 +1,17 @@
+import { AuthService, PayLoad, UserMetadata } from '@backend/auth/auth.service';
+import { User } from '@backend/user/user.entity';
+import { Str } from '@backend/utils';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AuthService, PayLoad, UserMetadata } from '@backend/auth/auth.service';
-import { Str } from '@backend/utils';
 import {
 	DeepPartial,
-	FindManyOptions,
-	FindOneOptions,
 	FindOptionsWhere,
 	Repository,
 	SaveOptions,
 } from 'typeorm';
-import { DeviceSession } from './device.entity';
+import { Device } from './device.entity';
 
 export class UserRecieve {
 	constructor(acsTkn: string, rfsTkn: string) {
@@ -31,7 +30,7 @@ export class UserRecieve {
 @Injectable()
 export class DeviceService {
 	constructor(
-		@InjectRepository(DeviceSession) private repo: Repository<DeviceSession>,
+		@InjectRepository(Device) private repo: Repository<Device>,
 		private jwtSvc: JwtService,
 		private cfgSvc: ConfigService,
 		@Inject(forwardRef(() => AuthService))
@@ -49,34 +48,35 @@ export class DeviceService {
 		});
 	}
 
-	async getTokens(usrId: string, mtdt: UserMetadata) {
+	async getTokens(user: User, mtdt: UserMetadata) {
 		const session = await this.save({
-				userId: usrId,
+				owner: user,
 				hashedUserAgent: this.authSvc.hash(mtdt.toString()),
 				useTimeLeft: this.use,
 			}),
 			rfsTkn = this.refreshTokenSign(new PayLoad(session.id).toPlainObj()),
-			acsTkn = this.jwtSvc.sign(new PayLoad(usrId).toPlainObj());
+			acsTkn = this.jwtSvc.sign(new PayLoad(user.id).toPlainObj());
 
 		return new UserRecieve(acsTkn, rfsTkn);
 	}
 
-	find(options?: FindManyOptions<DeviceSession>): Promise<DeviceSession[]> {
-		return this.repo.find(options);
+	// Database requests
+	find(options?: FindOptionsWhere<Device>): Promise<Device[]> {
+		return this.repo.find({ where: options, relations: ['owner'] });
 	}
 
-	findOne(options?: FindOneOptions<DeviceSession>) {
-		return this.repo.findOne(options);
+	findOne(options?: FindOptionsWhere<Device>): Promise<Device> {
+		return this.repo.findOne({ where: options, relations: ['owner'] });
 	}
 
 	save(
-		entities: DeepPartial<DeviceSession>,
+		entities: DeepPartial<Device>,
 		options?: SaveOptions & { reload: false },
 	) {
-		return this.repo.save(entities, options);
+		return this.repo.save(entities, options) as Promise<Device>;
 	}
 
-	delete(criteria: FindOptionsWhere<DeviceSession>) {
+	delete(criteria: FindOptionsWhere<Device>) {
 		return this.repo.delete(criteria);
 	}
 }

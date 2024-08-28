@@ -15,16 +15,16 @@ describe('UserController', () => {
 		usrCon = module.get<UserController>(UserController);
 	});
 
-	it('should be defined', () => expect(usrCon).toBeDefined());
+	it('be defined', () => expect(usrCon).toBeDefined());
 
 	describe('getUser', () => {
-		it("should return user's infomation", () => {
+		it("return user's infomation", () => {
 			const user = User.test,
 				req = createRequest({ user });
 			expect(usrCon.getUser(req)).toEqual(user.info);
 		});
 
-		it('should return error', () => {
+		it('return error', () => {
 			const req = createRequest();
 			expect(async () => usrCon.getUser(req)).rejects.toThrow(
 				BadRequestException,
