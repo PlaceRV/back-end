@@ -12,7 +12,7 @@ describe('PlaceController', () => {
 		controller = module.get<PlaceController>(PlaceController);
 	});
 
-	it('should be defined', () => {
+	it('be defined', () => {
 		expect(controller).toBeDefined();
 	});
 });

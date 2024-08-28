@@ -24,7 +24,7 @@ describe('DeviceService', () => {
 			(usrSvc = module.get(UserService));
 	});
 
-	it('should be defined', () => expect(dvcSvc).toBeDefined());
+	it('be defined', () => expect(dvcSvc).toBeDefined());
 
 	describe('getTokens', () => {
 		let mtdt: UserMetadata, usr: User;
@@ -32,7 +32,7 @@ describe('DeviceService', () => {
 			(mtdt = UserMetadata.test), (usr = await usrSvc.save(User.test));
 		});
 
-		it('should create a new device session and return tokens', async () => {
+		it('create a new device session and return tokens', async () => {
 			const usrRcv = UserRecieve.test;
 
 			jest.spyOn(authSvc, 'hash'),

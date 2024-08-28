@@ -31,7 +31,7 @@ import { RefreshStrategy } from './strategies/refresh.strategy';
 		// Foreign modules
 		forwardRef(() => DeviceModule),
 		forwardRef(() => UserModule),
-		PlaceModule,
+		forwardRef(() => AuthModule),
 	],
 	providers: [
 		AuthService,

@@ -17,17 +17,17 @@ describe('UserResolver', () => {
 		(usrRsv = module.get(UserResolver)), (usrSvc = module.get(UserService));
 	});
 
-	it('should be defined', () => expect(usrRsv).toBeDefined());
+	it('be defined', () => expect(usrRsv).toBeDefined());
 
 	describe('findOne', () => {
-		it('should return a user', async () => {
+		it('return a user', async () => {
 			const user = User.test;
 			jest.spyOn(usrSvc, 'findOne').mockResolvedValue(user);
 			expect(await usrRsv.findOne('1')).toEqual(user);
 			expect(usrSvc.findOne).toHaveBeenCalledWith({ id: '1' });
 		});
 
-		it('should throw a BadRequestException if user not found', async () => {
+		it('throw a BadRequestException if user not found', async () => {
 			jest.spyOn(usrSvc, 'findOne').mockResolvedValue(null);
 			await expect(usrRsv.findOne('1')).rejects.toThrow(BadRequestException),
 				expect(usrSvc.findOne).toHaveBeenCalledWith({ id: '1' });
@@ -35,7 +35,7 @@ describe('UserResolver', () => {
 	});
 
 	describe('findAll', () => {
-		it('should return all users', async () => {
+		it('return all users', async () => {
 			const users: User[] = [User.test, User.test];
 			jest.spyOn(usrSvc, 'find').mockResolvedValue(users);
 			expect(await usrRsv.findAll()).toEqual(users);

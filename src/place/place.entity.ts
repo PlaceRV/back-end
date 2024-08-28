@@ -1,5 +1,5 @@
 import { User } from '@backend/user/user.entity';
-import { InitClass } from '@backend/utils';
+import { ClassProperties, Str } from '@backend/utils';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Point } from 'geojson';
 import {
@@ -18,7 +18,7 @@ export type PlaceType = 'Temple' | 'Church';
 @ObjectType()
 @Entity()
 export class Place extends BaseEntity {
-	constructor(payload: InitClass<Place>) {
+	constructor(payload: ClassProperties<Place>) {
 		super();
 		Object.assign(this, payload);
 	}
@@ -28,7 +28,7 @@ export class Place extends BaseEntity {
 	createdBy: User;
 
 	// Sensitive infomation
-	@PrimaryGeneratedColumn('uuid') id: string;
+	@PrimaryGeneratedColumn('uuid') id?: string;
 
 	// Basic infomation
 	@Field() @Column() name: string;
@@ -38,4 +38,14 @@ export class Place extends BaseEntity {
 	@Column({ type: 'geography', spatialFeatureType: 'Point' })
 	location: Point;
 	@Field() @Column() description?: string;
+
+	// Methods
+	static test(user: User) {
+		return new Place({
+			name: Str.random(),
+			type: 'Church',
+			createdBy: user,
+			location: { type: 'Point', coordinates: [0, 0] },
+		});
+	}
 }

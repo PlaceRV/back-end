@@ -9,9 +9,9 @@ import { PlaceService } from './place.service';
 
 @Module({
 	imports: [TypeOrmModule.forFeature([Place]), forwardRef(() => AuthModule)],
-	controllers: [PlaceController],
 	providers: [PlaceResolver, PlaceService],
 	exports: [PlaceService],
+	controllers: [PlaceController],
 })
 export class PlaceModule {
 	configure(consumer: MiddlewareConsumer) {

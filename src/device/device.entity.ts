@@ -1,5 +1,5 @@
 import { User } from '@backend/user/user.entity';
-import { InitClass } from '@backend/utils';
+import { ClassProperties } from '@backend/utils';
 import {
 	BaseEntity,
 	Column,
@@ -10,7 +10,7 @@ import {
 
 @Entity()
 export class Device extends BaseEntity {
-	constructor(payload: InitClass<Device>) {
+	constructor(payload: ClassProperties<Device>) {
 		super();
 		Object.assign(this, payload);
 	}

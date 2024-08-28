@@ -14,5 +14,5 @@ describe('DeviceResolver', () => {
 		resolver = module.get(DeviceResolver);
 	});
 
-	it('should be defined', () => expect(resolver).toBeDefined());
+	it('be defined', () => expect(resolver).toBeDefined());
 });

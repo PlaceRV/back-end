@@ -1,6 +1,6 @@
 import { Device } from '@backend/device/device.entity';
 import { Place } from '@backend/place/place.entity';
-import { InitClass, Str } from '@backend/utils';
+import { ClassProperties, Str } from '@backend/utils';
 import { Field, ObjectType } from '@nestjs/graphql';
 import {
 	BaseEntity,
@@ -22,7 +22,7 @@ export enum Role {
 @ObjectType()
 @Entity()
 export class User extends BaseEntity {
-	constructor(payload: InitClass<User>) {
+	constructor(payload: ClassProperties<User>) {
 		super();
 		Object.assign(this, payload);
 	}

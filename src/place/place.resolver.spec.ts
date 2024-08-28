@@ -14,5 +14,5 @@ describe('PlaceResolver', () => {
 		resolver = module.get<PlaceResolver>(PlaceResolver);
 	});
 
-	it('should be defined', () => expect(resolver).toBeDefined());
+	it('be defined', () => expect(resolver).toBeDefined());
 });

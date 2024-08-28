@@ -28,7 +28,7 @@ describe('AuthService', () => {
 			(dvcSvc = module.get(DeviceService));
 	});
 
-	it('should be defined', () => expect(authSvc).toBeDefined());
+	it('be defined', () => expect(authSvc).toBeDefined());
 
 	describe('signup', () => {
 		let dto: SignUpDto, mtdt: UserMetadata, usr: User;
@@ -38,7 +38,7 @@ describe('AuthService', () => {
 				(mtdt = UserMetadata.test);
 		});
 
-		it('should create a new user and return tokens', async () => {
+		it('create a new user and return tokens', async () => {
 			jest.spyOn(usrSvc, 'findOne'),
 				jest.spyOn(usrSvc, 'save'),
 				jest.spyOn(dvcSvc, 'getTokens');
@@ -51,7 +51,7 @@ describe('AuthService', () => {
 				);
 		});
 
-		it('should throw a BadRequestException if the email is already assigned', async () => {
+		it('throw a BadRequestException if the email is already assigned', async () => {
 			await authSvc.signup(dto, mtdt);
 			await expect(authSvc.signup(dto, mtdt)).rejects.toThrow(
 				BadRequestException,
@@ -71,7 +71,7 @@ describe('AuthService', () => {
 			);
 		});
 
-		it('should return tokens for a valid user', async () => {
+		it('return tokens for a valid user', async () => {
 			jest.spyOn(usrSvc, 'findOne'), jest.spyOn(dvcSvc, 'getTokens');
 			await authSvc.login(dto, mtdt),
 				expect(usrSvc.findOne).toHaveBeenCalledWith({ email: dto.email }),
@@ -81,7 +81,7 @@ describe('AuthService', () => {
 				);
 		});
 
-		it('should throw a BadRequestException for an invalid user', async () => {
+		it('throw a BadRequestException for an invalid user', async () => {
 			dto.password += '0';
 			await expect(authSvc.login(dto, mtdt)).rejects.toThrow(
 				BadRequestException,
@@ -90,7 +90,7 @@ describe('AuthService', () => {
 	});
 
 	describe('encrypt and decrypt', () => {
-		it('should encrypt and decrypt a string', () => {
+		it('encrypt and decrypt a string', () => {
 			const text = 'hello, world!',
 				key = 'my_secret_key',
 				encrypted = authSvc.encrypt(text, key),

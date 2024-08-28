@@ -8,8 +8,8 @@
 		"**/CVS": true,
 		"**/.DS_Store": true,
 		"**/Thumbs.db": true,
-		"**/*.example*": false,
-		"**/*.spec*": true,
+		"**/*.example*": true,
+		"**/*.spec*": false,
 		"**/.adminjs": true,
 		"**/.gitignore": true,
 		"**/dist": true,
@@ -17,8 +17,8 @@
 		"**/package-lock.json": true,
 		"**/schema.gql": true,
 		".github": true,
-		".prettierrc": false,
-		".vscode": true,
+		".prettierrc": true,
+		".vscode": false,
 		"LICENSE": true,
 		"nest-cli.json": true,
 		"secrets": true
@@ -66,5 +66,14 @@
 			"color": "#FFC1CF",
 			"backgroundColor": "#420039"
 		}
-	]
+	],
+	"jest.outputConfig": {
+		"clearOnRun": "terminal"
+	},
+	"testing.openTesting": "neverOpen",
+	"jest.runMode": {
+		"type": "on-demand",
+		"coverage": true,
+		"showInlineError": true
+	}
 }

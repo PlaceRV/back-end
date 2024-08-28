@@ -1,9 +1,25 @@
 import { randomBytes } from 'crypto';
 
-export type InitClass<T> = {
-	[K in keyof T as T[K] extends string | boolean | number | any[]
-		? K
-		: never]: T[K];
+/**
+ * https://stackoverflow.com/questions/52443276/how-to-exclude-getter-only-properties-from-type-in-typescript
+ */
+type IfEquals<X, Y, A, B> =
+	(<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2 ? A : B;
+
+type WritableKeysOf<T> = {
+	[P in keyof T]: IfEquals<
+		{ [Q in P]: T[P] },
+		{ -readonly [Q in P]: T[P] },
+		P,
+		never
+	>;
+}[keyof T];
+
+type WritablePart<T> = Pick<T, WritableKeysOf<T>>;
+
+export type ClassProperties<T> = {
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	[K in keyof WritablePart<T> as T[K] extends Function ? never : K]: T[K];
 };
 
 export class Str {
@@ -12,8 +28,9 @@ export class Str {
 	}
 }
 
+// @deprecated Implement this constructor to class instead
 export class Base<T> {
-	constructor(payload: InitClass<T>) {
+	constructor(payload: ClassProperties<T>) {
 		for (const key in payload as any) this[key] = payload[key];
 	}
 }

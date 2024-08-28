@@ -44,10 +44,10 @@ describe('AuthauthCon', () => {
 			(ckiSfx = cfgSvc.get('SERVER_COOKIE_PREFIX'));
 	});
 
-	it('should be defined', () => expect(authCon).toBeDefined());
+	it('be defined', () => expect(authCon).toBeDefined());
 
 	describe('signup', () => {
-		it('should call authSvc.signup and sendBack', () => {
+		it('call authSvc.signup and sendBack', () => {
 			const dto = new SignUpDto({ email, password, lastName, firstName }),
 				usrRcv = UserRecieve.test,
 				next = async () => {
@@ -65,7 +65,7 @@ describe('AuthauthCon', () => {
 	});
 
 	describe('login', () => {
-		it('should call authSvc.login and sendBack', () => {
+		it('call authSvc.login and sendBack', () => {
 			const dto = new LogInDto({ email, password }),
 				usrRcv = UserRecieve.test,
 				next = async () => {
@@ -83,7 +83,7 @@ describe('AuthauthCon', () => {
 	});
 
 	describe('logout', () => {
-		it('should clear all cookies and delete device session from databse', async () => {
+		it('clear all cookies and delete device session from databse', async () => {
 			req.user = { id: 'a' };
 
 			jest.spyOn(authCon, 'clearCookies').mockImplementation(),
@@ -95,7 +95,7 @@ describe('AuthauthCon', () => {
 	});
 
 	describe('refresh', () => {
-		it('should call dvcSvc.getTokens and sendBack if req.user.success is false', () => {
+		it('call dvcSvc.getTokens and sendBack if req.user.success is false', () => {
 			const usrRcv = UserRecieve.test,
 				next = async () => {
 					req.user = { success: false, userId: 'user_id' };
@@ -112,7 +112,7 @@ describe('AuthauthCon', () => {
 			authMdw.use(req, res, next);
 		});
 
-		it('should call sendBack if req.user.success is true and compareSync is true', () => {
+		it('call sendBack if req.user.success is true and compareSync is true', () => {
 			const next = async () => {
 				req.user = {
 					success: true,
@@ -132,7 +132,7 @@ describe('AuthauthCon', () => {
 	});
 
 	describe('clearCookies', () => {
-		it('should call res.clearCookie twice', () => {
+		it('call res.clearCookie twice', () => {
 			let acs: string, rfs: string;
 			req.cookies[`${(acs = ckiSfx + authSvc.hash(acsKey))}`] =
 				randomBytes(6).toString();
@@ -148,7 +148,7 @@ describe('AuthauthCon', () => {
 	});
 
 	describe('sendBack', () => {
-		it('should call clearCookies once and res.cookie twice', () => {
+		it('call clearCookies once and res.cookie twice', () => {
 			jest.spyOn(authCon, 'clearCookies').mockImplementation(),
 				jest.spyOn(res, 'cookie');
 			authCon.sendBack(req, res, new UserRecieve('', '')),

@@ -23,7 +23,7 @@ describe('AuthGuard', () => {
 			} as unknown as ExecutionContext);
 	});
 
-	it('should be defined', () => expect(roleGrd).toBeDefined());
+	it('be defined', () => expect(roleGrd).toBeDefined());
 
 	describe('canActivate', () => {
 		beforeEach(() => {
@@ -32,12 +32,12 @@ describe('AuthGuard', () => {
 				.mockImplementation(() => true);
 		});
 
-		it('should allow access when AllowPublic is set', async () => {
+		it('allow access when AllowPublic is set', async () => {
 			jest.spyOn(rflt, 'get').mockReturnValueOnce(true);
 			expect(await roleGrd.canActivate(ctx)).toBe(true);
 		});
 
-		it('should allow access when user roles match the required roles', async () => {
+		it('allow access when user roles match the required roles', async () => {
 			const req = { user: { roles: [Role.ADMIN] } };
 			jest
 				.spyOn(rflt, 'get')
@@ -49,7 +49,7 @@ describe('AuthGuard', () => {
 			expect(await roleGrd.canActivate(ctx)).toBe(true);
 		});
 
-		it('should not allow access when user roles not match the required roles', async () => {
+		it('not allow access when user roles not match the required roles', async () => {
 			const req = { user: { roles: [Role.USER] } };
 			jest
 				.spyOn(rflt, 'get')
@@ -61,7 +61,7 @@ describe('AuthGuard', () => {
 			expect(await roleGrd.canActivate(ctx)).toBe(false);
 		});
 
-		it('should throw an error when roles are not defined', async () => {
+		it('throw an error when roles are not defined', async () => {
 			await expect(roleGrd.canActivate(ctx)).rejects.toThrow(
 				InternalServerErrorException,
 			);
