@@ -1,5 +1,5 @@
 import { User } from '@backend/user/user.entity';
-import { ClassProperties, Str } from '@backend/utils';
+import { Str } from '@backend/utils';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Point } from 'geojson';
 import {
@@ -14,11 +14,19 @@ import { CustomPointScalar } from './place.scalar';
 
 export type PlaceType = 'Temple' | 'Church';
 
+export interface IPlace {
+	name: string;
+	type: PlaceType;
+	location: Point;
+	description?: string;
+	createdBy: User;
+}
+
 // ! INSTALL PostGIS required
 @ObjectType()
 @Entity()
-export class Place extends BaseEntity {
-	constructor(payload: ClassProperties<Place>) {
+export class Place extends BaseEntity implements IPlace {
+	constructor(payload: IPlace) {
 		super();
 		Object.assign(this, payload);
 	}
@@ -37,7 +45,7 @@ export class Place extends BaseEntity {
 	@Index({ spatial: true })
 	@Column({ type: 'geography', spatialFeatureType: 'Point' })
 	location: Point;
-	@Field() @Column() description?: string;
+	@Field() @Column({ nullable: true }) description?: string;
 
 	// Methods
 	static test(user: User) {

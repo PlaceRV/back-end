@@ -1,5 +1,4 @@
 import { User } from '@backend/user/user.entity';
-import { ClassProperties } from '@backend/utils';
 import {
 	BaseEntity,
 	Column,
@@ -8,9 +7,15 @@ import {
 	PrimaryGeneratedColumn,
 } from 'typeorm';
 
+export interface IDevice {
+	owner: User;
+	hashedUserAgent: string;
+	useTimeLeft: number;
+}
+
 @Entity()
 export class Device extends BaseEntity {
-	constructor(payload: ClassProperties<Device>) {
+	constructor(payload: IDevice) {
 		super();
 		Object.assign(this, payload);
 	}

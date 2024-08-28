@@ -1,6 +1,6 @@
 import { Device } from '@backend/device/device.entity';
 import { Place } from '@backend/place/place.entity';
-import { ClassProperties, Str } from '@backend/utils';
+import { Str } from '@backend/utils';
 import { Field, ObjectType } from '@nestjs/graphql';
 import {
 	BaseEntity,
@@ -19,17 +19,28 @@ export enum Role {
 	STAFF = 'STAFF',
 }
 
+export interface IUser {
+	sessions?: Device[];
+	placesAssigned?: Place[];
+	roles?: Role[];
+
+	firstName: string;
+	lastName: string;
+	email: string;
+	password: string;
+}
+
 @ObjectType()
 @Entity()
-export class User extends BaseEntity {
-	constructor(payload: ClassProperties<User>) {
+export class User extends BaseEntity implements IUser {
+	constructor(payload: IUser) {
 		super();
 		Object.assign(this, payload);
 	}
 
 	// Sensitive infomation
 	@PrimaryGeneratedColumn('uuid') id?: string;
-	@Column('text', { nullable: false }) password?: string;
+	@Column('text', { nullable: false }) password: string;
 
 	// Relationships
 	@OneToMany(() => Device, (_: Device) => _.owner, { eager: true })
@@ -40,14 +51,14 @@ export class User extends BaseEntity {
 	// Basic infomation
 	@Field()
 	@Column({ length: 15, nullable: false })
-	firstName!: string;
-	@Field() @Column({ length: 15, nullable: false }) lastName!: string;
+	firstName: string;
+	@Field() @Column({ length: 15, nullable: false }) lastName: string;
 	@Field()
 	@Column({ length: 128, nullable: false, unique: true })
-	email!: string;
+	email: string;
 	@Field(() => [Role])
 	@Column({ type: 'enum', enum: Role, array: true, default: [Role.USER] })
-	roles!: Role[];
+	roles: Role[];
 
 	// Methods
 	get info() {

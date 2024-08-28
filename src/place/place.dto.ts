@@ -1,13 +1,13 @@
-import { ClassProperties } from '@backend/utils';
+import { Basic } from '@backend/utils';
 import { Field, InputType } from '@nestjs/graphql';
 import { IsString } from 'class-validator';
 import { Point } from 'geojson';
-import { PlaceType } from './place.entity';
+import { IPlace, PlaceType } from './place.entity';
 import { CustomPointScalar } from './place.scalar';
 
 @InputType()
-export class PlaceAssign {
-	constructor(payload: ClassProperties<PlaceAssign>) {
+export class PlaceAssign implements Omit<Basic<IPlace>, 'createdBy'> {
+	constructor(payload: IPlace) {
 		Object.assign(this, payload);
 	}
 
