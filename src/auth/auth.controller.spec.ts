@@ -1,6 +1,7 @@
 import { randomBytes } from 'crypto';
-import { DeviceService, UserRecieve } from '@backend/device/device.service';
+import { DeviceService } from '@backend/device/device.service';
 import { TestModule } from '@backend/test';
+import { UserRecieve } from '@backend/user/user.dto';
 import { User } from '@backend/user/user.entity';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -151,7 +152,7 @@ describe('AuthauthCon', () => {
 		it('call clearCookies once and res.cookie twice', () => {
 			jest.spyOn(authCon, 'clearCookies').mockImplementation(),
 				jest.spyOn(res, 'cookie');
-			authCon.sendBack(req, res, new UserRecieve('', '')),
+			authCon.sendBack(req, res, UserRecieve.test),
 				expect(authCon.clearCookies).toHaveBeenCalledWith(req, res),
 				expect(res.cookie).toHaveBeenCalledTimes(2),
 				expect(res['cookies']).toBeDefined();

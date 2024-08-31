@@ -1,11 +1,12 @@
 import { AuthService, UserMetadata } from '@backend/auth/auth.service';
 import { TestModule } from '@backend/test';
+import { UserRecieve } from '@backend/user/user.dto';
 import { User } from '@backend/user/user.entity';
 import { UserService } from '@backend/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DeviceModule } from './device.module';
-import { DeviceService, UserRecieve } from './device.service';
+import { DeviceService } from './device.service';
 
 describe('DeviceService', () => {
 	let dvcSvc: DeviceService,

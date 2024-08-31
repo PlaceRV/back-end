@@ -1,4 +1,5 @@
-import { isMatchRoles, Role, User } from '@backend/user/user.entity';
+import { User } from '@backend/user/user.entity';
+import { matchingRoles, Role } from '@backend/user/user.enum';
 import {
 	createParamDecorator,
 	ExecutionContext,
@@ -51,7 +52,7 @@ export class RoleGuard extends AuthGuard('access') {
 			const req = this.getRequest(context),
 				user = req.user;
 
-			return isMatchRoles(roles, user.roles);
+			return matchingRoles(user.roles, roles);
 		}
 		throw new InternalServerErrorException(
 			'Function not defined roles/permissions',

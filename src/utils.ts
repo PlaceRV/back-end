@@ -1,15 +1,4 @@
-import { randomBytes } from 'crypto';
-
-export type Basic<T> = {
-	[P in keyof T as T[P] extends Required<T>[P] ? P : never]: T[P];
-};
-
-export class Str {
-	static random(length: number = 12) {
-		return randomBytes(length / 2).toString('hex');
-	}
-}
-
+// Local
 export const methodDecorator =
 		(
 			before?: (t: any, args: any) => void,
@@ -32,7 +21,8 @@ export const methodDecorator =
 		(propertyKey, result) => {
 			console.log(`Result of ${propertyKey}:`, result);
 		},
-	);
+	),
+	tstStr = () => (12).char();
 
 export function allImplement(
 	decorator: (
@@ -57,3 +47,45 @@ export function allImplement(
 		}
 	};
 }
+
+// Global
+declare global {
+	interface Array<T> {
+		random(): T;
+		get(subString: string): Array<T>;
+		last(): T;
+	}
+	interface Number {
+		f(): number; // floor()
+		r(): number; // round()
+		a(): number; // abs()
+		char(): string;
+	}
+	type Basic<T> = {
+		[P in keyof T as T[P] extends Required<T>[P] ? P : never]: T[P];
+	};
+}
+
+Array.prototype.get = function (subString: string) {
+	return this.filter((i: string) => i.includes(subString));
+};
+Array.prototype.random = function () {
+	return this[Math.floor(Math.random() * this.length)];
+};
+Array.prototype.last = function () {
+	return this[this.length - 1];
+};
+Number.prototype.char = function () {
+	return Math.random()
+		.toString(20)
+		.slice(2, this as number);
+};
+Number.prototype.f = function () {
+	return Math.floor(Number(this));
+};
+Number.prototype.r = function () {
+	return Math.round(Number(this));
+};
+Number.prototype.a = function () {
+	return Math.abs(Number(this));
+};

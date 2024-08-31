@@ -1,5 +1,5 @@
 import { TestModule } from '@backend/test';
-import { Role } from '@backend/user/user.entity';
+import { Role } from '@backend/user/user.enum';
 import { ExecutionContext, InternalServerErrorException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';

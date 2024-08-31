@@ -1,5 +1,5 @@
 import { User } from '@backend/user/user.entity';
-import { Str } from '@backend/utils';
+import { tstStr } from '@backend/utils';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Point } from 'geojson';
 import {
@@ -10,17 +10,9 @@ import {
 	ManyToOne,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
+import { IPlace } from './place.interface';
 import { CustomPointScalar } from './place.scalar';
-
-export type PlaceType = 'Temple' | 'Church';
-
-export interface IPlace {
-	name: string;
-	type: PlaceType;
-	location: Point;
-	description?: string;
-	createdBy: User;
-}
+import { PlaceType } from './place.type';
 
 // ! INSTALL PostGIS required
 @ObjectType()
@@ -50,7 +42,7 @@ export class Place extends BaseEntity implements IPlace {
 	// Methods
 	static test(user: User) {
 		return new Place({
-			name: Str.random(),
+			name: tstStr(),
 			type: 'Church',
 			createdBy: user,
 			location: { type: 'Point', coordinates: [0, 0] },

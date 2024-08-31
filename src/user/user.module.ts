@@ -4,7 +4,8 @@ import { forwardRef, MiddlewareConsumer, Module } from '@nestjs/common';
 import { registerEnumType } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserController } from './user.controller';
-import { Role, User } from './user.entity';
+import { User } from './user.entity';
+import { Role } from './user.enum';
 import { UserResolver } from './user.resolver';
 import { UserService } from './user.service';
 

@@ -1,6 +1,6 @@
 import { Device } from '@backend/device/device.entity';
 import { Place } from '@backend/place/place.entity';
-import { Str } from '@backend/utils';
+import { tstStr } from '@backend/utils';
 import { Field, ObjectType } from '@nestjs/graphql';
 import {
 	BaseEntity,
@@ -9,26 +9,8 @@ import {
 	OneToMany,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
-
-export const isMatchRoles = (roles: Role[], userRoles: Role[]) =>
-	roles.some((i) => userRoles.some((j) => i === j));
-
-export enum Role {
-	USER = 'USER',
-	ADMIN = 'ADMIN',
-	STAFF = 'STAFF',
-}
-
-export interface IUser {
-	sessions?: Device[];
-	placesAssigned?: Place[];
-	roles?: Role[];
-
-	firstName: string;
-	lastName: string;
-	email: string;
-	password?: string;
-}
+import { Role } from './user.enum';
+import { IUser } from './user.interface';
 
 @ObjectType()
 @Entity()
@@ -72,10 +54,10 @@ export class User extends BaseEntity implements IUser {
 
 	static get test() {
 		return new User({
-			email: Str.random(),
-			password: Str.random(),
-			firstName: Str.random(),
-			lastName: Str.random(),
+			email: tstStr(),
+			password: tstStr(),
+			firstName: tstStr(),
+			lastName: tstStr(),
 			roles: [Role.USER],
 		});
 	}

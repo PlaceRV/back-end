@@ -1,4 +1,5 @@
-import { DeviceService, UserRecieve } from '@backend/device/device.service';
+import { DeviceService } from '@backend/device/device.service';
+import { UserRecieve } from '@backend/user/user.dto';
 import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
@@ -85,7 +86,12 @@ export class AuthController {
 			req.user['success'] &&
 			compareSync(new UsrMtdt(req).toString(), req.user['ua'])
 		) {
-			sendBack(new UserRecieve(req.user['acsTkn'], req.user['rfsTkn']));
+			sendBack(
+				new UserRecieve({
+					accessToken: req.user['acsTkn'],
+					refreshToken: req.user['rfsTkn'],
+				}),
+			);
 		} else
 			sendBack(
 				await this.dvcSvc.getTokens(req.user['userId'], new UsrMtdt(req)),
