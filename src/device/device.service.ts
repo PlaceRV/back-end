@@ -1,6 +1,6 @@
 import { AuthService, PayLoad, UserMetadata } from '@backend/auth/auth.service';
+import { UserRecieve } from '@backend/user/user.dto';
 import { User } from '@backend/user/user.entity';
-import { Str } from '@backend/utils';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -12,20 +12,6 @@ import {
 	SaveOptions,
 } from 'typeorm';
 import { Device } from './device.entity';
-
-export class UserRecieve {
-	constructor(acsTkn: string, rfsTkn: string) {
-		this.accessToken = acsTkn;
-		this.refreshToken = rfsTkn;
-	}
-
-	accessToken: string;
-	refreshToken: string;
-
-	static get test() {
-		return new UserRecieve(Str.random(), Str.random());
-	}
-}
 
 @Injectable()
 export class DeviceService {
@@ -54,10 +40,12 @@ export class DeviceService {
 				hashedUserAgent: this.authSvc.hash(mtdt.toString()),
 				useTimeLeft: this.use,
 			}),
-			rfsTkn = this.refreshTokenSign(new PayLoad(session.id).toPlainObj()),
-			acsTkn = this.jwtSvc.sign(new PayLoad(user.id).toPlainObj());
+			refreshToken = this.refreshTokenSign(
+				new PayLoad(session.id).toPlainObj(),
+			),
+			accessToken = this.jwtSvc.sign(new PayLoad(user.id).toPlainObj());
 
-		return new UserRecieve(acsTkn, rfsTkn);
+		return new UserRecieve({ accessToken, refreshToken });
 	}
 
 	// Database requests

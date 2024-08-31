@@ -6,15 +6,10 @@ import {
 	ManyToOne,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
-
-export interface IDevice {
-	owner: User;
-	hashedUserAgent: string;
-	useTimeLeft: number;
-}
+import { IDevice } from './device.interface';
 
 @Entity()
-export class Device extends BaseEntity {
+export class Device extends BaseEntity implements IDevice {
 	constructor(payload: IDevice) {
 		super();
 		Object.assign(this, payload);

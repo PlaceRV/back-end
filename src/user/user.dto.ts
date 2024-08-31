@@ -1,5 +1,18 @@
-export class UserInfoDto {
-	firstName: string;
-	lastName: string;
-	email: string;
+import { tstStr } from '@backend/utils';
+import { IUserRecieve } from './user.interface';
+
+export class UserRecieve implements IUserRecieve {
+	constructor(payload: IUserRecieve) {
+		Object.assign(this, payload);
+	}
+
+	accessToken: string;
+	refreshToken: string;
+
+	static get test() {
+		return new UserRecieve({
+			accessToken: tstStr(),
+			refreshToken: tstStr(),
+		});
+	}
 }
