@@ -2,7 +2,7 @@ import { BadRequestException, UseGuards } from '@nestjs/common';
 import { Args, Query, Resolver } from '@nestjs/graphql';
 import { AllowPublic, RoleGuard, Roles } from 'auth/auth.guard';
 import { User } from './user.entity';
-import { Role } from './user.enum';
+import { Role } from './user.model';
 import { UserService } from './user.service';
 
 @Resolver(() => User)

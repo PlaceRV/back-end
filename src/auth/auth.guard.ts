@@ -7,7 +7,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { AuthGuard } from '@nestjs/passport';
-import { Role } from 'user/user.enum';
+import { Role } from 'user/user.model';
 
 /**
  * * Convert context's request to graphql's request

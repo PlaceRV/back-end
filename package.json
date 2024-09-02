@@ -8,7 +8,7 @@
 	"type": "commonjs",
 	"types": "index.d.ts",
 	"scripts": {
-		"install": "npm-dts generate",
+		"postinstall": "npm-dts generate",
 		"build": "nest build",
 		"format": "prettier --write \"./**/*.ts\" \"./**/*.json\"",
 		"lint": "eslint --fix  --ext .ts .",

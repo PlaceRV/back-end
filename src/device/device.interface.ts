@@ -1,4 +1,4 @@
-import { IUser } from 'user/user.interface';
+import { IUser } from 'user/user.model';
 
 export interface IDevice {
 	owner: IUser;

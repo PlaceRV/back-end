@@ -1,7 +1,9 @@
 import { forwardRef, Module } from '@nestjs/common';
+import { registerEnumType } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from 'auth/auth.module';
 import { Place } from './place.entity';
+import { PlaceType } from './place.model';
 import { PlaceResolver } from './place.resolver';
 import { PlaceService } from './place.service';
 
@@ -10,4 +12,8 @@ import { PlaceService } from './place.service';
 	providers: [PlaceResolver, PlaceService],
 	exports: [PlaceService],
 })
-export class PlaceModule {}
+export class PlaceModule {
+	constructor() {
+		registerEnumType(PlaceType, { name: 'PlaceType' });
+	}
+}

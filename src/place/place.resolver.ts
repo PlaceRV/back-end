@@ -2,9 +2,9 @@ import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { CurrentUser, RoleGuard, Roles } from 'auth/auth.guard';
 import { User } from 'user/user.entity';
-import { Role } from 'user/user.enum';
-import { PlaceAssign } from './place.dto';
+import { Role } from 'user/user.model';
 import { Place } from './place.entity';
+import { PlaceAssign } from './place.model';
 import { PlaceService } from './place.service';
 
 @Resolver(() => Place)
@@ -17,7 +17,7 @@ export class PlaceResolver {
 	@Roles([Role.STAFF])
 	async createPlace(
 		@CurrentUser() user: User,
-		@Args('assignPlace') input: PlaceAssign,
+		@Args('placeAssign') input: PlaceAssign,
 	) {
 		return Boolean(this.plcSvc.assign(input, user));
 	}

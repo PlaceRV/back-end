@@ -1,4 +1,13 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, HideField, ObjectType } from '@nestjs/graphql';
+import {
+	IsAlpha,
+	IsEnum,
+	IsInstance,
+	IsLatitude,
+	IsLongitude,
+	IsString,
+	IsUUID,
+} from 'class-validator';
 import { Point } from 'geojson';
 import {
 	BaseEntity,
@@ -10,9 +19,7 @@ import {
 } from 'typeorm';
 import { User } from 'user/user.entity';
 import { tstStr } from 'utils';
-import { IPlace } from './place.interface';
-import { CustomPointScalar } from './place.scalar';
-import { PlaceType } from './place.type';
+import { IPlace, PlaceType } from './place.model';
 
 // ! INSTALL PostGIS required
 @ObjectType()
@@ -24,28 +31,74 @@ export class Place extends BaseEntity implements IPlace {
 	}
 
 	// Relationships
+	@IsInstance(User)
+	@HideField()
 	@ManyToOne(() => User, (_: User) => _.placesAssigned)
 	createdBy: User;
 
-	// Sensitive infomation
-	@PrimaryGeneratedColumn('uuid') id?: string;
+	// Sensitive infomations
+	@IsUUID()
+	@HideField()
+	@PrimaryGeneratedColumn('uuid')
+	id?: string;
 
-	// Basic infomation
-	@Field() @Column() name: string;
-	@Field() @Column() type: PlaceType;
-	@Field(() => CustomPointScalar)
+	// Infomations
+	@IsAlpha()
+	@Field()
+	@Column()
+	name: string;
+
+	@IsEnum(PlaceType)
+	@Field(() => PlaceType)
+	@Column({ type: 'enum', enum: PlaceType, default: PlaceType.NONE })
+	type: PlaceType;
+
+	@HideField()
 	@Index({ spatial: true })
 	@Column({ type: 'geography', spatialFeatureType: 'Point' })
-	location: Point;
-	@Field() @Column({ nullable: true }) description?: string;
+	private location: Point = { type: 'Point', coordinates: [0, 0] };
+
+	@HideField()
+	private _longitude: number;
+	@IsLongitude()
+	@Field()
+	set longitude(i: number) {
+		this.location.coordinates[0] = i;
+		this._longitude = i;
+	}
+	get longitude() {
+		if (this.location[0]) return this.location[0];
+		return this._longitude;
+	}
+
+	@HideField()
+	private _latitude: number;
+	@IsLatitude()
+	@Field()
+	set latitude(i: number) {
+		this.location.coordinates[1] = i;
+		this._latitude = i;
+	}
+	get latitude() {
+		if (this.location[1]) return this.location[1];
+		return this._latitude;
+	}
+
+	@IsString()
+	@Field()
+	@Column()
+	description: string;
 
 	// Methods
+	@HideField()
 	static test(user: User) {
 		return new Place({
 			name: tstStr(),
-			type: 'Church',
+			type: PlaceType.CHURCH,
 			createdBy: user,
-			location: { type: 'Point', coordinates: [0, 0] },
+			longitude: (32).rd(),
+			latitude: (32).rd(),
+			description: '',
 		});
 	}
 }

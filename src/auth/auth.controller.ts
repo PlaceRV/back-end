@@ -5,7 +5,7 @@ import { compareSync } from 'bcrypt';
 import { DeviceService } from 'device/device.service';
 import { CookieOptions, Request as Rqt, Response as Rsp } from 'express';
 import { UserRecieve } from 'user/user.dto';
-import { ILogin, ISignUp } from 'user/user.interface';
+import { ILogin, ISignUp } from 'user/user.model';
 import { hash } from 'utils';
 import { AuthService, UserMetadata as UsrMtdt } from './auth.service';
 

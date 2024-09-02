@@ -1,7 +1,7 @@
 import { IDevice } from 'device/device.interface';
-import { IPlace } from 'place/place.interface';
-import { Role } from './user.enum';
+import { IPlace } from 'place/place.model';
 
+// Interfaces
 export interface IUserAuthentication {
 	email: string;
 	password: string;
@@ -25,3 +25,10 @@ export interface IUserRecieve {
 
 export interface ILogin extends IUserAuthentication {}
 export interface ISignUp extends IUserAuthentication, IUserInfo {}
+
+// Enums
+export enum Role {
+	USER = 'User',
+	ADMIN = 'Admin',
+	STAFF = 'Staff',
+}

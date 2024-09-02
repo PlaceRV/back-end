@@ -1,4 +1,4 @@
-import { Role } from './user/user.enum';
+import { Role } from 'user/user.model';
 import './utils';
 
 describe('utils', () => {

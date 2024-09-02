@@ -10,7 +10,7 @@ import { compareSync } from 'bcrypt';
 import { DeviceService } from 'device/device.service';
 import { Request } from 'express';
 import { User } from 'user/user.entity';
-import { ILogin, ISignUp } from 'user/user.interface';
+import { ILogin, ISignUp } from 'user/user.model';
 import { UserService } from 'user/user.service';
 import { generateFingerprint } from './auth.middleware';
 

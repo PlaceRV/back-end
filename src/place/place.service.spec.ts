@@ -3,7 +3,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { User } from 'user/user.entity';
 import { UserService } from 'user/user.service';
 import { TestModule } from '../../test/test.module';
-import { PlaceAssign } from './place.dto';
 import { Place } from './place.entity';
 import { PlaceModule } from './place.module';
 import { PlaceService } from './place.service';
@@ -28,21 +27,17 @@ describe('PlaceService', () => {
 		});
 
 		it('save assign place', async () => {
-			const plcAss = new PlaceAssign({ ...plc });
-
 			jest.spyOn(plcSvc, 'save');
 
-			await plcSvc.assign(plcAss, usr);
+			await plcSvc.assign(plc, usr);
 
 			expect(plcSvc.save).toHaveBeenCalledWith(
-				expect.objectContaining({ ...plcAss, createdBy: usr }),
+				expect.objectContaining({ ...plc, createdBy: usr }),
 			);
 		});
 
 		it('throw error', async () => {
-			const plcAss = new PlaceAssign({ ...plc });
-
-			await expect(plcSvc.assign(plcAss, null)).rejects.toThrow(
+			await expect(plcSvc.assign(plc, null)).rejects.toThrow(
 				BadRequestException,
 			);
 		});

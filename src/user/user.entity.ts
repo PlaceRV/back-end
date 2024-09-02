@@ -16,8 +16,7 @@ import {
 	PrimaryGeneratedColumn,
 } from 'typeorm';
 import { hash, tstStr } from 'utils';
-import { Role } from './user.enum';
-import { IUser } from './user.interface';
+import { IUser, Role } from './user.model';
 
 @ObjectType()
 @Entity()
@@ -57,7 +56,7 @@ export class User extends BaseEntity implements IUser {
 	@OneToMany(() => Place, (_: Place) => _.createdBy, { eager: true })
 	placesAssigned?: Place[];
 
-	// User infomations
+	// Infomations
 	@IsAlpha()
 	@Field()
 	@Column()
