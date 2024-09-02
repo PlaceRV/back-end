@@ -68,8 +68,19 @@ declare global {
 	type Basic<T> = {
 		[P in keyof T as T[P] extends Required<T>[P] ? P : never]: T[P];
 	};
+
+	/**
+	 * Comparing require objects and input objects
+	 * @param {T[]} input - Input objects
+	 * @param {T[]} required - Require objects
+	 * @return {Boolean} Is input objects sastisfy with require objects
+	 */
+	function matching<T>(input: T[], required: T[]): boolean;
 }
 
+global.matching = <T>(input: T[], required: T[]): boolean => {
+	return required.every((i) => input.some((j) => i === j));
+};
 Array.prototype.get = function (subString: string) {
 	return this.filter((i: string) => i.includes(subString));
 };

@@ -17,7 +17,7 @@
 		"**/node_modules": true,
 		"**/package-lock.json": true,
 		"**/schema.gql": true,
-		".github": false,
+		".github": true,
 		".prettierrc": true,
 		".vscode": true,
 		"LICENSE": true,
@@ -57,13 +57,13 @@
 			"backgroundColor": "#CDE7B0",
 			"color": "#BE6E46",
 			"isWholeLine": true,
-			"text": "Basic infomation"
+			"text": "User infomations"
 		},
 		{
 			"backgroundColor": "#FF3366",
 			"color": "#011627",
 			"isWholeLine": true,
-			"text": "Sensitive infomation"
+			"text": "Sensitive infomations"
 		},
 		{
 			"backgroundColor": "#4464AD",

@@ -1,5 +1,4 @@
-import { User } from '@backend/user/user.entity';
-import { matchingRoles, Role } from '@backend/user/user.enum';
+import { Role } from '@backend/user/user.enum';
 import {
 	createParamDecorator,
 	ExecutionContext,
@@ -12,9 +11,6 @@ import { AuthGuard } from '@nestjs/passport';
 
 export const Roles = Reflector.createDecorator<Role[]>(),
 	AllowPublic = Reflector.createDecorator<boolean>();
-export class ServerContext extends GqlExecutionContext {
-	user: User;
-}
 export const CurrentUser = createParamDecorator(
 	(data: unknown, context: ExecutionContext) => {
 		const ctx = GqlExecutionContext.create(context);
@@ -34,7 +30,7 @@ export class RoleGuard extends AuthGuard('access') {
 	 * @return {GqlExecutionContext} graphql's request
 	 * ! Cautious: Since using GraphQL, it's NOT recommend to DELETE this
 	 */
-	getRequest(context: ExecutionContext): ServerContext {
+	getRequest(context: ExecutionContext) {
 		const ctx = GqlExecutionContext.create(context);
 		return ctx.getContext().req;
 	}
@@ -52,7 +48,7 @@ export class RoleGuard extends AuthGuard('access') {
 			const req = this.getRequest(context),
 				user = req.user;
 
-			return matchingRoles(user.roles, roles);
+			return matching(user.roles, roles);
 		}
 		throw new InternalServerErrorException(
 			'Function not defined roles/permissions',

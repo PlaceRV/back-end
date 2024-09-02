@@ -4,7 +4,7 @@ import { ExecutionContext, InternalServerErrorException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleGuard, ServerContext } from './auth.guard';
+import { RoleGuard } from './auth.guard';
 import { AuthModule } from './auth.module';
 
 describe('AuthGuard', () => {
@@ -43,9 +43,7 @@ describe('AuthGuard', () => {
 				.spyOn(rflt, 'get')
 				.mockReturnValueOnce(false)
 				.mockReturnValueOnce([Role.ADMIN]),
-				jest
-					.spyOn(roleGrd, 'getRequest')
-					.mockReturnValueOnce(req as ServerContext);
+				jest.spyOn(roleGrd, 'getRequest').mockReturnValueOnce(req);
 			expect(await roleGrd.canActivate(ctx)).toBe(true);
 		});
 
@@ -55,9 +53,7 @@ describe('AuthGuard', () => {
 				.spyOn(rflt, 'get')
 				.mockReturnValueOnce(false)
 				.mockReturnValueOnce([Role.ADMIN]);
-			jest
-				.spyOn(roleGrd, 'getRequest')
-				.mockReturnValueOnce(req as ServerContext);
+			jest.spyOn(roleGrd, 'getRequest').mockReturnValueOnce(req);
 			expect(await roleGrd.canActivate(ctx)).toBe(false);
 		});
 
