@@ -59,7 +59,8 @@ declare global {
 		f(): number; // floor()
 		r(): number; // round()
 		a(): number; // abs()
-		char(): string;
+		char(chars?: string): string;
+		rd(): number; // random()
 	}
 	type Basic<T> = {
 		[P in keyof T as T[P] extends Required<T>[P] ? P : never]: T[P];
@@ -70,15 +71,22 @@ Array.prototype.get = function (subString: string) {
 	return this.filter((i: string) => i.includes(subString));
 };
 Array.prototype.random = function () {
-	return this[Math.floor(Math.random() * this.length)];
+	return this[this.length.rd()];
 };
 Array.prototype.last = function () {
 	return this[this.length - 1];
 };
-Number.prototype.char = function () {
-	return Math.random()
-		.toString(20)
-		.slice(2, this as number);
+Number.prototype.char = function (
+	chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
+) {
+	return Array(this)
+		.join()
+		.split(',')
+		.map(() => chars.charAt(chars.length.rd()))
+		.join('');
+};
+Number.prototype.rd = function () {
+	return Math.floor(Math.random() * (this as number));
 };
 Number.prototype.f = function () {
 	return Math.floor(Number(this));

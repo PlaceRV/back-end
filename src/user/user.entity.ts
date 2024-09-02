@@ -1,7 +1,14 @@
 import { Device } from '@backend/device/device.entity';
 import { Place } from '@backend/place/place.entity';
 import { tstStr } from '@backend/utils';
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, HideField, ObjectType } from '@nestjs/graphql';
+import {
+	IsAlpha,
+	IsArray,
+	IsEmail,
+	IsStrongPassword,
+	IsUUID,
+} from 'class-validator';
 import {
 	BaseEntity,
 	Column,
@@ -20,25 +27,52 @@ export class User extends BaseEntity implements IUser {
 		Object.assign(this, payload);
 	}
 
-	// Sensitive infomation
-	@PrimaryGeneratedColumn('uuid') id?: string;
-	@Column('text', { nullable: false }) password: string;
+	// Sensitive infomations
+	@IsUUID()
+	@HideField()
+	@PrimaryGeneratedColumn('uuid')
+	id?: string;
+
+	@IsStrongPassword({
+		minLength: 16,
+		minLowercase: 1,
+		minUppercase: 1,
+		minNumbers: 1,
+		minSymbols: 1,
+	})
+	@Field()
+	@Column()
+	password: string;
 
 	// Relationships
+	@IsArray()
+	@HideField()
 	@OneToMany(() => Device, (_: Device) => _.owner, { eager: true })
 	sessions?: Device[];
+
+	@IsArray()
+	@HideField()
 	@OneToMany(() => Place, (_: Place) => _.createdBy, { eager: true })
 	placesAssigned?: Place[];
 
-	// Basic infomation
+	// User infomations
+	@IsAlpha()
 	@Field()
-	@Column({ length: 15, nullable: false })
+	@Column()
 	firstName: string;
-	@Field() @Column({ length: 15, nullable: false }) lastName: string;
+
+	@IsAlpha()
 	@Field()
-	@Column({ length: 128, nullable: false, unique: true })
+	@Column()
+	lastName: string;
+
+	@IsEmail()
+	@Field()
+	@Column()
 	email: string;
-	@Field(() => [Role])
+
+	@IsArray()
+	@Field()
 	@Column({ type: 'enum', enum: Role, array: true, default: [Role.USER] })
 	roles: Role[];
 

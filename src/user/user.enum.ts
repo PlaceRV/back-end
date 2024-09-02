@@ -12,7 +12,7 @@ export function matchingRoles(
 }
 
 export enum Role {
-	USER = 'USER',
-	ADMIN = 'ADMIN',
-	STAFF = 'STAFF',
+	USER = 'User',
+	ADMIN = 'Admin',
+	STAFF = 'Staff',
 }
