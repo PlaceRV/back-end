@@ -1,10 +1,10 @@
-import { UserMetadata } from '@backend/auth/auth.service';
-import { TestModule } from '@backend/test';
-import { UserRecieve } from '@backend/user/user.dto';
-import { User } from '@backend/user/user.entity';
-import { UserService } from '@backend/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
+import { UserMetadata } from 'auth/auth.service';
+import { UserRecieve } from 'user/user.dto';
+import { User } from 'user/user.entity';
+import { UserService } from 'user/user.service';
+import { TestModule } from '../../test/test.module';
 import { DeviceModule } from './device.module';
 import { DeviceService } from './device.service';
 

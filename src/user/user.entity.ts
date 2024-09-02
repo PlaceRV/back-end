@@ -1,6 +1,3 @@
-import { Device } from '@backend/device/device.entity';
-import { Place } from '@backend/place/place.entity';
-import { hash, tstStr } from '@backend/utils';
 import { Field, HideField, ObjectType } from '@nestjs/graphql';
 import {
 	IsAlpha,
@@ -9,6 +6,8 @@ import {
 	IsStrongPassword,
 	IsUUID,
 } from 'class-validator';
+import { Device } from 'device/device.entity';
+import { Place } from 'place/place.entity';
 import {
 	BaseEntity,
 	Column,
@@ -16,6 +15,7 @@ import {
 	OneToMany,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
+import { hash, tstStr } from 'utils';
 import { Role } from './user.enum';
 import { IUser } from './user.interface';
 

@@ -1,8 +1,4 @@
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
-import { DeviceService } from '@backend/device/device.service';
-import { User } from '@backend/user/user.entity';
-import { ILogin, ISignUp } from '@backend/user/user.interface';
-import { UserService } from '@backend/user/user.service';
 import {
 	BadRequestException,
 	forwardRef,
@@ -11,7 +7,11 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { compareSync } from 'bcrypt';
+import { DeviceService } from 'device/device.service';
 import { Request } from 'express';
+import { User } from 'user/user.entity';
+import { ILogin, ISignUp } from 'user/user.interface';
+import { UserService } from 'user/user.service';
 import { generateFingerprint } from './auth.middleware';
 
 export class PayLoad {

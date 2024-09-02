@@ -1,8 +1,8 @@
-import { CurrentUser, RoleGuard, Roles } from '@backend/auth/auth.guard';
-import { User } from '@backend/user/user.entity';
-import { Role } from '@backend/user/user.enum';
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { CurrentUser, RoleGuard, Roles } from 'auth/auth.guard';
+import { User } from 'user/user.entity';
+import { Role } from 'user/user.enum';
 import { PlaceAssign } from './place.dto';
 import { Place } from './place.entity';
 import { PlaceService } from './place.service';

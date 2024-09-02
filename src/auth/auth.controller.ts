@@ -1,12 +1,12 @@
-import { DeviceService } from '@backend/device/device.service';
-import { UserRecieve } from '@backend/user/user.dto';
-import { ILogin, ISignUp } from '@backend/user/user.interface';
-import { hash } from '@backend/utils';
 import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
 import { compareSync } from 'bcrypt';
+import { DeviceService } from 'device/device.service';
 import { CookieOptions, Request as Rqt, Response as Rsp } from 'express';
+import { UserRecieve } from 'user/user.dto';
+import { ILogin, ISignUp } from 'user/user.interface';
+import { hash } from 'utils';
 import { AuthService, UserMetadata as UsrMtdt } from './auth.service';
 
 @Controller('auth')

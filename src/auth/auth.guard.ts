@@ -1,4 +1,3 @@
-import { Role } from '@backend/user/user.enum';
 import {
 	createParamDecorator,
 	ExecutionContext,
@@ -8,6 +7,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { AuthGuard } from '@nestjs/passport';
+import { Role } from 'user/user.enum';
 
 /**
  * * Convert context's request to graphql's request

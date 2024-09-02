@@ -1,4 +1,4 @@
-import { tstStr } from '@backend/utils';
+import { tstStr } from 'utils';
 import { IUserRecieve } from './user.interface';
 
 export class UserRecieve implements IUserRecieve {

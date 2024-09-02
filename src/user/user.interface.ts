@@ -1,5 +1,5 @@
-import { IDevice } from '@backend/device/device.interface';
-import { IPlace } from '@backend/place/place.interface';
+import { IDevice } from 'device/device.interface';
+import { IPlace } from 'place/place.interface';
 import { Role } from './user.enum';
 
 export interface IUserAuthentication {

@@ -1,13 +1,13 @@
 import { randomBytes } from 'crypto';
-import { DeviceService } from '@backend/device/device.service';
-import { TestModule } from '@backend/test';
-import { UserRecieve } from '@backend/user/user.dto';
-import { User } from '@backend/user/user.entity';
-import { hash } from '@backend/utils';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { DeviceService } from 'device/device.service';
 import { Request, Response } from 'express';
 import { createRequest, createResponse } from 'node-mocks-http';
+import { UserRecieve } from 'user/user.dto';
+import { User } from 'user/user.entity';
+import { hash } from 'utils';
+import { TestModule } from '../../test/test.module';
 import { AuthController } from './auth.controller';
 import { AuthMiddleware } from './auth.middleware';
 import { AuthModule } from './auth.module';

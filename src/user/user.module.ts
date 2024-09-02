@@ -1,8 +1,8 @@
-import { AuthMiddleware } from '@backend/auth/auth.middleware';
-import { AuthModule } from '@backend/auth/auth.module';
 import { forwardRef, MiddlewareConsumer, Module } from '@nestjs/common';
 import { registerEnumType } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthMiddleware } from 'auth/auth.middleware';
+import { AuthModule } from 'auth/auth.module';
 import { UserController } from './user.controller';
 import { User } from './user.entity';
 import { Role } from './user.enum';

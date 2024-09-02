@@ -1,10 +1,10 @@
-import { DeviceModule } from '@backend/device/device.module';
-import { PlaceModule } from '@backend/place/place.module';
-import { UserModule } from '@backend/user/user.module';
 import { forwardRef, MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+import { DeviceModule } from 'device/device.module';
+import { PlaceModule } from 'place/place.module';
+import { UserModule } from 'user/user.module';
 import { AuthController } from './auth.controller';
 import { AuthMiddleware } from './auth.middleware';
 import { AuthService } from './auth.service';

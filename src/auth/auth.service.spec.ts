@@ -1,10 +1,10 @@
-import { DeviceService } from '@backend/device/device.service';
-import { TestModule } from '@backend/test';
-import { User } from '@backend/user/user.entity';
-import { UserService } from '@backend/user/user.service';
 import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { DeviceService } from 'device/device.service';
 import UAParser from 'ua-parser-js';
+import { User } from 'user/user.entity';
+import { UserService } from 'user/user.service';
+import { TestModule } from '../../test/test.module';
 import { AuthModule } from './auth.module';
 import { AuthService, UserMetadata } from './auth.service';
 

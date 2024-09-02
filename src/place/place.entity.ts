@@ -1,5 +1,3 @@
-import { User } from '@backend/user/user.entity';
-import { tstStr } from '@backend/utils';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Point } from 'geojson';
 import {
@@ -10,6 +8,8 @@ import {
 	ManyToOne,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
+import { User } from 'user/user.entity';
+import { tstStr } from 'utils';
 import { IPlace } from './place.interface';
 import { CustomPointScalar } from './place.scalar';
 import { PlaceType } from './place.type';

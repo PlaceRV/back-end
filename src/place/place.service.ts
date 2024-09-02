@@ -1,4 +1,3 @@
-import { User } from '@backend/user/user.entity';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
@@ -7,6 +6,7 @@ import {
 	Repository,
 	SaveOptions,
 } from 'typeorm';
+import { User } from 'user/user.entity';
 import { PlaceAssign } from './place.dto';
 import { Place } from './place.entity';
 

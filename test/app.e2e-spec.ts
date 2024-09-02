@@ -1,7 +1,7 @@
-import { SignUpDto } from '@backend/auth/auth.dto';
-import { AuthModule } from '@backend/auth/auth.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { SignUpDto } from 'auth/auth.dto';
+import { AuthModule } from 'auth/auth.module';
 import request from 'supertest';
 import TestAgent from 'supertest/lib/agent';
 import { TestModule } from './test.module';

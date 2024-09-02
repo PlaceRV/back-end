@@ -1,8 +1,8 @@
-import { TestModule } from '@backend/test';
-import { User } from '@backend/user/user.entity';
-import { UserService } from '@backend/user/user.service';
 import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { User } from 'user/user.entity';
+import { UserService } from 'user/user.service';
+import { TestModule } from '../../test/test.module';
 import { PlaceAssign } from './place.dto';
 import { Place } from './place.entity';
 import { PlaceModule } from './place.module';

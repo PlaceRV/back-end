@@ -1,8 +1,8 @@
-import { DeviceService } from '@backend/device/device.service';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PassportStrategy } from '@nestjs/passport';
+import { DeviceService } from 'device/device.service';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PayLoad } from '../auth.service';
 

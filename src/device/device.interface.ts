@@ -1,4 +1,4 @@
-import { IUser } from '@backend/user/user.interface';
+import { IUser } from 'user/user.interface';
 
 export interface IDevice {
 	owner: IUser;

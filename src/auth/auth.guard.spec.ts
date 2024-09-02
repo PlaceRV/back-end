@@ -1,9 +1,9 @@
-import { TestModule } from '@backend/test';
-import { Role } from '@backend/user/user.enum';
 import { ExecutionContext, InternalServerErrorException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Role } from 'user/user.enum';
+import { TestModule } from '../../test/test.module';
 import { RoleGuard } from './auth.guard';
 import { AuthModule } from './auth.module';
 

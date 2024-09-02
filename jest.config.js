@@ -4,10 +4,6 @@ module.exports = {
 	transform: {
 		'^.+.tsx?$': ['ts-jest', {}],
 	},
-	rootDir: '.',
-	moduleNameMapper: {
-		'@backend/test': '<rootDir>/test/test.module.ts',
-		'@backend/(.*)': '<rootDir>/src/$1',
-	},
 	detectOpenHandles: true,
+	moduleDirectories: ['node_modules', 'src'],
 };
