@@ -21,5 +21,6 @@
 		"strictNullChecks": false,
 		"target": "ESNext",
 		"useDefineForClassFields": false
-	}
+	},
+	"include": ["src/**/*.ts"]
 }
