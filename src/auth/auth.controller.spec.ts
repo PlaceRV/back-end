@@ -3,18 +3,18 @@ import { DeviceService } from '@backend/device/device.service';
 import { TestModule } from '@backend/test';
 import { UserRecieve } from '@backend/user/user.dto';
 import { User } from '@backend/user/user.entity';
+import { hash } from '@backend/utils';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Request, Response } from 'express';
 import { createRequest, createResponse } from 'node-mocks-http';
 import { AuthController } from './auth.controller';
-import { LogInDto, SignUpDto } from './auth.dto';
 import { AuthMiddleware } from './auth.middleware';
 import { AuthModule } from './auth.module';
 import { AuthService, UserMetadata } from './auth.service';
 
 describe('AuthauthCon', () => {
-	const { email, password, firstName, lastName } = User.test;
+	const usr = User.test;
 
 	let authCon: AuthController,
 		authSvc: AuthService,
@@ -49,14 +49,13 @@ describe('AuthauthCon', () => {
 
 	describe('signup', () => {
 		it('call authSvc.signup and sendBack', () => {
-			const dto = new SignUpDto({ email, password, lastName, firstName }),
-				usrRcv = UserRecieve.test,
+			const usrRcv = UserRecieve.test,
 				next = async () => {
-					jest.spyOn(authSvc, 'signup').mockResolvedValue(usrRcv),
+					jest.spyOn(authSvc, 'signUp').mockResolvedValue(usrRcv),
 						jest.spyOn(authCon, 'sendBack').mockImplementation();
-					await authCon.signup(req, dto, res),
-						expect(authSvc.signup).toHaveBeenCalledWith(
-							dto,
+					await authCon.signUp(req, usr, res),
+						expect(authSvc.signUp).toHaveBeenCalledWith(
+							usr,
 							expect.any(UserMetadata),
 						),
 						expect(authCon.sendBack).toHaveBeenCalledWith(req, res, usrRcv);
@@ -67,14 +66,13 @@ describe('AuthauthCon', () => {
 
 	describe('login', () => {
 		it('call authSvc.login and sendBack', () => {
-			const dto = new LogInDto({ email, password }),
-				usrRcv = UserRecieve.test,
+			const usrRcv = UserRecieve.test,
 				next = async () => {
 					jest.spyOn(authSvc, 'login').mockResolvedValue(usrRcv),
 						jest.spyOn(authCon, 'sendBack').mockImplementation();
-					await authCon.login(req, dto, res),
+					await authCon.login(req, usr, res),
 						expect(authSvc.login).toHaveBeenCalledWith(
-							dto,
+							usr,
 							expect.any(UserMetadata),
 						),
 						expect(authCon.sendBack).toHaveBeenCalledWith(req, res, usrRcv);
@@ -117,7 +115,7 @@ describe('AuthauthCon', () => {
 			const next = async () => {
 				req.user = {
 					success: true,
-					ua: authSvc.hash(new UserMetadata(req).toString()),
+					ua: hash(new UserMetadata(req).toString()),
 				};
 
 				jest.spyOn(authCon, 'sendBack').mockImplementation();
@@ -135,9 +133,9 @@ describe('AuthauthCon', () => {
 	describe('clearCookies', () => {
 		it('call res.clearCookie twice', () => {
 			let acs: string, rfs: string;
-			req.cookies[`${(acs = ckiSfx + authSvc.hash(acsKey))}`] =
+			req.cookies[`${(acs = ckiSfx + hash(acsKey))}`] =
 				randomBytes(6).toString();
-			req.cookies[`${(rfs = ckiSfx + authSvc.hash(rfsKey))}`] =
+			req.cookies[`${(rfs = ckiSfx + hash(rfsKey))}`] =
 				randomBytes(6).toString();
 
 			jest.spyOn(res, 'clearCookie');

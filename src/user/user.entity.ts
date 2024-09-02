@@ -1,6 +1,6 @@
 import { Device } from '@backend/device/device.entity';
 import { Place } from '@backend/place/place.entity';
-import { tstStr } from '@backend/utils';
+import { hash, tstStr } from '@backend/utils';
 import { Field, HideField, ObjectType } from '@nestjs/graphql';
 import {
 	IsAlpha,
@@ -33,16 +33,18 @@ export class User extends BaseEntity implements IUser {
 	@PrimaryGeneratedColumn('uuid')
 	id?: string;
 
-	@IsStrongPassword({
-		minLength: 16,
-		minLowercase: 1,
-		minUppercase: 1,
-		minNumbers: 1,
-		minSymbols: 1,
-	})
-	@Field()
 	@Column()
-	password: string;
+	private _hashedPassword: string;
+
+	get hashedPassword() {
+		if (this.password || this._hashedPassword) {
+			if (this._hashedPassword) return this._hashedPassword;
+			return (this._hashedPassword = hash(this.password));
+		}
+		return this._hashedPassword;
+	}
+
+	set hashedPassword(i: any) {}
 
 	// Relationships
 	@IsArray()
@@ -76,6 +78,16 @@ export class User extends BaseEntity implements IUser {
 	@Column({ type: 'enum', enum: Role, array: true, default: [Role.USER] })
 	roles: Role[];
 
+	@IsStrongPassword({
+		minLength: 16,
+		minLowercase: 1,
+		minUppercase: 1,
+		minNumbers: 1,
+		minSymbols: 1,
+	})
+	@Field()
+	password: string;
+
 	// Methods
 	get info() {
 		return {
@@ -87,12 +99,13 @@ export class User extends BaseEntity implements IUser {
 	}
 
 	static get test() {
-		return new User({
+		const n = new User({
 			email: tstStr(),
 			password: tstStr(),
 			firstName: tstStr(),
 			lastName: tstStr(),
 			roles: [Role.USER],
 		});
+		if (n.hashedPassword) return n;
 	}
 }

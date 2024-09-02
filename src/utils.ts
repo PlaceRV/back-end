@@ -1,3 +1,5 @@
+import { hashSync } from 'bcrypt';
+
 // Local
 export const methodDecorator =
 		(
@@ -22,7 +24,8 @@ export const methodDecorator =
 			console.log(`Result of ${propertyKey}:`, result);
 		},
 	),
-	tstStr = () => (12).char();
+	tstStr = () => (12).char(),
+	hash = (i: string) => hashSync(i, (8).rd() + 4);
 
 export function allImplement(
 	decorator: (

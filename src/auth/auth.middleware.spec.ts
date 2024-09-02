@@ -1,4 +1,5 @@
 import { TestModule } from '@backend/test';
+import { hash } from '@backend/utils';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NextFunction, Request, Response } from 'express';
@@ -57,11 +58,11 @@ describe('AuthMiddleware', () => {
 
 	describe('use', () => {
 		beforeEach(() => {
-			req.cookies[`${ckiSfx + authSvc.hash(rfsKey)}`] = authSvc.encrypt(
+			req.cookies[`${ckiSfx + hash(rfsKey)}`] = authSvc.encrypt(
 				rfsTkn,
 				acsTkn.split('.')[2],
 			);
-			req.cookies[`${ckiSfx + authSvc.hash(acsKey)}`] = authSvc.encrypt(acsTkn);
+			req.cookies[`${ckiSfx + hash(acsKey)}`] = authSvc.encrypt(acsTkn);
 		});
 
 		it('set the request fingerprint and authorization header for refresh', () => {

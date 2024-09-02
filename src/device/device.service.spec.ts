@@ -1,4 +1,4 @@
-import { AuthService, UserMetadata } from '@backend/auth/auth.service';
+import { UserMetadata } from '@backend/auth/auth.service';
 import { TestModule } from '@backend/test';
 import { UserRecieve } from '@backend/user/user.dto';
 import { User } from '@backend/user/user.entity';
@@ -9,10 +9,7 @@ import { DeviceModule } from './device.module';
 import { DeviceService } from './device.service';
 
 describe('DeviceService', () => {
-	let dvcSvc: DeviceService,
-		authSvc: AuthService,
-		jwtSvc: JwtService,
-		usrSvc: UserService;
+	let dvcSvc: DeviceService, jwtSvc: JwtService, usrSvc: UserService;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -20,7 +17,6 @@ describe('DeviceService', () => {
 		}).compile();
 
 		(dvcSvc = module.get(DeviceService)),
-			(authSvc = module.get(AuthService)),
 			(jwtSvc = module.get(JwtService)),
 			(usrSvc = module.get(UserService));
 	});
@@ -36,16 +32,14 @@ describe('DeviceService', () => {
 		it('create a new device session and return tokens', async () => {
 			const usrRcv = UserRecieve.test;
 
-			jest.spyOn(authSvc, 'hash'),
-				jest
-					.spyOn(jwtSvc, 'sign')
-					.mockReturnValueOnce(usrRcv.refreshToken)
-					.mockReturnValueOnce(usrRcv.accessToken);
+			jest
+				.spyOn(jwtSvc, 'sign')
+				.mockReturnValueOnce(usrRcv.refreshToken)
+				.mockReturnValueOnce(usrRcv.accessToken);
 
 			const result = await dvcSvc.getTokens(usr, mtdt);
 
 			expect(jwtSvc.sign).toHaveBeenCalledTimes(2),
-				expect(authSvc.hash).toHaveBeenCalledWith(mtdt.toString()),
 				expect(result).toEqual(usrRcv);
 		});
 	});

@@ -5,7 +5,6 @@ import { UserService } from '@backend/user/user.service';
 import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import UAParser from 'ua-parser-js';
-import { LogInDto, SignUpDto } from './auth.dto';
 import { AuthModule } from './auth.module';
 import { AuthService, UserMetadata } from './auth.service';
 
@@ -31,20 +30,18 @@ describe('AuthService', () => {
 	it('be defined', () => expect(authSvc).toBeDefined());
 
 	describe('signup', () => {
-		let dto: SignUpDto, mtdt: UserMetadata, usr: User;
+		let mtdt: UserMetadata, usr: User;
 		beforeEach(() => {
-			(usr = User.test),
-				(dto = new SignUpDto({ ...usr } as Required<SignUpDto>)),
-				(mtdt = UserMetadata.test);
+			(usr = User.test), (mtdt = UserMetadata.test);
 		});
 
 		it('create a new user and return tokens', async () => {
 			jest.spyOn(usrSvc, 'findOne'),
 				jest.spyOn(usrSvc, 'save'),
 				jest.spyOn(dvcSvc, 'getTokens');
-			await authSvc.signup(dto, mtdt),
-				expect(usrSvc.findOne).toHaveBeenCalledWith({ email: dto.email }),
-				expect(usrSvc.save).toHaveBeenCalledWith(dto),
+			await authSvc.signUp(usr, mtdt),
+				expect(usrSvc.findOne).toHaveBeenCalledWith({ email: usr.email }),
+				expect(usrSvc.save).toHaveBeenCalledWith(expect.objectContaining(usr)),
 				expect(dvcSvc.getTokens).toHaveBeenCalledWith(
 					expect.objectContaining(usr.info),
 					mtdt,
@@ -52,29 +49,24 @@ describe('AuthService', () => {
 		});
 
 		it('throw a BadRequestException if the email is already assigned', async () => {
-			await authSvc.signup(dto, mtdt);
-			await expect(authSvc.signup(dto, mtdt)).rejects.toThrow(
+			await authSvc.signUp(usr, mtdt);
+			await expect(authSvc.signUp(usr, mtdt)).rejects.toThrow(
 				BadRequestException,
 			);
 		});
 	});
 
 	describe('login', () => {
-		let dto: LogInDto, mtdt: UserMetadata, usr: User;
+		let mtdt: UserMetadata, usr: User;
 		beforeEach(async () => {
-			(usr = User.test),
-				(dto = new LogInDto({ ...usr } as Required<LogInDto>)),
-				(mtdt = UserMetadata.test);
-			await authSvc.signup(
-				new SignUpDto({ ...usr } as Required<SignUpDto>),
-				mtdt,
-			);
+			(usr = User.test), (mtdt = UserMetadata.test);
+			await authSvc.signUp(usr, mtdt);
 		});
 
 		it('return tokens for a valid user', async () => {
 			jest.spyOn(usrSvc, 'findOne'), jest.spyOn(dvcSvc, 'getTokens');
-			await authSvc.login(dto, mtdt),
-				expect(usrSvc.findOne).toHaveBeenCalledWith({ email: dto.email }),
+			await authSvc.login(usr, mtdt),
+				expect(usrSvc.findOne).toHaveBeenCalledWith({ email: usr.email }),
 				expect(dvcSvc.getTokens).toHaveBeenCalledWith(
 					expect.objectContaining(usr.info),
 					mtdt,
@@ -82,8 +74,8 @@ describe('AuthService', () => {
 		});
 
 		it('throw a BadRequestException for an invalid user', async () => {
-			dto.password += '0';
-			await expect(authSvc.login(dto, mtdt)).rejects.toThrow(
+			usr.password += '0';
+			await expect(authSvc.login(usr, mtdt)).rejects.toThrow(
 				BadRequestException,
 			);
 		});

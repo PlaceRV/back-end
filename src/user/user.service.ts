@@ -12,6 +12,7 @@ import { User } from './user.entity';
 export class UserService {
 	constructor(@InjectRepository(User) private repo: Repository<User>) {}
 
+	// Database requests
 	find(options?: FindOptionsWhere<User>) {
 		return this.repo.find({ where: options });
 	}
