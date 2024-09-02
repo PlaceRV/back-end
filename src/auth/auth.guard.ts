@@ -9,14 +9,22 @@ import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { AuthGuard } from '@nestjs/passport';
 
+/**
+ * * Convert context's request to graphql's request
+ * @param {ExecutionContext} context - context's request
+ * ! Cautious: Since using GraphQL, it's NOT recommend to DELETE this
+ */
+function convertForGql(context: ExecutionContext) {
+	const ctx = GqlExecutionContext.create(context);
+	return ctx.getContext().req;
+}
+
+// Decorators
 export const Roles = Reflector.createDecorator<Role[]>(),
-	AllowPublic = Reflector.createDecorator<boolean>();
-export const CurrentUser = createParamDecorator(
-	(data: unknown, context: ExecutionContext) => {
-		const ctx = GqlExecutionContext.create(context);
-		return ctx.getContext().req.user;
-	},
-);
+	AllowPublic = Reflector.createDecorator<boolean>(),
+	CurrentUser = createParamDecorator((context: ExecutionContext) => {
+		return convertForGql(context).user;
+	});
 
 @Injectable()
 export class RoleGuard extends AuthGuard('access') {
@@ -24,22 +32,10 @@ export class RoleGuard extends AuthGuard('access') {
 		super();
 	}
 
-	/**
-	 * * Convert context's request to graphql's request
-	 * @param {ExecutionContext} context - context's request
-	 * @return {GqlExecutionContext} graphql's request
-	 * ! Cautious: Since using GraphQL, it's NOT recommend to DELETE this
-	 */
-	getRequest(context: ExecutionContext) {
-		const ctx = GqlExecutionContext.create(context);
-		return ctx.getContext().req;
+	getRequest(ctx: ExecutionContext) {
+		return convertForGql(ctx);
 	}
 
-	/**
-	 * * Check user's role
-	 * @param {ExecutionContext} context - context from request
-	 * @return {boolean} allow user proceed process
-	 */
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		if (this.reflector.get(AllowPublic, context.getHandler())) return true;
 		await super.canActivate(context); // ! Must run to check passport
