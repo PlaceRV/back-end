@@ -74,7 +74,7 @@ export class User extends BaseEntity implements IUser {
 	email: string;
 
 	@IsArray()
-	@Field()
+	@Field(() => [Role])
 	@Column({ type: 'enum', enum: Role, array: true, default: [Role.USER] })
 	roles: Role[];
 

@@ -4,6 +4,7 @@
 /build
 package-lock.json
 .adminjs
+index.d.ts
 
 # Logs
 logs
