@@ -65,9 +65,6 @@ declare global {
 		char(chars?: string): string;
 		rd(): number; // random()
 	}
-	type Basic<T> = {
-		[P in keyof T as T[P] extends Required<T>[P] ? P : never]: T[P];
-	};
 
 	/**
 	 * Comparing require objects and input objects

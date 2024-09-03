@@ -18,7 +18,7 @@ import { SqlModule } from './module/sql.module';
 				'subscriptions-transport-ws': false,
 			},
 			// Code first
-			autoSchemaFile: './src/schema.gql',
+			autoSchemaFile: 'schema.gql',
 			sortSchema: true,
 			// Init Apollo SandBox
 			playground: false,

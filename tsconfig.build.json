@@ -1,4 +1,10 @@
 {
-	"exclude": ["**/*.spec.ts", "**/schema.gql", "test/**/*.ts", "*.ts"],
+	"exclude": [
+		"**/*.spec.ts",
+		"**/schema.gql",
+		"*.config.*",
+		"./*.d.ts",
+		"**/build.ts"
+	],
 	"extends": "./tsconfig.json"
 }

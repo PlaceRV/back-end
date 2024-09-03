@@ -4,8 +4,9 @@
 /build
 package-lock.json
 .adminjs
-index.d.ts
+types.d.ts
 src/models.ts
+*.tsbuildinfo
 
 # Logs
 logs

@@ -7,7 +7,7 @@
 		"esModuleInterop": true,
 		"experimentalDecorators": true,
 		"forceConsistentCasingInFileNames": true,
-		"incremental": true,
+		"incremental": false,
 		"module": "NodeNext",
 		"moduleResolution": "NodeNext",
 		"noFallthroughCasesInSwitch": false,
@@ -23,5 +23,5 @@
 		"target": "ESNext",
 		"useDefineForClassFields": false
 	},
-	"include": ["./**/*.ts"]
+	"exclude": ["*.config.*", "./*.d.ts", "dist"]
 }

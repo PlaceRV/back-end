@@ -6,11 +6,11 @@
 	"license": "AGPL-3.0-only",
 	"author": "",
 	"type": "commonjs",
-	"types": "index.d.ts",
+	"types": "types.d.ts",
 	"scripts": {
-		"postinstall": "",
-		"build": "nest build",
-		"dts": "npm-dts generate",
+		"postinstall": "npm run build && npm run dts",
+		"build": "ts-node src/build.ts && nest build",
+		"dts": "npm-dts generate --output types.d.ts",
 		"format": "prettier --write \"./**/*.ts\" \"./**/*.json\"",
 		"lint": "eslint --fix  --ext .ts .",
 		"safe": "generate-env-example",
@@ -86,7 +86,7 @@
 		"ts-jest": "^29.1.0",
 		"ts-loader": "^9.4.3",
 		"ts-morph": "^21.0.1",
-		"ts-node": "^10.9.1",
+		"ts-node": "^10.9.2",
 		"tsconfig-paths": "^4.2.0",
 		"typescript": "^5.1.3"
 	}
