@@ -28,7 +28,7 @@ export interface ISignUp extends IUserAuthentication, IUserInfo {}
 
 // Enums
 export enum Role {
-	USER = 'User',
-	ADMIN = 'Admin',
-	STAFF = 'Staff',
+	USER = 'USER',
+	ADMIN = 'ADMIN',
+	STAFF = 'STAFF',
 }

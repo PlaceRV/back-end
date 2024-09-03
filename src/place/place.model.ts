@@ -15,7 +15,7 @@ export interface IPlace extends IPlaceInfo {
 
 // Enums
 export enum PlaceType {
-	CHURCH = 'Church',
-	TEMPLE = 'Temple',
-	NONE = 'Empty',
+	CHURCH = 'CHURCH',
+	TEMPLE = 'TEMPLE',
+	NONE = 'NONE',
 }
