@@ -1,3 +1,5 @@
+import { hashSync } from 'bcrypt';
+
 // Local
 export const methodDecorator =
 		(
@@ -22,7 +24,8 @@ export const methodDecorator =
 			console.log(`Result of ${propertyKey}:`, result);
 		},
 	),
-	tstStr = () => (12).char();
+	tstStr = () => (12).char(),
+	hash = (i: string) => hashSync(i, (8).rd() + 4);
 
 export function allImplement(
 	decorator: (
@@ -59,26 +62,57 @@ declare global {
 		f(): number; // floor()
 		r(): number; // round()
 		a(): number; // abs()
-		char(): string;
+		char(chars?: string): string;
+		rd(): number; // random()
 	}
-	type Basic<T> = {
-		[P in keyof T as T[P] extends Required<T>[P] ? P : never]: T[P];
-	};
+
+	/**
+	 * Comparing require objects and input objects
+	 * @param {T[]} input - Input objects
+	 * @param {T[]} required - Require objects
+	 * @return {Boolean} Is input objects sastisfy with require objects
+	 */
+	function matching<T>(input: T[], required: T[]): boolean;
+	/**
+	 * Return the formatted name of current file
+	 * @param {string} file - the current file's name (must be __filename)
+	 * @param {number} cut - How many chunk should get (default: 2)
+	 * @return {string} formatted file's name
+	 */
+	function curFile(file: string, cut?: number): string;
 }
 
+global.curFile = (file: string, cut = 2) =>
+	file
+		.split('\\')
+		.last()
+		.split('.')
+		.map((w) => w[0].toUpperCase() + w.slice(1))
+		.slice(0, cut)
+		.join(' ');
+global.matching = <T>(input: T[], required: T[]): boolean => {
+	return required.every((i) => input.some((j) => i === j));
+};
 Array.prototype.get = function (subString: string) {
 	return this.filter((i: string) => i.includes(subString));
 };
 Array.prototype.random = function () {
-	return this[Math.floor(Math.random() * this.length)];
+	return this[this.length.rd()];
 };
 Array.prototype.last = function () {
 	return this[this.length - 1];
 };
-Number.prototype.char = function () {
-	return Math.random()
-		.toString(20)
-		.slice(2, this as number);
+Number.prototype.char = function (
+	chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
+) {
+	return Array(this)
+		.join()
+		.split(',')
+		.map(() => chars.charAt(chars.length.rd()))
+		.join('');
+};
+Number.prototype.rd = function () {
+	return Math.floor(Math.random() * (this as number));
 };
 Number.prototype.f = function () {
 	return Math.floor(Number(this));

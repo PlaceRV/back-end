@@ -4,9 +4,8 @@ import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { AuthMiddleware } from './auth/auth.middleware';
 import { AuthModule } from './auth/auth.module';
-import { LoadEnvModule } from './config.module';
-import { CustomPointScalar } from './place/place.scalar';
-import { SqlModule } from './sql.module';
+import { LoadEnvModule } from './module/config.module';
+import { SqlModule } from './module/sql.module';
 
 @Module({
 	imports: [
@@ -19,15 +18,13 @@ import { SqlModule } from './sql.module';
 				'subscriptions-transport-ws': false,
 			},
 			// Code first
-			autoSchemaFile: './src/schema.gql',
+			autoSchemaFile: 'schema.gql',
 			sortSchema: true,
 			// Init Apollo SandBox
 			playground: false,
 			plugins: [ApolloServerPluginLandingPageLocalDefault()],
 			includeStacktraceInErrorResponses: false,
 			inheritResolversFromInterfaces: false,
-			// Custom scalar
-			resolvers: { Point: CustomPointScalar },
 		}),
 		// Sub modules
 		AuthModule,

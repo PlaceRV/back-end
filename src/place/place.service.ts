@@ -1,4 +1,3 @@
-import { User } from '@backend/user/user.entity';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
@@ -7,17 +6,24 @@ import {
 	Repository,
 	SaveOptions,
 } from 'typeorm';
-import { PlaceAssign } from './place.dto';
-import { Place } from './place.entity';
+import { User } from 'user/user.entity';
+import { UserService } from 'user/user.service';
+import { Place, PlaceAssign } from './place.entity';
 
 @Injectable()
 export class PlaceService {
-	constructor(@InjectRepository(Place) private repo: Repository<Place>) {}
+	constructor(
+		@InjectRepository(Place) private repo: Repository<Place>,
+		private usrSvc: UserService,
+	) {}
 
-	async assign(placeAssign: PlaceAssign, user: User) {
-		if (user) {
-			return await this.save({ ...placeAssign, createdBy: user });
-		}
+	async assign(placeAssign: PlaceAssign, usr: User) {
+		try {
+			const user = await this.usrSvc.findOne({ email: usr.email });
+			if (user) {
+				return await this.save({ ...placeAssign, createdBy: user });
+			}
+		} catch (error) {}
 		throw new BadRequestException('Invalid input');
 	}
 

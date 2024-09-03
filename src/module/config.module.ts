@@ -29,8 +29,6 @@ import Joi from 'joi';
 				SERVER_COOKIE_PREFIX: Joi.string().default(
 					randomBytes(3).toString('hex'),
 				),
-				// bcrypt
-				BCRYPT_SALT: Joi.number().default(6),
 				// AES
 				AES_ALGO: Joi.string().default('aes-256-ctr'),
 				// ADMIN

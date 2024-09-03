@@ -1,5 +1,5 @@
-import { tstStr } from '@backend/utils';
-import { IUserRecieve } from './user.interface';
+import { tstStr } from 'utils';
+import { IUserRecieve } from './user.model';
 
 export class UserRecieve implements IUserRecieve {
 	constructor(payload: IUserRecieve) {

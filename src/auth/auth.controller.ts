@@ -1,11 +1,12 @@
-import { DeviceService } from '@backend/device/device.service';
-import { UserRecieve } from '@backend/user/user.dto';
 import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
 import { compareSync } from 'bcrypt';
+import { DeviceService } from 'device/device.service';
 import { CookieOptions, Request as Rqt, Response as Rsp } from 'express';
-import { LogInDto, SignUpDto } from './auth.dto';
+import { UserRecieve } from 'user/user.dto';
+import { ILogin, ISignUp } from 'user/user.model';
+import { hash } from 'utils';
 import { AuthService, UserMetadata as UsrMtdt } from './auth.service';
 
 @Controller('auth')
@@ -38,12 +39,12 @@ export class AuthController {
 		this.clearCookies(req, res);
 		res
 			.cookie(
-				this.ckiPfx + this.authSvc.hash(this.acsKey),
+				this.ckiPfx + hash(this.acsKey),
 				this.authSvc.encrypt(usrRcv.accessToken),
 				this.ckiOpt,
 			)
 			.cookie(
-				this.ckiPfx + this.authSvc.hash(this.rfsKey),
+				this.ckiPfx + hash(this.rfsKey),
 				this.authSvc.encrypt(
 					usrRcv.refreshToken,
 					usrRcv.accessToken.split('.')[2],
@@ -56,19 +57,19 @@ export class AuthController {
 	@Post('login')
 	async login(
 		@Req() req: Rqt,
-		@Body() dto: LogInDto,
+		@Body() dto: ILogin,
 		@Res({ passthrough: true }) res: Rsp,
 	) {
 		this.sendBack(req, res, await this.authSvc.login(dto, new UsrMtdt(req)));
 	}
 
 	@Post('signup')
-	async signup(
+	async signUp(
 		@Req() req: Rqt,
-		@Body() dto: SignUpDto,
+		@Body() dto: ISignUp,
 		@Res({ passthrough: true }) res: Rsp,
 	) {
-		this.sendBack(req, res, await this.authSvc.signup(dto, new UsrMtdt(req)));
+		this.sendBack(req, res, await this.authSvc.signUp(dto, new UsrMtdt(req)));
 	}
 
 	@Post('logout')

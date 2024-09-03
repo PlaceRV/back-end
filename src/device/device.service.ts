@@ -1,16 +1,17 @@
-import { AuthService, PayLoad, UserMetadata } from '@backend/auth/auth.service';
-import { UserRecieve } from '@backend/user/user.dto';
-import { User } from '@backend/user/user.entity';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
+import { AuthService, PayLoad, UserMetadata } from 'auth/auth.service';
 import {
 	DeepPartial,
 	FindOptionsWhere,
 	Repository,
 	SaveOptions,
 } from 'typeorm';
+import { UserRecieve } from 'user/user.dto';
+import { User } from 'user/user.entity';
+import { hash } from 'utils';
 import { Device } from './device.entity';
 
 @Injectable()
@@ -37,7 +38,7 @@ export class DeviceService {
 	async getTokens(user: User, mtdt: UserMetadata) {
 		const session = await this.save({
 				owner: user,
-				hashedUserAgent: this.authSvc.hash(mtdt.toString()),
+				hashedUserAgent: hash(mtdt.toString()),
 				useTimeLeft: this.use,
 			}),
 			refreshToken = this.refreshTokenSign(

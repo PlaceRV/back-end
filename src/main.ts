@@ -1,6 +1,7 @@
 import { readFileSync } from 'fs';
 import http from 'http';
 import https from 'https';
+import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
@@ -21,17 +22,9 @@ async function bootstrap() {
 		{ buildAuthenticatedRouter } = await import('@adminjs/express'),
 		{ Database, Resource } = await import('@adminjs/typeorm'),
 		server = express(),
-		app = (
-			await NestFactory.create(AppModule, new ExpressAdapter(server), {
-				cors: {
-					origin: [
-						/^https:\/\/([.\w]*)(anhvietnguyen.id.vn)(:[0-9]+)?\/?(\/[.\w]*)*$/,
-					],
-					methods: '*',
-					credentials: true,
-				},
-			})
-		).use(cookieParser()),
+		app = (await NestFactory.create(AppModule, new ExpressAdapter(server)))
+			.use(cookieParser())
+			.useGlobalPipes(new ValidationPipe()),
 		cfgSvc = app.get(ConfigService);
 	Resource.validate = validate;
 	AdminJS.registerAdapter({ Resource, Database });

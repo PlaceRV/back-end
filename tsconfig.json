@@ -1,22 +1,20 @@
 {
 	"compilerOptions": {
 		"allowSyntheticDefaultImports": true,
+		"baseUrl": "src",
 		"declaration": true,
 		"emitDecoratorMetadata": true,
 		"esModuleInterop": true,
 		"experimentalDecorators": true,
 		"forceConsistentCasingInFileNames": true,
-		"incremental": true,
+		"incremental": false,
 		"module": "NodeNext",
 		"moduleResolution": "NodeNext",
 		"noFallthroughCasesInSwitch": false,
 		"noImplicitAny": false,
-		"outDir": "./dist",
-		"paths": {
-			"@backend/*": ["./src/*.ts"],
-			"@backend/test": ["./test/test.module.ts"]
-		},
+		"outDir": "dist",
 		"removeComments": true,
+		"rootDir": "src",
 		"skipLibCheck": true,
 		"sourceMap": true,
 		"strict": true,
@@ -24,5 +22,6 @@
 		"strictNullChecks": false,
 		"target": "ESNext",
 		"useDefineForClassFields": false
-	}
+	},
+	"exclude": ["./*.d.ts", "dist", "*.config.*"]
 }

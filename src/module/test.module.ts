@@ -1,6 +1,6 @@
-import { LoadEnvModule } from '@backend/config.module';
-import { SqlModule } from '@backend/sql.module';
 import { Module } from '@nestjs/common';
+import { LoadEnvModule } from 'module/config.module';
+import { SqlModule } from 'module/sql.module';
 
 @Module({
 	imports: [LoadEnvModule, SqlModule('test')],

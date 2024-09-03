@@ -1,4 +1,3 @@
-import { User } from '@backend/user/user.entity';
 import {
 	BaseEntity,
 	Column,
@@ -6,6 +5,7 @@ import {
 	ManyToOne,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
+import { User } from 'user/user.entity';
 import { IDevice } from './device.interface';
 
 @Entity()

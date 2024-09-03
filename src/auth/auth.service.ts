@@ -1,6 +1,4 @@
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
-import { DeviceService } from '@backend/device/device.service';
-import { UserService } from '@backend/user/user.service';
 import {
 	BadRequestException,
 	forwardRef,
@@ -8,9 +6,12 @@ import {
 	Injectable,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { compareSync, hashSync } from 'bcrypt';
+import { compareSync } from 'bcrypt';
+import { DeviceService } from 'device/device.service';
 import { Request } from 'express';
-import { LogInDto, SignUpDto } from './auth.dto';
+import { User } from 'user/user.entity';
+import { ILogin, ISignUp } from 'user/user.model';
+import { UserService } from 'user/user.service';
 import { generateFingerprint } from './auth.middleware';
 
 export class PayLoad {
@@ -58,25 +59,28 @@ export class AuthService {
 		@Inject(forwardRef(() => DeviceService))
 		private dvcSvc: DeviceService,
 	) {}
-	private readonly slt = this.cfgSvc.get('BCRYPT_SALT');
 	private readonly algorithm = this.cfgSvc.get('AES_ALGO');
 	private readonly svrScr = this.cfgSvc.get('SERVER_SECRET');
 
-	async signup(signupDto: SignUpDto, mtdt: UserMetadata) {
-		const user = await this.usrSvc.findOne({ email: signupDto.email });
+	async signUp(input: ISignUp, mtdt: UserMetadata) {
+		const user = await this.usrSvc.findOne({ email: input.email });
 		if (!user) {
-			signupDto.password = this.hash(signupDto.password);
-
-			const user = await this.usrSvc.save(signupDto);
-			return this.dvcSvc.getTokens(user, mtdt);
+			const newUser = new User(input);
+			if (newUser.hashedPassword) {
+				await this.usrSvc.save(newUser);
+				return this.dvcSvc.getTokens(newUser, mtdt);
+			}
 		}
 		throw new BadRequestException('Email already assigned');
 	}
 
-	async login(loginDto: LogInDto, mtdt: UserMetadata) {
-		const user = await this.usrSvc.findOne({ email: loginDto.email });
+	async login(input: ILogin, mtdt: UserMetadata) {
+		const user = await this.usrSvc.findOne({ email: input.email });
 		if (user) {
-			const isPasswordMatched = compareSync(loginDto.password, user.password);
+			const isPasswordMatched = compareSync(
+				input.password,
+				user.hashedPassword,
+			);
 			if (isPasswordMatched) return this.dvcSvc.getTokens(user, mtdt);
 		}
 		throw new BadRequestException('Invalid email or password');
@@ -101,9 +105,5 @@ export class AuthService {
 			decipher = createDecipheriv(this.algorithm, this.sigToKey(key), iv),
 			decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()]);
 		return decrypted.toString();
-	}
-
-	hash(text: string) {
-		return hashSync(text, this.slt);
 	}
 }

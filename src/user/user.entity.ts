@@ -1,7 +1,13 @@
-import { Device } from '@backend/device/device.entity';
-import { Place } from '@backend/place/place.entity';
-import { tstStr } from '@backend/utils';
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, HideField, ObjectType } from '@nestjs/graphql';
+import {
+	IsAlpha,
+	IsArray,
+	IsEmail,
+	IsStrongPassword,
+	IsUUID,
+} from 'class-validator';
+import { Device } from 'device/device.entity';
+import { Place } from 'place/place.entity';
 import {
 	BaseEntity,
 	Column,
@@ -9,8 +15,8 @@ import {
 	OneToMany,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Role } from './user.enum';
-import { IUser } from './user.interface';
+import { hash, tstStr } from 'utils';
+import { IUser, Role } from './user.model';
 
 @ObjectType()
 @Entity()
@@ -20,27 +26,66 @@ export class User extends BaseEntity implements IUser {
 		Object.assign(this, payload);
 	}
 
-	// Sensitive infomation
-	@PrimaryGeneratedColumn('uuid') id?: string;
-	@Column('text', { nullable: false }) password: string;
+	// Sensitive infomations
+	@IsUUID()
+	@HideField()
+	@PrimaryGeneratedColumn('uuid')
+	id?: string;
+
+	@Column()
+	private _hashedPassword: string;
+
+	get hashedPassword() {
+		if (this.password || this._hashedPassword) {
+			if (this._hashedPassword) return this._hashedPassword;
+			return (this._hashedPassword = hash(this.password));
+		}
+		return this._hashedPassword;
+	}
+
+	set hashedPassword(i: any) {}
 
 	// Relationships
+	@IsArray()
+	@HideField()
 	@OneToMany(() => Device, (_: Device) => _.owner, { eager: true })
 	sessions?: Device[];
+
+	@IsArray()
+	@HideField()
 	@OneToMany(() => Place, (_: Place) => _.createdBy, { eager: true })
 	placesAssigned?: Place[];
 
-	// Basic infomation
+	// Infomations
+	@IsAlpha()
 	@Field()
-	@Column({ length: 15, nullable: false })
+	@Column()
 	firstName: string;
-	@Field() @Column({ length: 15, nullable: false }) lastName: string;
+
+	@IsAlpha()
 	@Field()
-	@Column({ length: 128, nullable: false, unique: true })
+	@Column()
+	lastName: string;
+
+	@IsEmail()
+	@Field()
+	@Column()
 	email: string;
+
+	@IsArray()
 	@Field(() => [Role])
 	@Column({ type: 'enum', enum: Role, array: true, default: [Role.USER] })
 	roles: Role[];
+
+	@IsStrongPassword({
+		minLength: 16,
+		minLowercase: 1,
+		minUppercase: 1,
+		minNumbers: 1,
+		minSymbols: 1,
+	})
+	@Field()
+	password: string;
 
 	// Methods
 	get info() {
@@ -52,13 +97,14 @@ export class User extends BaseEntity implements IUser {
 		};
 	}
 
-	static get test() {
-		return new User({
+	static test(from: string) {
+		const n = new User({
 			email: tstStr(),
 			password: tstStr(),
-			firstName: tstStr(),
-			lastName: tstStr(),
+			firstName: from,
+			lastName: new Date().toISOString(),
 			roles: [Role.USER],
 		});
+		if (n.hashedPassword) return n;
 	}
 }
