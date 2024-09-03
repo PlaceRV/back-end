@@ -5,7 +5,7 @@
 	"files.exclude": {
 		"**/*.example*": true,
 		"**/*.js": true,
-		"**/*spec*": true,
+		"**/*spec*": false,
 		"**/.DS_Store": true,
 		"**/.git": true,
 		"**/.hg": true,
@@ -23,7 +23,7 @@
 		".vscode": true,
 		"LICENSE": true,
 		"coverage": true,
-		"dist": true,
+		"dist": false,
 		"nest-cli.json": true,
 		"node_modules": true,
 		"package-lock.json": true,

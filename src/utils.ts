@@ -73,8 +73,23 @@ declare global {
 	 * @return {Boolean} Is input objects sastisfy with require objects
 	 */
 	function matching<T>(input: T[], required: T[]): boolean;
+	/**
+	 * Return the formatted name of current file
+	 * @param {string} file - the current file's name (must be __filename)
+	 * @param {number} cut - How many chunk should get (default: 2)
+	 * @return {string} formatted file's name
+	 */
+	function curFile(file: string, cut?: number): string;
 }
 
+global.curFile = (file: string, cut = 2) =>
+	file
+		.split('\\')
+		.last()
+		.split('.')
+		.map((w) => w[0].toUpperCase() + w.slice(1))
+		.slice(0, cut)
+		.join(' ');
 global.matching = <T>(input: T[], required: T[]): boolean => {
 	return required.every((i) => input.some((j) => i === j));
 };

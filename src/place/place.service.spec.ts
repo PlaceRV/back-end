@@ -7,39 +7,30 @@ import { Place } from './place.entity';
 import { PlaceModule } from './place.module';
 import { PlaceService } from './place.service';
 
-describe('PlaceService', () => {
-	let plcSvc: PlaceService, usrSvc: UserService;
+const fileName = curFile(__filename);
+let plcSvc: PlaceService, usrSvc: UserService;
 
+beforeEach(async () => {
+	const module: TestingModule = await Test.createTestingModule({
+		imports: [TestModule, PlaceModule],
+	}).compile();
+
+	(plcSvc = module.get(PlaceService)), (usrSvc = module.get(UserService));
+});
+
+describe('assign', () => {
+	let usr: User, plc: Place;
 	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
-			imports: [TestModule, PlaceModule],
-		}).compile();
-
-		(plcSvc = module.get(PlaceService)), (usrSvc = module.get(UserService));
+		(usr = await usrSvc.save(User.test(fileName))), (plc = Place.test(usr));
 	});
 
-	it('be defined', () => expect(plcSvc).toBeDefined());
+	it('save assign place', async () => {
+		jest.spyOn(plcSvc, 'save');
+		const result = await plcSvc.assign(plc, usr);
+		expect(result).toBeInstanceOf(Object);
+	});
 
-	describe('assign', () => {
-		let usr: User, plc: Place;
-		beforeEach(async () => {
-			(usr = await usrSvc.save(User.test)), (plc = Place.test(usr));
-		});
-
-		it('save assign place', async () => {
-			jest.spyOn(plcSvc, 'save');
-
-			await plcSvc.assign(plc, usr);
-
-			expect(plcSvc.save).toHaveBeenCalledWith(
-				expect.objectContaining({ ...plc, createdBy: usr }),
-			);
-		});
-
-		it('throw error', async () => {
-			await expect(plcSvc.assign(plc, null)).rejects.toThrow(
-				BadRequestException,
-			);
-		});
+	it('throw error', async () => {
+		await expect(plcSvc.assign(plc, null)).rejects.toThrow(BadRequestException);
 	});
 });

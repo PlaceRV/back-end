@@ -97,12 +97,12 @@ export class User extends BaseEntity implements IUser {
 		};
 	}
 
-	static get test() {
+	static test(from: string) {
 		const n = new User({
 			email: tstStr(),
 			password: tstStr(),
-			firstName: tstStr(),
-			lastName: tstStr(),
+			firstName: from,
+			lastName: new Date().toISOString(),
 			roles: [Role.USER],
 		});
 		if (n.hashedPassword) return n;
