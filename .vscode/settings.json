@@ -5,7 +5,6 @@
 	"files.exclude": {
 		"**/*.example*": true,
 		"**/*.js": true,
-		"**/*.json": true,
 		"**/*spec*": true,
 		"**/.DS_Store": true,
 		"**/.git": true,
@@ -14,6 +13,7 @@
 		"**/CVS": true,
 		"**/Thumbs.db": true,
 		"**/schema.gql": true,
+		"*.json": true,
 		".adminjs": true,
 		".env": true,
 		".git": true,
@@ -44,43 +44,61 @@
 			"backgroundColor": "#00bfff",
 			"color": "#4b3621",
 			"isWholeLine": true,
-			"text": "Queries"
+			"text": " Queries"
 		},
 		{
 			"backgroundColor": "#69359c",
 			"color": "#e3a857",
 			"isWholeLine": true,
-			"text": "Mutations"
+			"text": " Mutations"
 		},
 		{
 			"backgroundColor": "#E4D6A7",
 			"color": "#1C110A",
 			"isWholeLine": true,
-			"text": "Relationships"
+			"text": " Relationships"
 		},
 		{
 			"backgroundColor": "#CDE7B0",
 			"color": "#BE6E46",
 			"isWholeLine": true,
-			"text": "User infomations"
+			"text": " Infomations"
 		},
 		{
 			"backgroundColor": "#FF3366",
 			"color": "#011627",
 			"isWholeLine": true,
-			"text": "Sensitive infomations"
+			"text": " Sensitive infomations"
 		},
 		{
 			"backgroundColor": "#4464AD",
 			"color": "#FFC759",
 			"isWholeLine": true,
-			"text": "Methods"
+			"text": " Methods"
 		},
 		{
 			"backgroundColor": "#420039",
 			"color": "#FFC1CF",
 			"isWholeLine": true,
-			"text": "Database requests"
+			"text": " Database requests"
+		},
+		{
+			"backgroundColor": "#ECB0E1",
+			"color": "#A31621",
+			"isWholeLine": true,
+			"text": " Interfaces"
+		},
+		{
+			"backgroundColor": "#E94F37",
+			"color": "#F6F7EB",
+			"isWholeLine": true,
+			"text": " Enums"
+		},
+		{
+			"backgroundColor": "#320D6D",
+			"color": "#D8D8F6",
+			"isWholeLine": true,
+			"text": " DTOs"
 		}
 	]
 }

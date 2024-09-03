@@ -7,8 +7,7 @@ import {
 	SaveOptions,
 } from 'typeorm';
 import { User } from 'user/user.entity';
-import { Place } from './place.entity';
-import { PlaceAssign } from './place.model';
+import { Place, PlaceAssign } from './place.entity';
 
 @Injectable()
 export class PlaceService {

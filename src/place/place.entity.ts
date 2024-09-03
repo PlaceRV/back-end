@@ -1,4 +1,10 @@
-import { Field, HideField, ObjectType } from '@nestjs/graphql';
+import {
+	Field,
+	HideField,
+	InputType,
+	ObjectType,
+	PickType,
+} from '@nestjs/graphql';
 import {
 	IsAlpha,
 	IsEnum,
@@ -9,6 +15,7 @@ import {
 	IsUUID,
 } from 'class-validator';
 import { Point } from 'geojson';
+import { IPlaceInfoKeys } from 'models';
 import {
 	BaseEntity,
 	Column,
@@ -102,3 +109,7 @@ export class Place extends BaseEntity implements IPlace {
 		});
 	}
 }
+
+// DTOs
+@InputType()
+export class PlaceAssign extends PickType(Place, IPlaceInfoKeys) {}

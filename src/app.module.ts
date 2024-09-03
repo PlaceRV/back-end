@@ -4,8 +4,8 @@ import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { AuthMiddleware } from './auth/auth.middleware';
 import { AuthModule } from './auth/auth.module';
-import { LoadEnvModule } from './config.module';
-import { SqlModule } from './sql.module';
+import { LoadEnvModule } from './module/config.module';
+import { SqlModule } from './module/sql.module';
 
 @Module({
 	imports: [

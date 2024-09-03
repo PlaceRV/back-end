@@ -23,5 +23,5 @@
 		"useDefineForClassFields": false
 	},
 	"exclude": ["./index.d.ts"],
-	"include": ["src/**/*.ts", "test/**/*.ts"]
+	"include": ["src/**/*.ts", "test/**/*.ts", "build.ts"]
 }

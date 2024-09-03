@@ -3,8 +3,7 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { CurrentUser, RoleGuard, Roles } from 'auth/auth.guard';
 import { User } from 'user/user.entity';
 import { Role } from 'user/user.model';
-import { Place } from './place.entity';
-import { PlaceAssign } from './place.model';
+import { Place, PlaceAssign } from './place.entity';
 import { PlaceService } from './place.service';
 
 @Resolver(() => Place)
