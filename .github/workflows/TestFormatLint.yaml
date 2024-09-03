@@ -47,10 +47,16 @@ jobs:
 
       - run: 'npm install'
 
+      - name: Start server
+        run: npm run start &
+
       - run: npm run build && npm run test && npm run format && npm run lint
         env:
           ACCESS_SECRET: a
           REFRESH_SECRET: a
+
+      - name: Stop server
+        run: pkill -f "node"
 
       - uses: stefanzweifel/git-auto-commit-action@v5
 
