@@ -23,5 +23,5 @@
 		"target": "ESNext",
 		"useDefineForClassFields": false
 	},
-	"exclude": ["*.config.*", "./*.d.ts", "dist"]
+	"exclude": ["./*.d.ts", "dist"]
 }
