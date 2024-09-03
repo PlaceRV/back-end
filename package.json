@@ -10,7 +10,7 @@
 	"scripts": {
 		"postinstall": "npm run build && npm run dts",
 		"build": "ts-node src/build.ts && nest build",
-		"dts": "npm-dts generate --output types.d.ts -L debug",
+		"dts": "npm-dts generate --output types.d.ts",
 		"format": "prettier --write \"./**/*.ts\" \"./**/*.json\"",
 		"lint": "eslint --fix  --ext .ts .",
 		"safe": "generate-env-example",
