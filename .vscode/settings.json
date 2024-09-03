@@ -23,12 +23,12 @@
 		".vscode": true,
 		"LICENSE": true,
 		"coverage": true,
-		"dist": false,
+		"dist": true,
 		"nest-cli.json": true,
 		"node_modules": true,
 		"package-lock.json": true,
 		"secrets": true,
-		"types.d.ts": false
+		"types.d.ts": true
 	},
 	"jest.outputConfig": {
 		"clearOnRun": "terminal"

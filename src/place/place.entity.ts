@@ -65,7 +65,6 @@ export class Place extends BaseEntity implements IPlace {
 	@Column({ type: 'geography', spatialFeatureType: 'Point' })
 	private location: Point = { type: 'Point', coordinates: [0, 0] };
 
-	@HideField()
 	private _longitude: number;
 	@IsLongitude()
 	@Field()
@@ -78,7 +77,6 @@ export class Place extends BaseEntity implements IPlace {
 		return this._longitude;
 	}
 
-	@HideField()
 	private _latitude: number;
 	@IsLatitude()
 	@Field()
@@ -97,7 +95,6 @@ export class Place extends BaseEntity implements IPlace {
 	description: string;
 
 	// Methods
-	@HideField()
 	static test(user: User) {
 		return new Place({
 			name: tstStr(),
@@ -112,4 +109,4 @@ export class Place extends BaseEntity implements IPlace {
 
 // DTOs
 @InputType()
-export class PlaceAssign extends PickType(Place, IPlaceInfoKeys) {}
+export class PlaceAssign extends PickType(Place, IPlaceInfoKeys, InputType) {}
