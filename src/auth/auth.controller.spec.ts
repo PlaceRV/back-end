@@ -13,7 +13,7 @@ import { AuthMiddleware } from './auth.middleware';
 import { AuthModule } from './auth.module';
 import { AuthService, UserMetadata } from './auth.service';
 
-describe('AuthauthCon', () => {
+describe('AuthController', () => {
 	const usr = User.test;
 
 	let authCon: AuthController,

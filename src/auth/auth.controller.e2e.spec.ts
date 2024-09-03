@@ -1,12 +1,12 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthModule } from 'auth/auth.module';
+import { TestModule } from 'module/test.module';
 import request from 'supertest';
 import TestAgent from 'supertest/lib/agent';
 import { User } from 'user/user.entity';
-import { TestModule } from '../src/module/test.module';
 
-describe('AppController (e2e)', () => {
+describe('AuthController (e2e)', () => {
 	let app: INestApplication, req: TestAgent;
 	const payload = User.test;
 
