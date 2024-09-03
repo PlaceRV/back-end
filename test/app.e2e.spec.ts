@@ -1,19 +1,14 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SignUpDto } from 'auth/auth.dto';
 import { AuthModule } from 'auth/auth.module';
 import request from 'supertest';
 import TestAgent from 'supertest/lib/agent';
-import { TestModule } from './test.module';
+import { User } from 'user/user.entity';
+import { TestModule } from '../src/module/test.module';
 
 describe('AppController (e2e)', () => {
 	let app: INestApplication, req: TestAgent;
-	const payload: SignUpDto = {
-		firstName: 'a',
-		lastName: 'a',
-		email: 'a@a.gmail.com',
-		password: 'a',
-	};
+	const payload = User.test;
 
 	beforeEach(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({

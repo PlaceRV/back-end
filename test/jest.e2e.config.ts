@@ -4,7 +4,7 @@ const config: Config = {
 	testEnvironment: 'node',
 	detectOpenHandles: true,
 	rootDir: '..',
-	testRegex: '.spec.e2e.ts$',
+	testRegex: '^([\w]+)(.e2e.spec.ts)$',
 	moduleDirectories: ['node_modules', 'src'],
 	transform: {
 		'^.+.tsx?$': ['ts-jest', {}],

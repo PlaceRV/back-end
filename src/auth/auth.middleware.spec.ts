@@ -1,10 +1,10 @@
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NextFunction, Request, Response } from 'express';
+import { TestModule } from 'module/test.module';
 import { createRequest, createResponse } from 'node-mocks-http';
 import uaParserJs from 'ua-parser-js';
 import { hash } from 'utils';
-import { TestModule } from '../../test/test.module';
 import { AuthMiddleware, generateFingerprint } from './auth.middleware';
 import { AuthModule } from './auth.module';
 import { AuthService } from './auth.service';

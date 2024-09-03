@@ -8,8 +8,9 @@
 	"type": "commonjs",
 	"types": "index.d.ts",
 	"scripts": {
-		"postinstall": "npm-dts generate",
-		"build": "nest build && node dist/build.js",
+		"postinstall": "",
+		"build": "nest build",
+		"dts": "npm-dts generate",
 		"format": "prettier --write \"./**/*.ts\" \"./**/*.json\"",
 		"lint": "eslint --fix  --ext .ts .",
 		"safe": "generate-env-example",
@@ -20,7 +21,8 @@
 		"test": "jest",
 		"test:cov": "jest --coverage",
 		"test:debug": "jest --runInBand",
-		"test:e2e": "jest --config ./test/jest-e2e.json",
+		"test:e2e": "jest --config ./test/jest.e2e.config.ts",
+		"test:all": "npm run test && npm run test:e2e",
 		"test:watch": "jest --watch"
 	},
 	"dependencies": {

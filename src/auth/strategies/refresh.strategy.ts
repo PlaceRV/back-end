@@ -2,9 +2,9 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PassportStrategy } from '@nestjs/passport';
+import { PayLoad } from 'auth/auth.service';
 import { DeviceService } from 'device/device.service';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { PayLoad } from '../auth.service';
 
 @Injectable()
 export class RefreshStrategy extends PassportStrategy(Strategy, 'refresh') {

@@ -1,7 +1,7 @@
 {
 	"compilerOptions": {
 		"allowSyntheticDefaultImports": true,
-		"baseUrl": "./src",
+		"baseUrl": "src",
 		"declaration": true,
 		"emitDecoratorMetadata": true,
 		"esModuleInterop": true,
@@ -12,8 +12,9 @@
 		"moduleResolution": "NodeNext",
 		"noFallthroughCasesInSwitch": false,
 		"noImplicitAny": false,
-		"outDir": "./dist",
+		"outDir": "dist",
 		"removeComments": true,
+		"rootDir": "src",
 		"skipLibCheck": true,
 		"sourceMap": true,
 		"strict": true,
@@ -22,6 +23,5 @@
 		"target": "ESNext",
 		"useDefineForClassFields": false
 	},
-	"exclude": ["./index.d.ts"],
-	"include": ["src/**/*.ts", "test/**/*.ts", "build.ts"]
+	"include": ["./**/*.ts"]
 }

@@ -1,8 +1,8 @@
 import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { TestModule } from 'module/test.module';
 import { User } from 'user/user.entity';
 import { UserService } from 'user/user.service';
-import { TestModule } from '../../test/test.module';
 import { Place } from './place.entity';
 import { PlaceModule } from './place.module';
 import { PlaceService } from './place.service';
