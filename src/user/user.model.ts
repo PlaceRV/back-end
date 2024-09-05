@@ -10,6 +10,7 @@ export interface IUserAuthentication {
 export interface IUserInfo {
 	firstName: string;
 	lastName: string;
+	description: string;
 }
 
 export interface IUser extends IUserAuthentication, IUserInfo {

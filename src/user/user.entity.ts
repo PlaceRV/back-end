@@ -1,11 +1,5 @@
 import { Field, HideField, ObjectType } from '@nestjs/graphql';
-import {
-	IsAlpha,
-	IsArray,
-	IsEmail,
-	IsStrongPassword,
-	IsUUID,
-} from 'class-validator';
+import { IsAlpha, IsEmail, IsString, IsStrongPassword } from 'class-validator';
 import { Device } from 'device/device.entity';
 import { Place } from 'place/place.entity';
 import {
@@ -27,7 +21,6 @@ export class User extends BaseEntity implements IUser {
 	}
 
 	// Sensitive infomations
-	@IsUUID()
 	@HideField()
 	@PrimaryGeneratedColumn('uuid')
 	id?: string;
@@ -46,12 +39,10 @@ export class User extends BaseEntity implements IUser {
 	set hashedPassword(i: any) {}
 
 	// Relationships
-	@IsArray()
 	@HideField()
 	@OneToMany(() => Device, (_: Device) => _.owner, { eager: true })
 	sessions?: Device[];
 
-	@IsArray()
 	@HideField()
 	@OneToMany(() => Place, (_: Place) => _.createdBy, { eager: true })
 	placesAssigned?: Place[];
@@ -72,7 +63,11 @@ export class User extends BaseEntity implements IUser {
 	@Column()
 	email: string;
 
-	@IsArray()
+	@IsString()
+	@Field()
+	@Column()
+	description: string;
+
 	@Field(() => [Role])
 	@Column({ type: 'enum', enum: Role, array: true, default: [Role.USER] })
 	roles: Role[];
@@ -99,11 +94,12 @@ export class User extends BaseEntity implements IUser {
 
 	static test(from: string) {
 		const n = new User({
-			email: tstStr(),
-			password: tstStr(),
+			email: tstStr() + '@gmail.com',
+			password: 'Aa1!000000000000',
 			firstName: from,
-			lastName: new Date().toISOString(),
+			lastName: tstStr(),
 			roles: [Role.USER],
+			description: new Date().toISOString(),
 		});
 		if (n.hashedPassword) return n;
 	}
