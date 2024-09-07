@@ -3,9 +3,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NextFunction, Request, Response } from 'express';
 import { TestModule } from 'module/test.module';
 import { createRequest, createResponse } from 'node-mocks-http';
+import { execute } from 'test.utils';
 import uaParserJs from 'ua-parser-js';
 import { hash } from 'utils';
-import { AuthMiddleware, generateFingerprint } from './auth.middleware';
+import { AuthMiddleware } from './auth.middleware';
 import { AuthModule } from './auth.module';
 import { AuthService } from './auth.service';
 
@@ -43,14 +44,6 @@ beforeEach(async () => {
 		(acsKey = cfgSvc.get('ACCESS_KEY')),
 		(rfsKey = cfgSvc.get('REFRESH_KEY')),
 		(ckiSfx = cfgSvc.get('SERVER_COOKIE_PREFIX'));
-});
-
-describe('generateFingerprint', () => {
-	it('generate a fingerprint object', () => {
-		expect(generateFingerprint()).toEqual({
-			userAgent: ua,
-		});
-	});
 });
 
 describe('use', () => {

@@ -22,7 +22,7 @@ interface Expectation {
  * @param {Expectation[]} exps - expectations that function will return
  */
 export async function execute(
-	func: Promise<any>,
+	func: Promise<any> | void,
 	throwError: boolean,
 	exps: Expectation[],
 ) {
