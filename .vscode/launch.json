@@ -13,7 +13,7 @@
 			"type": "node-terminal"
 		},
 		{
-			"command": "npx jest --testPathPattern=${fileBasename}",
+			"command": "npx jest --testPathPattern=${fileBasename} --openHandlesTimeout=0",
 			"name": "Debug Jest current file",
 			"request": "launch",
 			"type": "node-terminal"

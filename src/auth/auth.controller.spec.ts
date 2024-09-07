@@ -1,75 +1,169 @@
-import { BadRequestException } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import cookieParser from 'cookie-parser';
 import { DeviceService } from 'device/device.service';
-import { Request, Response } from 'express';
 import { TestModule } from 'module/test.module';
-import { createMocks } from 'node-mocks-http';
+import request from 'supertest';
+import TestAgent from 'supertest/lib/agent';
 import { execute } from 'test.utils';
 import { User } from 'user/user.entity';
 import { UserService } from 'user/user.service';
 import { tstStr } from 'utils';
-import { AuthController } from './auth.controller';
 import { AuthModule } from './auth.module';
 
 const fileName = curFile(__filename);
 
-let authCon: AuthController,
-	dvcSvc: DeviceService,
+let dvcSvc: DeviceService,
 	usrSvc: UserService,
-	req: Request,
-	res: Response,
-	usr: User;
+	req: TestAgent,
+	usr: User,
+	app: INestApplication;
 
 beforeAll(async () => {
 	const module: TestingModule = await Test.createTestingModule({
 		imports: [AuthModule, TestModule],
 	}).compile();
 
-	(authCon = module.get(AuthController)),
-		(dvcSvc = module.get(DeviceService)),
-		(usrSvc = module.get(UserService));
+	(dvcSvc = module.get(DeviceService)),
+		(usrSvc = module.get(UserService)),
+		(app = module.createNestApplication());
+
+	await app.use(cookieParser()).init();
 });
 
 beforeEach(() => {
-	({ req, res } = createMocks({})), (usr = User.test(fileName));
+	(req = request(app.getHttpServer())), (usr = User.test(fileName));
 });
 
 describe('signup', () => {
 	it('success', async () => {
-		await execute(authCon.signUp(req, usr, res, ''), false, [
-			{ type: 'toEqual', params: [true] },
+		await execute(req.post('/auth/signup').send(usr), false, [
+			{
+				type: 'toHaveProperty',
+				params: [
+					'headers.set-cookie',
+					expect.arrayContaining([expect.anything(), expect.anything()]),
+				],
+			},
+			{ type: 'toHaveProperty', params: ['status', HttpStatus.ACCEPTED] },
 		]);
+
 		await execute(usrSvc.findOne({ email: usr.email }), false, [
 			{ type: 'toBeInstanceOf', params: [User] },
 		]);
 	});
 
 	it('fail due to email already exist', async () => {
-		await authCon.signUp(req, usr, res, '');
-		await execute(authCon.signUp(req, usr, res, ''), true, [
-			{ type: 'toThrow', params: [BadRequestException] },
+		await req.post('/auth/signup').send(usr);
+
+		await execute(req.post('/auth/signup').send(usr), false, [
+			{
+				type: 'toHaveProperty',
+				params: ['status', HttpStatus.BAD_REQUEST],
+			},
 		]);
 	});
 });
 
 describe('login', () => {
-	it('success', async () => {
-		await authCon.signUp(req, usr, res, '');
+	beforeEach(async () => await req.post('/auth/signup').send(usr));
 
-		await execute(authCon.login(req, usr, res, ''), false, [
-			{ type: 'toEqual', params: [true] },
+	it('success', async () => {
+		await execute(req.post('/auth/login').send(usr), false, [
+			{
+				type: 'toHaveProperty',
+				params: [
+					'headers.set-cookie',
+					expect.arrayContaining([expect.anything(), expect.anything()]),
+				],
+			},
+			{ type: 'toHaveProperty', params: ['status', HttpStatus.ACCEPTED] },
 		]);
+
 		await execute(dvcSvc.find({ owner: { email: usr.email } }), false, [
 			{ type: 'toHaveLength', params: [2] },
 		]);
 	});
 
 	it('fail due to wrong password', async () => {
-		await authCon.signUp(req, usr, res, '');
 		usr = new User({ ...usr, password: tstStr() });
 
-		await execute(authCon.login(req, usr, res, ''), true, [
-			{ type: 'toThrow', params: [BadRequestException] },
+		await execute(req.post('/auth/login').send(usr), false, [
+			{
+				type: 'toHaveProperty',
+				params: ['status', HttpStatus.BAD_REQUEST],
+			},
+		]);
+	});
+});
+
+describe('logout', () => {
+	let headers: object;
+
+	beforeEach(
+		async () => ({ headers } = await req.post('/auth/signup').send(usr)),
+	);
+
+	it('success', async () => {
+		await execute(
+			req.post('/auth/logout').set('Cookie', [...headers['set-cookie']]),
+			false,
+			[
+				{
+					type: 'toHaveProperty',
+					params: ['headers.set-cookie', expect.arrayContaining([])],
+				},
+				{ type: 'toHaveProperty', params: ['status', HttpStatus.ACCEPTED] },
+			],
+		);
+
+		await execute(dvcSvc.find({ owner: { email: usr.email } }), false, [
+			{ type: 'toHaveLength', params: [0] },
+		]);
+	});
+
+	it('faild due to not have valid cookies', async () => {
+		await execute(req.post('/auth/logout'), false, [
+			{ type: 'toHaveProperty', params: ['status', HttpStatus.UNAUTHORIZED] },
+		]);
+	});
+});
+
+describe('refresh', () => {
+	let headers: object;
+
+	beforeEach(
+		async () => ({ headers } = await req.post('/auth/signup').send(usr)),
+	);
+
+	it('success', async () => {
+		await execute(
+			req.post('/auth/refresh').set('Cookie', [...headers['set-cookie']]),
+			false,
+			[
+				{
+					type: 'toHaveProperty',
+					not: true,
+					params: [
+						'headers.set-cookie',
+						expect.arrayContaining([...headers['set-cookie']]),
+					],
+				},
+				{
+					type: 'toHaveProperty',
+					params: [
+						'headers.set-cookie',
+						expect.arrayContaining([expect.anything(), expect.anything()]),
+					],
+				},
+				{ type: 'toHaveProperty', params: ['status', HttpStatus.ACCEPTED] },
+			],
+		);
+	});
+
+	it('faild due to not have valid cookies', async () => {
+		await execute(req.post('/auth/refresh'), false, [
+			{ type: 'toHaveProperty', params: ['status', HttpStatus.UNAUTHORIZED] },
 		]);
 	});
 });

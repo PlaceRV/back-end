@@ -1,13 +1,22 @@
-import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	HttpStatus,
+	Post,
+	Req,
+	Res,
+	UseGuards,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
 import { compareSync } from 'bcrypt';
 import { DeviceService } from 'device/device.service';
-import { CookieOptions, Request as Rqt, Response as Rsp } from 'express';
-import { UserRecieve } from 'user/user.dto';
+import { CookieOptions, Request, Response } from 'express';
+import { UserRecieve } from 'user/user.class';
 import { ILogin, ISignUp } from 'user/user.model';
 import { hash } from 'utils';
-import { AuthService, UserMetadata as UsrMtdt } from './auth.service';
+import { MetaData } from './auth.guard';
+import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
@@ -26,76 +35,94 @@ export class AuthController {
 	private readonly rfsKey = this.cfgSvc.get('REFRESH_KEY');
 	private readonly acsKey = this.cfgSvc.get('ACCESS_KEY');
 
-	clearCookies(req: Rqt, res: Rsp, acs = true, rfs = true) {
-		for (const cki in req.cookies)
+	clearCookies(request: Request, response: Response, acs = true, rfs = true) {
+		for (const cki in request.cookies)
 			if (
 				(compareSync(this.acsKey, cki.substring(this.ckiPfx.length)) && acs) ||
 				(compareSync(this.rfsKey, cki.substring(this.ckiPfx.length)) && rfs)
 			)
-				res.clearCookie(cki, this.ckiOpt);
+				response.clearCookie(cki, this.ckiOpt);
+		response.status(HttpStatus.ACCEPTED);
 	}
 
-	sendBack(req: Rqt, res: Rsp, usrRcv: UserRecieve) {
-		this.clearCookies(req, res);
-		res
-			.cookie(
-				this.ckiPfx + hash(this.acsKey),
-				this.authSvc.encrypt(usrRcv.accessToken),
-				this.ckiOpt,
-			)
-			.cookie(
-				this.ckiPfx + hash(this.rfsKey),
-				this.authSvc.encrypt(
-					usrRcv.refreshToken,
-					usrRcv.accessToken.split('.')[2],
-				),
-				this.ckiOpt,
-			)
-			.send({ success: true });
+	sendBack(request: Request, response: Response, usrRcv: UserRecieve): boolean {
+		try {
+			this.clearCookies(request, response);
+			response
+				.cookie(
+					this.ckiPfx + hash(this.acsKey),
+					this.authSvc.encrypt(usrRcv.accessToken),
+					this.ckiOpt,
+				)
+				.cookie(
+					this.ckiPfx + hash(this.rfsKey),
+					this.authSvc.encrypt(
+						usrRcv.refreshToken,
+						usrRcv.accessToken.split('.')[2],
+					),
+					this.ckiOpt,
+				)
+				.status(HttpStatus.ACCEPTED);
+			return true;
+		} catch (error) {
+			response.status(HttpStatus.INTERNAL_SERVER_ERROR).send(error);
+		}
 	}
 
 	@Post('login')
 	async login(
-		@Req() req: Rqt,
-		@Body() dto: ILogin,
-		@Res({ passthrough: true }) res: Rsp,
+		@Req() request: Request,
+		@Body() body: ILogin,
+		@Res({ passthrough: true }) response: Response,
+		@MetaData() mtdt: string,
 	) {
-		this.sendBack(req, res, await this.authSvc.login(dto, new UsrMtdt(req)));
+		return this.sendBack(
+			request,
+			response,
+			await this.authSvc.login(body, mtdt),
+		);
 	}
 
 	@Post('signup')
 	async signUp(
-		@Req() req: Rqt,
-		@Body() dto: ISignUp,
-		@Res({ passthrough: true }) res: Rsp,
+		@Req() request: Request,
+		@Body() body: ISignUp,
+		@Res({ passthrough: true }) response: Response,
+		@MetaData() mtdt: string,
 	) {
-		this.sendBack(req, res, await this.authSvc.signUp(dto, new UsrMtdt(req)));
+		return this.sendBack(
+			request,
+			response,
+			await this.authSvc.signUp(body, mtdt),
+		);
 	}
 
 	@Post('logout')
 	@UseGuards(AuthGuard('refresh'))
-	async logout(@Req() req: Rqt, @Res({ passthrough: true }) res: Rsp) {
-		this.clearCookies(req, res);
-		await this.dvcSvc.delete({ id: req.user['id'] });
+	async logout(
+		@Req() request: Request,
+		@Res({ passthrough: true }) response: Response,
+	) {
+		this.clearCookies(request, response);
+		await this.dvcSvc.delete({ id: request.user['id'] });
 	}
 
-	@Post('refreshToken')
+	@Post('refresh')
 	@UseGuards(AuthGuard('refresh'))
-	async refresh(@Req() req: Rqt, @Res({ passthrough: true }) res: Rsp) {
-		const sendBack = (usrRcv: UserRecieve) => this.sendBack(req, res, usrRcv);
-		if (
-			req.user['success'] &&
-			compareSync(new UsrMtdt(req).toString(), req.user['ua'])
-		) {
+	async refresh(
+		@Req() request: Request,
+		@Res({ passthrough: true }) response: Response,
+		@MetaData() mtdt: string,
+	) {
+		const sendBack = (usrRcv: UserRecieve) =>
+			this.sendBack(request, response, usrRcv);
+		if (request.user['success'] && compareSync(mtdt, request.user['ua'])) {
 			sendBack(
 				new UserRecieve({
-					accessToken: req.user['acsTkn'],
-					refreshToken: req.user['rfsTkn'],
+					accessToken: request.user['acsTkn'],
+					refreshToken: request.user['rfsTkn'],
 				}),
 			);
-		} else
-			sendBack(
-				await this.dvcSvc.getTokens(req.user['userId'], new UsrMtdt(req)),
-			);
+		} else sendBack(await this.dvcSvc.getTokens(request.user['userId'], mtdt));
 	}
 }
