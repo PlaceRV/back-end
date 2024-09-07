@@ -51,4 +51,4 @@ async function bootstrap() {
 	https.createServer(httpsOptions, server).listen(2053);
 }
 
-bootstrap();
+void bootstrap();

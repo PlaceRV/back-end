@@ -89,7 +89,7 @@ global.curFile = (file: string, cut = 2) =>
 		.split('.')
 		.map((w) => w[0].toUpperCase() + w.slice(1))
 		.slice(0, cut)
-		.join(' ');
+		.join('');
 global.matching = <T>(input: T[], required: T[]): boolean => {
 	return required.every((i) => input.some((j) => i === j));
 };
@@ -103,7 +103,7 @@ Array.prototype.last = function () {
 	return this[this.length - 1];
 };
 Number.prototype.char = function (
-	chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
+	chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
 ) {
 	return Array(this)
 		.join()

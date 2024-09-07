@@ -36,15 +36,19 @@ beforeEach(() => {
 
 describe('signup', () => {
 	it('success', async () => {
-		(await execute(authCon.signUp(req, usr, res, ''))).toEqual(true);
-		(await execute(usrSvc.findOne({ email: usr.email }))).toBeInstanceOf(User);
+		await execute(authCon.signUp(req, usr, res, ''), false, [
+			{ type: 'toEqual', params: [true] },
+		]);
+		await execute(usrSvc.findOne({ email: usr.email }), false, [
+			{ type: 'toBeInstanceOf', params: [User] },
+		]);
 	});
 
 	it('fail due to email already exist', async () => {
 		await authCon.signUp(req, usr, res, '');
-		(await execute(authCon.signUp(req, usr, res, ''), true)).toThrow(
-			BadRequestException,
-		);
+		await execute(authCon.signUp(req, usr, res, ''), true, [
+			{ type: 'toThrow', params: [BadRequestException] },
+		]);
 	});
 });
 
@@ -52,18 +56,20 @@ describe('login', () => {
 	it('success', async () => {
 		await authCon.signUp(req, usr, res, '');
 
-		(await execute(authCon.login(req, usr, res, ''))).toEqual(true);
-		(await execute(dvcSvc.find({ owner: { email: usr.email } }))).toHaveLength(
-			2,
-		);
+		await execute(authCon.login(req, usr, res, ''), false, [
+			{ type: 'toEqual', params: [true] },
+		]);
+		await execute(dvcSvc.find({ owner: { email: usr.email } }), false, [
+			{ type: 'toHaveLength', params: [2] },
+		]);
 	});
 
 	it('fail due to wrong password', async () => {
 		await authCon.signUp(req, usr, res, '');
 		usr = new User({ ...usr, password: tstStr() });
 
-		(await execute(authCon.login(req, usr, res, ''), true)).toThrow(
-			BadRequestException,
-		);
+		await execute(authCon.login(req, usr, res, ''), true, [
+			{ type: 'toThrow', params: [BadRequestException] },
+		]);
 	});
 });

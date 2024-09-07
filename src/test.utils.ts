@@ -12,16 +12,13 @@ export const spy = <T extends Record<string, any>>(
  * A function run async functions and catch both throw errors and results
  * @param {Promise<T>} func - the function to test
  * @param {boolean} throwError - is the function going to throw errors?
- * @return {jest.JestMatchers<T | Promise<T>> | jest.AndNot<jest.Matchers<Promise<void>, T | Promise<T>>>} the function tester
+ * @param {{type: K; params: Parameters<jest.Matchers<Promise<T>>[K]>}[]} exps - expectations that function will return
  */
-export async function execute<T>(
-	func: Promise<T>,
-	throwError: boolean = false,
-): Promise<
-	| jest.JestMatchers<Promise<T>>
-	| jest.AndNot<jest.Matchers<Promise<void>, Promise<T>>>
-> {
-	return throwError
-		? expect((async () => await func)()).rejects
-		: expect(await (async () => await func)());
+export async function execute<K extends keyof jest.Matchers<any>>(
+	func: Promise<any>,
+	throwError: boolean,
+	exps: { type: K; params: Parameters<jest.Matchers<any>[K]> }[],
+) {
+	const result = throwError ? expect(func).rejects : expect(await func);
+	for (const exp of exps) await result[exp.type].apply(null, exp.params);
 }
