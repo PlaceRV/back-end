@@ -107,7 +107,7 @@ describe('logout', () => {
 
 	it('success', async () => {
 		await execute(
-			() => req.post('/auth/logout').set('Cookie', [...headers['set-cookie']]),
+			() => req.post('/auth/logout').set('Cookie', headers['set-cookie']),
 			{},
 			[
 				{
@@ -141,7 +141,7 @@ describe('refresh', () => {
 
 	it('success', async () => {
 		await execute(
-			() => req.post('/auth/refresh').set('Cookie', [...headers['set-cookie']]),
+			() => req.post('/auth/refresh').set('Cookie', headers['set-cookie']),
 			{},
 			[
 				{
@@ -149,7 +149,7 @@ describe('refresh', () => {
 					not: true,
 					params: [
 						'headers.set-cookie',
-						expect.arrayContaining([...headers['set-cookie']]),
+						expect.arrayContaining(headers['set-cookie']),
 					],
 				},
 				{
@@ -175,7 +175,7 @@ describe('refresh', () => {
 			async (headers: object) =>
 				({ headers } = await req
 					.post('/auth/refresh')
-					.set('Cookie', [...headers['set-cookie']])),
+					.set('Cookie', headers['set-cookie'])),
 			{ numOfRun: rfsTms * 1.2, params: [headers] },
 			[
 				{
@@ -183,7 +183,7 @@ describe('refresh', () => {
 					not: true,
 					params: [
 						'headers.set-cookie',
-						expect.arrayContaining([...headers['set-cookie']]),
+						expect.arrayContaining(headers['set-cookie']),
 					],
 				},
 				{

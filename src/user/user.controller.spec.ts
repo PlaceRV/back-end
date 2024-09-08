@@ -1,31 +1,56 @@
-import { BadRequestException } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { createRequest } from 'node-mocks-http';
-import { UserController } from './user.controller';
+import cookieParser from 'cookie-parser';
+import { TestModule } from 'module/test.module';
+import request from 'supertest';
+import TestAgent from 'supertest/lib/agent';
+import { execute } from 'utils/test.utils';
 import { User } from './user.entity';
+import { UserModule } from './user.module';
 
 const fileName = curFile(__filename);
-let usrCon: UserController;
+let usr: User, req: TestAgent, app: INestApplication;
 
-beforeEach(async () => {
+beforeAll(async () => {
 	const module: TestingModule = await Test.createTestingModule({
-		controllers: [UserController],
+		imports: [UserModule, TestModule],
 	}).compile();
 
-	usrCon = module.get<UserController>(UserController);
+	app = module.createNestApplication();
+
+	await app.use(cookieParser()).init();
+});
+
+beforeEach(() => {
+	(req = request(app.getHttpServer())), (usr = User.test(fileName));
 });
 
 describe('getUser', () => {
-	it("return user's infomation", () => {
-		const user = User.test(fileName),
-			req = createRequest({ user });
-		expect(usrCon.getUser(req)).toEqual(user.info);
+	let headers: object;
+
+	beforeEach(
+		async () => ({ headers } = await req.post('/auth/signup').send(usr)),
+	);
+
+	it("return user's infomation", async () => {
+		await execute(
+			() => req.post('/user').set('Cookie', headers['set-cookie']),
+			{},
+			[
+				{
+					type: 'toHaveProperty',
+					params: ['text', JSON.stringify(usr.info)],
+				},
+			],
+		);
 	});
 
-	it('return error', () => {
-		const req = createRequest();
-		await expect(async () => usrCon.getUser(req)).rejects.toThrow(
-			BadRequestException,
-		);
+	it('return error', async () => {
+		await execute(() => req.post('/user').send(usr), {}, [
+			{
+				type: 'toHaveProperty',
+				params: ['status', HttpStatus.UNAUTHORIZED],
+			},
+		]);
 	});
 });

@@ -10,10 +10,6 @@ export class UserService extends DatabaseRequests<User> {
 		super(repo);
 	}
 
-	get(id: string) {
-		return this.findOne({ id });
-	}
-
 	email(input: string) {
 		return this.findOne({ email: input });
 	}

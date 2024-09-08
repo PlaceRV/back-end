@@ -66,4 +66,8 @@ export class DatabaseRequests<T extends SensitiveInfomations> {
 	id(id: string) {
 		return this.findOne({ id } as FindOptionsWhere<T>);
 	}
+
+	all() {
+		return this.find();
+	}
 }

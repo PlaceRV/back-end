@@ -47,12 +47,8 @@ export class DeviceService extends DatabaseRequests<Device> {
 		return new UserRecieve({ accessToken, refreshToken });
 	}
 
-	get(id: string) {
-		return this.findOne({ id });
-	}
-
 	async remove(session_id: string) {
-		const { id, sessions } = (await this.sesSvc.get(session_id)).device;
+		const { id, sessions } = (await this.sesSvc.id(session_id)).device;
 		await Promise.all(
 			sessions.map(async (i) => await this.sesSvc.remove(i.id)),
 		);

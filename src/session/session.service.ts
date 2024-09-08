@@ -21,12 +21,8 @@ export class SessionService extends DatabaseRequests<Session> {
 	}
 
 	async update(id: string) {
-		const useTimeLeft = (await this.get(id)).useTimeLeft - 1;
+		const useTimeLeft = (await this.id(id)).useTimeLeft - 1;
 		return this.save({ id, useTimeLeft });
-	}
-
-	get(id: string) {
-		return this.findOne({ id });
 	}
 
 	remove(id: string) {

@@ -14,8 +14,8 @@ export class PlaceResolver {
 	// Queries
 	@Query(() => [Place])
 	@AllowPublic(true)
-	findAll() {
-		return null;
+	async findAll() {
+		return await this.plcSvc.all();
 	}
 
 	// Mutations

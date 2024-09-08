@@ -14,14 +14,14 @@ export class UserResolver {
 	@Query(() => User)
 	@AllowPublic(true)
 	async findOne(@Args('id') id: string) {
-		const user = await this.usrSvc.get(id);
+		const user = await this.usrSvc.id(id);
 		if (user) return user;
 		throw new BadRequestException('User not found');
 	}
 
 	@Query(() => [User])
 	@Roles([Role.ADMIN, Role.USER])
-	findAll() {
-		return null;
+	async findAll() {
+		return await this.usrSvc.all();
 	}
 }

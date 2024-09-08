@@ -23,7 +23,7 @@ export class RefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
 	}
 
 	async validate(payload: IPayload) {
-		const session = await this.sesSvc.get(payload.id);
+		const session = await this.sesSvc.id(payload.id);
 		if (session) {
 			if (session.useTimeLeft - 1 >= 0) {
 				await this.sesSvc.update(session.id);

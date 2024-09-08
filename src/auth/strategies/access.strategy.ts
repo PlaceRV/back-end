@@ -19,7 +19,7 @@ export class AccessStrategy extends PassportStrategy(Strategy, 'access') {
 	}
 
 	async validate(payload: IPayload) {
-		const user = await this.usrSvc.get(payload.id);
+		const user = await this.usrSvc.id(payload.id);
 		if (user) return user;
 		throw new UnauthorizedException('Login first to access this endpoint.');
 	}
