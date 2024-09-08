@@ -2,28 +2,18 @@ import { Field, HideField, ObjectType } from '@nestjs/graphql';
 import { IsAlpha, IsEmail, IsString, IsStrongPassword } from 'class-validator';
 import { Device } from 'device/device.entity';
 import { Place } from 'place/place.entity';
-import {
-	BaseEntity,
-	Column,
-	Entity,
-	OneToMany,
-	PrimaryGeneratedColumn,
-} from 'typeorm';
-import { hash, tstStr } from 'utils';
+import { Column, Entity, OneToMany } from 'typeorm';
+import { SensitiveInfomations } from 'utils/typeorm.utils';
+import { hash, tstStr } from 'utils/utils';
 import { IUser, Role } from './user.model';
 
 @ObjectType()
 @Entity()
-export class User extends BaseEntity implements IUser {
+export class User extends SensitiveInfomations implements IUser {
 	constructor(payload: IUser) {
 		super();
 		Object.assign(this, payload);
 	}
-
-	// Sensitive infomations
-	@HideField()
-	@PrimaryGeneratedColumn('uuid')
-	id?: string;
 
 	@Column()
 	private _hashedPassword: string;
@@ -40,11 +30,11 @@ export class User extends BaseEntity implements IUser {
 
 	// Relationships
 	@HideField()
-	@OneToMany(() => Device, (_: Device) => _.owner, { eager: true })
-	sessions?: Device[];
+	@OneToMany(() => Device, (_: Device) => _.owner)
+	devices?: Device[];
 
 	@HideField()
-	@OneToMany(() => Place, (_: Place) => _.createdBy, { eager: true })
+	@OneToMany(() => Place, (_: Place) => _.createdBy)
 	placesAssigned?: Place[];
 
 	// Infomations

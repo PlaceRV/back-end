@@ -1,4 +1,4 @@
-import { tstStr } from 'utils';
+import { tstStr } from 'utils/utils';
 import { IUserRecieve } from './user.model';
 
 export class UserRecieve implements IUserRecieve {

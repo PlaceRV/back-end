@@ -1,49 +1,24 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-	DeepPartial,
-	FindOptionsWhere,
-	Repository,
-	SaveOptions,
-} from 'typeorm';
+import { Repository } from 'typeorm';
 import { User } from 'user/user.entity';
 import { UserService } from 'user/user.service';
+import { DatabaseRequests } from 'utils/typeorm.utils';
 import { Place, PlaceAssign } from './place.entity';
 
 @Injectable()
-export class PlaceService {
+export class PlaceService extends DatabaseRequests<Place> {
 	constructor(
-		@InjectRepository(Place) private repo: Repository<Place>,
+		@InjectRepository(Place) repo: Repository<Place>,
 		private usrSvc: UserService,
-	) {}
+	) {
+		super(repo);
+	}
 
 	async assign(placeAssign: PlaceAssign, usr: User) {
 		try {
-			const user = await this.usrSvc.findOne({ email: usr.email });
-			if (user) {
-				return await this.save({ ...placeAssign, createdBy: user });
-			}
+			return await this.save({ ...placeAssign, createdBy: usr });
 		} catch (error) {}
 		throw new BadRequestException('Invalid input');
-	}
-
-	// Database requests
-	find(options?: FindOptionsWhere<Place>): Promise<Place[]> {
-		return this.repo.find({ where: options, relations: ['createdBy'] });
-	}
-
-	findOne(options?: FindOptionsWhere<Place>) {
-		return this.repo.findOne({ where: options, relations: ['createdBy'] });
-	}
-
-	save(
-		entities: DeepPartial<Place>,
-		options?: SaveOptions,
-	): Promise<DeepPartial<Place>> {
-		return this.repo.save(entities, options);
-	}
-
-	delete(criteria: FindOptionsWhere<Place>) {
-		return this.repo.delete(criteria);
 	}
 }

@@ -5,13 +5,15 @@ import { PassportStrategy } from '@nestjs/passport';
 import { IPayload } from 'auth/auth.interface';
 import { DeviceService } from 'device/device.service';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { SessionService } from 'session/session.service';
 
 @Injectable()
 export class RefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
 	constructor(
 		cfgSvc: ConfigService,
-		private dvcSvc: DeviceService,
+		private sesSvc: SessionService,
 		private jwtSvc: JwtService,
+		private dvcSvc: DeviceService,
 	) {
 		super({
 			jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -21,21 +23,19 @@ export class RefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
 	}
 
 	async validate(payload: IPayload) {
-		const session = await this.dvcSvc.findOne({ id: payload.id });
+		const session = await this.sesSvc.get(payload.id);
 		if (session) {
 			if (session.useTimeLeft - 1 >= 0) {
-				await this.dvcSvc.save({
-					id: session.id,
-					useTimeLeft: session.useTimeLeft - 1,
-				});
+				await this.sesSvc.update(session.id);
 				return {
 					success: true,
 					id: session.id,
-					ua: session.hashedUserAgent,
-					acsTkn: this.jwtSvc.sign({ id: session.owner.id }),
+					ua: session.device.hashedUserAgent,
+					acsTkn: this.jwtSvc.sign({ id: session.device.owner.id }),
 					rfsTkn: this.dvcSvc.refreshTokenSign(payload.id),
 				};
-			} else return { success: false, userId: session.owner.id };
+				// Todo: Cập nhật logic refresh token
+			} else return { success: false, userId: session.device.owner.id };
 		}
 		throw new UnauthorizedException('Invalid refresh token');
 	}

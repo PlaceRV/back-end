@@ -14,7 +14,7 @@ import { DeviceService } from 'device/device.service';
 import { CookieOptions, Request, Response } from 'express';
 import { UserRecieve } from 'user/user.class';
 import { ILogin, ISignUp } from 'user/user.model';
-import { hash } from 'utils';
+import { hash } from 'utils/utils';
 import { MetaData } from './auth.guard';
 import { AuthService } from './auth.service';
 
@@ -104,7 +104,7 @@ export class AuthController {
 		@Res({ passthrough: true }) response: Response,
 	) {
 		this.clearCookies(request, response);
-		await this.dvcSvc.delete({ id: request.user['id'] });
+		await this.dvcSvc.remove(request.user['id']);
 	}
 
 	@Post('refresh')

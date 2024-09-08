@@ -25,14 +25,14 @@ export class AuthService {
 	private readonly svrScr = this.cfgSvc.get('SERVER_SECRET');
 
 	async signUp(input: ISignUp, mtdt: string) {
-		const user = await this.usrSvc.findOne({ email: input.email });
+		const user = await this.usrSvc.email(input.email);
 		if (!user) {
 			const newUser = new User(input);
 			const inputErrors = await validate(newUser, {
 				stopAtFirstError: true,
 			} as ValidatorOptions);
 			if (newUser.hashedPassword && !inputErrors.length) {
-				await this.usrSvc.save(newUser);
+				await this.usrSvc.assign(newUser);
 				return this.dvcSvc.getTokens(newUser, mtdt);
 			}
 			throw new BadRequestException(String(inputErrors));
@@ -41,7 +41,7 @@ export class AuthService {
 	}
 
 	async login(input: ILogin, mtdt: string) {
-		const user = await this.usrSvc.findOne({ email: input.email });
+		const user = await this.usrSvc.email(input.email);
 		if (user) {
 			const isPasswordMatched = compareSync(
 				input.password,

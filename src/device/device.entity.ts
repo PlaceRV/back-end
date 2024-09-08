@@ -1,26 +1,24 @@
-import {
-	BaseEntity,
-	Column,
-	Entity,
-	ManyToOne,
-	PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Session } from 'session/session.entity';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { User } from 'user/user.entity';
+import { SensitiveInfomations } from 'utils/typeorm.utils';
 import { IDevice } from './device.interface';
 
 @Entity()
-export class Device extends BaseEntity implements IDevice {
+export class Device extends SensitiveInfomations implements IDevice {
 	constructor(payload: IDevice) {
 		super();
 		Object.assign(this, payload);
 	}
 
 	// Relationships
-	@ManyToOne(() => User, (_: User) => _.sessions)
+	@ManyToOne(() => User, (_: User) => _.devices)
 	owner: User;
 
-	// Sensitive infomation
-	@PrimaryGeneratedColumn('uuid') id: string;
+	@OneToMany(() => Session, (_: Session) => _.device)
+	sessions: Session[];
+
+	// Infomations
 	@Column() hashedUserAgent: string;
-	@Column() useTimeLeft: number;
+	@Column() valid: boolean;
 }

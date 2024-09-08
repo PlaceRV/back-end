@@ -14,7 +14,7 @@ export interface IUserInfo {
 }
 
 export interface IUser extends IUserAuthentication, IUserInfo {
-	sessions?: IDevice[];
+	devices?: IDevice[];
 	placesAssigned?: IPlace[];
 	roles?: Role[];
 }

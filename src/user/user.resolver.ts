@@ -14,7 +14,7 @@ export class UserResolver {
 	@Query(() => User)
 	@AllowPublic(true)
 	async findOne(@Args('id') id: string) {
-		const user = await this.usrSvc.findOne({ id });
+		const user = await this.usrSvc.get(id);
 		if (user) return user;
 		throw new BadRequestException('User not found');
 	}
@@ -22,6 +22,6 @@ export class UserResolver {
 	@Query(() => [User])
 	@Roles([Role.ADMIN, Role.USER])
 	findAll() {
-		return this.usrSvc.find();
+		return null;
 	}
 }

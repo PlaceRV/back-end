@@ -22,5 +22,6 @@ module.exports = {
 		'@typescript-eslint/no-explicit-any': 'off',
 		'@typescript-eslint/no-floating-promises': 'error',
 		'@typescript-eslint/require-await': 'error',
+		'@typescript-eslint/no-unused-vars': 'error',
 	},
 };

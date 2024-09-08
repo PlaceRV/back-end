@@ -1,21 +1,22 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import cookieParser from 'cookie-parser';
-import { DeviceService } from 'device/device.service';
+import { Device } from 'device/device.entity';
 import { TestModule } from 'module/test.module';
 import request from 'supertest';
 import TestAgent from 'supertest/lib/agent';
-import { execute } from 'test.utils';
+import { Repository } from 'typeorm';
 import { User } from 'user/user.entity';
-import { UserService } from 'user/user.service';
-import { tstStr } from 'utils';
+import { execute } from 'utils/test.utils';
+import { tstStr } from 'utils/utils';
 import { AuthModule } from './auth.module';
 
 const fileName = curFile(__filename);
 
-let dvcSvc: DeviceService,
-	usrSvc: UserService,
+let dvcRepo: Repository<Device>,
+	usrRepo: Repository<User>,
 	req: TestAgent,
 	usr: User,
 	app: INestApplication,
@@ -27,8 +28,8 @@ beforeAll(async () => {
 		}).compile(),
 		cfgSvc = module.get(ConfigService);
 
-	(dvcSvc = module.get(DeviceService)),
-		(usrSvc = module.get(UserService)),
+	(dvcRepo = module.get(getRepositoryToken(Device))),
+		(usrRepo = module.get(getRepositoryToken(User))),
 		(app = module.createNestApplication()),
 		(rfsTms = cfgSvc.get('REFRESH_USE'));
 
@@ -52,7 +53,7 @@ describe('signup', () => {
 			{ type: 'toHaveProperty', params: ['status', HttpStatus.ACCEPTED] },
 		]);
 
-		await execute(() => usrSvc.findOne({ email: usr.email }), {}, [
+		await execute(() => usrRepo.findOne({ where: { email: usr.email } }), {}, [
 			{ type: 'toBeInstanceOf', params: [User] },
 		]);
 	});
@@ -81,9 +82,11 @@ describe('login', () => {
 			{ type: 'toHaveProperty', params: ['status', HttpStatus.ACCEPTED] },
 		]);
 
-		await execute(() => dvcSvc.find({ owner: { email: usr.email } }), {}, [
-			{ type: 'toHaveLength', params: [2] },
-		]);
+		await execute(
+			() => dvcRepo.find({ where: { owner: { email: usr.email } } }),
+			{},
+			[{ type: 'toHaveLength', params: [2] }],
+		);
 	});
 
 	it('fail due to wrong password', async () => {
@@ -115,12 +118,14 @@ describe('logout', () => {
 			],
 		);
 
-		await execute(() => dvcSvc.find({ owner: { email: usr.email } }), {}, [
-			{ type: 'toHaveLength', params: [0] },
-		]);
+		await execute(
+			() => dvcRepo.find({ where: { owner: { email: usr.email } } }),
+			{},
+			[{ type: 'toHaveLength', params: [0] }],
+		);
 	});
 
-	it('faild due to not have valid cookies', async () => {
+	it('fail due to not have valid cookies', async () => {
 		await execute(req.post, { params: ['/auth/logout'] }, [
 			{ type: 'toHaveProperty', params: ['status', HttpStatus.UNAUTHORIZED] },
 		]);
@@ -159,7 +164,7 @@ describe('refresh', () => {
 		);
 	});
 
-	it('faild due to not have valid cookies', async () => {
+	it('fail due to not have valid cookies', async () => {
 		await execute(req.post, { params: ['/auth/refresh'] }, [
 			{ type: 'toHaveProperty', params: ['status', HttpStatus.UNAUTHORIZED] },
 		]);
