@@ -7,49 +7,11 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { compareSync } from 'bcrypt';
+import { validate, ValidatorOptions } from 'class-validator';
 import { DeviceService } from 'device/device.service';
-import { Request } from 'express';
 import { User } from 'user/user.entity';
 import { ILogin, ISignUp } from 'user/user.model';
 import { UserService } from 'user/user.service';
-import { generateFingerprint } from './auth.middleware';
-
-export class PayLoad {
-	constructor(id: string) {
-		this.id = id;
-	}
-
-	id!: string;
-
-	toPlainObj() {
-		return Object.assign({}, this);
-	}
-}
-
-export class UserMetadata {
-	constructor(req: Request) {
-		const fp = req['fingerprint'];
-		this.userAgent = { ...fp.userAgent, ...fp.maxmindData };
-		this.ipAddress = fp.ipAddress;
-	}
-
-	ipAddress!: string;
-	userAgent!: object;
-
-	toString(obj: object = this.userAgent) {
-		if (typeof obj === 'object') {
-			return `{${Object.keys(obj)
-				.map((key) => `${key}:${obj[key] ? this.toString(obj[key]) : '~'}`)
-				.join(',')}}`;
-		} else return JSON.stringify(obj);
-	}
-
-	static get test() {
-		return new UserMetadata({
-			fingerprint: generateFingerprint(),
-		} as unknown as Request);
-	}
-}
 
 @Injectable()
 export class AuthService {
@@ -62,19 +24,23 @@ export class AuthService {
 	private readonly algorithm = this.cfgSvc.get('AES_ALGO');
 	private readonly svrScr = this.cfgSvc.get('SERVER_SECRET');
 
-	async signUp(input: ISignUp, mtdt: UserMetadata) {
+	async signUp(input: ISignUp, mtdt: string) {
 		const user = await this.usrSvc.findOne({ email: input.email });
 		if (!user) {
 			const newUser = new User(input);
-			if (newUser.hashedPassword) {
+			const inputErrors = await validate(newUser, {
+				stopAtFirstError: true,
+			} as ValidatorOptions);
+			if (newUser.hashedPassword && !inputErrors.length) {
 				await this.usrSvc.save(newUser);
 				return this.dvcSvc.getTokens(newUser, mtdt);
 			}
+			throw new BadRequestException(String(inputErrors));
 		}
 		throw new BadRequestException('Email already assigned');
 	}
 
-	async login(input: ILogin, mtdt: UserMetadata) {
+	async login(input: ILogin, mtdt: string) {
 		const user = await this.usrSvc.findOne({ email: input.email });
 		if (user) {
 			const isPasswordMatched = compareSync(

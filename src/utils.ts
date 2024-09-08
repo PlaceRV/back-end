@@ -64,6 +64,7 @@ declare global {
 		a(): number; // abs()
 		char(chars?: string): string;
 		rd(): number; // random()
+		ra(input: () => Promise<any>): Promise<void>; // range() # like Python's range()
 	}
 
 	/**
@@ -113,6 +114,12 @@ Number.prototype.char = function (
 };
 Number.prototype.rd = function () {
 	return Math.floor(Math.random() * (this as number));
+};
+Number.prototype.ra = async function (input: () => Promise<any>) {
+	await Array.from({ length: Number(this) }, (_, i) => i).reduce(async (i) => {
+		await i;
+		return input();
+	}, Promise.resolve());
 };
 Number.prototype.f = function () {
 	return Math.floor(Number(this));

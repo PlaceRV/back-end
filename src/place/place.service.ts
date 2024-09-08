@@ -38,7 +38,7 @@ export class PlaceService {
 
 	save(
 		entities: DeepPartial<Place>,
-		options?: SaveOptions & { reload: false },
+		options?: SaveOptions,
 	): Promise<DeepPartial<Place>> {
 		return this.repo.save(entities, options);
 	}

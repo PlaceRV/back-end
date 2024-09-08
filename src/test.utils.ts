@@ -8,28 +8,41 @@ export const spy = <T extends Record<string, any>>(
 		key.forEach((k) => jest.spyOn(obj, k.toString())),
 	);
 
-interface Expectation {
-	type: keyof jest.Matchers<any>;
-	params: Parameters<jest.Matchers<any>[keyof jest.Matchers<any>]>;
+interface Expectation<T, K extends keyof jest.Matchers<T>> {
+	type: K;
+	params: Parameters<jest.Matchers<T>[K]>;
 	not?: boolean;
 	debug?: boolean;
 }
 
 /**
  * A function run async functions and catch both throw errors and results
- * @param {Promise<T>} func - the function to test
+ * @param {T} func - the function to test
+ * @param {Parameters<T>} params - the params for the function to test
  * @param {boolean} throwError - is the function going to throw errors?
- * @param {Expectation[]} exps - expectations that function will return
+ * @param {number} numOfRun - how many time function will run and the last one is going to test
+ * @param {Expectation<T, K>[]} exps - expectations that function will return
  */
-export async function execute(
-	func: Promise<any> | void,
-	throwError: boolean,
-	exps: Expectation[],
+export async function execute<
+	T extends (...args: any[]) => Promise<any>,
+	K extends keyof jest.Matchers<T>,
+>(
+	func: T,
+	{
+		params,
+		throwError = false,
+		numOfRun = 1,
+	}: { params?: Parameters<T>; throwError?: boolean; numOfRun?: number },
+	exps: Expectation<T, K>[],
 ) {
 	let funcResult: any;
+	const chamber = () => (params ? func(...params) : func());
+
+	if (!throwError && numOfRun - 1) await numOfRun.ra(chamber);
+
 	const result = throwError
 		? expect(func).rejects
-		: expect((funcResult = await func));
+		: expect((funcResult = await chamber()));
 	if (exps.some((i) => i.debug)) console.log(funcResult);
 	for (const exp of exps) {
 		await (exp.not ? result.not : result)[exp.type].apply(null, exp.params);

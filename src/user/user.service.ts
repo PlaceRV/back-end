@@ -21,7 +21,7 @@ export class UserService {
 		return this.repo.findOne({ where: options });
 	}
 
-	save(entities: DeepPartial<User>, options?: SaveOptions & { reload: false }) {
+	save(entities: DeepPartial<User>, options?: SaveOptions) {
 		return this.repo.save(entities, options) as Promise<User>;
 	}
 

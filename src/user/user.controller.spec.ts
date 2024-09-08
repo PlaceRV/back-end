@@ -24,7 +24,7 @@ describe('getUser', () => {
 
 	it('return error', () => {
 		const req = createRequest();
-		expect(async () => usrCon.getUser(req)).rejects.toThrow(
+		await expect(async () => usrCon.getUser(req)).rejects.toThrow(
 			BadRequestException,
 		);
 	});

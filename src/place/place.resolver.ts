@@ -21,7 +21,7 @@ export class PlaceResolver {
 	// Mutations
 	@Mutation(() => Boolean)
 	@Roles([Role.STAFF])
-	async createPlace(
+	createPlace(
 		@CurrentUser() user: User,
 		@Args('placeAssign') input: PlaceAssign,
 	) {

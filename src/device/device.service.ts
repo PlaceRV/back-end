@@ -2,14 +2,14 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AuthService, PayLoad, UserMetadata } from 'auth/auth.service';
+import { AuthService } from 'auth/auth.service';
 import {
 	DeepPartial,
 	FindOptionsWhere,
 	Repository,
 	SaveOptions,
 } from 'typeorm';
-import { UserRecieve } from 'user/user.dto';
+import { UserRecieve } from 'user/user.class';
 import { User } from 'user/user.entity';
 import { hash } from 'utils';
 import { Device } from './device.entity';
@@ -28,23 +28,24 @@ export class DeviceService {
 	private readonly exp = this.cfgSvc.get('REFRESH_EXPIRE');
 	private readonly use = this.cfgSvc.get('REFRESH_USE');
 
-	refreshTokenSign(payload: PayLoad) {
-		return this.jwtSvc.sign(payload, {
-			secret: this.scr,
-			expiresIn: this.exp,
-		});
+	refreshTokenSign(id: string) {
+		return this.jwtSvc.sign(
+			{ id },
+			{
+				secret: this.scr,
+				expiresIn: this.exp,
+			},
+		);
 	}
 
-	async getTokens(user: User, mtdt: UserMetadata) {
+	async getTokens(user: User, mtdt: string) {
 		const session = await this.save({
 				owner: user,
 				hashedUserAgent: hash(mtdt.toString()),
 				useTimeLeft: this.use,
 			}),
-			refreshToken = this.refreshTokenSign(
-				new PayLoad(session.id).toPlainObj(),
-			),
-			accessToken = this.jwtSvc.sign(new PayLoad(user.id).toPlainObj());
+			refreshToken = this.refreshTokenSign(session.id),
+			accessToken = this.jwtSvc.sign({ id: user.id });
 
 		return new UserRecieve({ accessToken, refreshToken });
 	}
@@ -58,10 +59,7 @@ export class DeviceService {
 		return this.repo.findOne({ where: options, relations: ['owner'] });
 	}
 
-	save(
-		entities: DeepPartial<Device>,
-		options?: SaveOptions & { reload: false },
-	) {
+	save(entities: DeepPartial<Device>, options?: SaveOptions) {
 		return this.repo.save(entities, options) as Promise<Device>;
 	}
 
