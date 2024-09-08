@@ -14,14 +14,14 @@ export class PlaceResolver {
 	// Queries
 	@Query(() => [Place])
 	@AllowPublic(true)
-	async findAll() {
+	async placeAll() {
 		return await this.plcSvc.all();
 	}
 
 	// Mutations
 	@Mutation(() => Boolean)
 	@Roles([Role.STAFF])
-	createPlace(
+	placeCreate(
 		@CurrentUser() user: User,
 		@Args('placeAssign') input: PlaceAssign,
 	) {

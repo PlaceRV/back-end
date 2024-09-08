@@ -32,7 +32,7 @@ describe('getUser', () => {
 		async () => ({ headers } = await req.post('/auth/signup').send(usr)),
 	);
 
-	it("return user's infomation", async () => {
+	it('success', async () => {
 		await execute(
 			() => req.post('/user').set('Cookie', headers['set-cookie']),
 			{},
@@ -45,7 +45,7 @@ describe('getUser', () => {
 		);
 	});
 
-	it('return error', async () => {
+	it('fail', async () => {
 		await execute(() => req.post('/user').send(usr), {}, [
 			{
 				type: 'toHaveProperty',
