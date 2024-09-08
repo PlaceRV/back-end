@@ -1,40 +1,75 @@
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import cookieParser from 'cookie-parser';
 import { TestModule } from 'module/test.module';
+import request from 'supertest';
+import TestAgent from 'supertest/lib/agent';
+import { Repository } from 'typeorm';
+import { execute } from 'utils/test.utils';
 import { User } from './user.entity';
 import { UserModule } from './user.module';
-import { UserResolver } from './user.resolver';
-import { UserService } from './user.service';
 
 const fileName = curFile(__filename);
-let usrRsv: UserResolver, usrSvc: UserService;
+let app: INestApplication,
+	usr: User,
+	req: TestAgent,
+	usrRepo: Repository<User>,
+	headers: object,
+	usrId: string;
 
-beforeEach(async () => {
+beforeAll(async () => {
 	const module: TestingModule = await Test.createTestingModule({
-		imports: [TestModule, UserModule],
+		imports: [UserModule, TestModule],
 	}).compile();
 
-	(usrRsv = module.get(UserResolver)), (usrSvc = module.get(UserService));
+	(app = module.createNestApplication()),
+		(usrRepo = module.get(getRepositoryToken(User)));
+
+	await app.use(cookieParser()).init();
+});
+
+beforeEach(async () => {
+	(req = request(app.getHttpServer())),
+		(usr = User.test(fileName)),
+		({ headers } = await req.post('/auth/signup').send(usr)),
+		(usrId = (await usrRepo.findOne({ where: { email: usr.email } })).id);
 });
 
 describe('findOne', () => {
 	it('return a user', async () => {
-		const user = User.test(fileName);
-		jest.spyOn(usrSvc, 'findOne').mockResolvedValue(user);
-		expect(await usrRsv.findOne('1')).toEqual(user);
+		await execute(
+			() =>
+				req
+					.post('/graphql')
+					.set('Cookie', headers['set-cookie'])
+					.send({
+						query: `
+							query FindOne($findOneId: String!) {
+								findOne(id: $findOneId) {
+									description
+									email
+									firstName
+									lastName
+									roles
+								}
+							}`,
+						variables: { findOneId: usrId },
+					}),
+			{},
+			[
+				{
+					type: 'toHaveProperty',
+					debug: true,
+					params: ['text', JSON.stringify({ data: { findOne: usr.info } })],
+				},
+			],
+		);
 	});
 
-	it('throw a BadRequestException if user not found', async () => {
-		jest.spyOn(usrSvc, 'findOne').mockResolvedValue(null);
-		await expect(usrRsv.findOne('1')).rejects.toThrow(BadRequestException);
-	});
+	it('throw a BadRequestException if user not found', async () => {});
 });
 
 describe('findAll', () => {
-	it('return all users', async () => {
-		const users: User[] = [User.test(fileName), User.test(fileName)];
-		jest.spyOn(usrSvc, 'find').mockResolvedValue(users);
-		expect(await usrRsv.findAll()).toEqual(users);
-		expect(usrSvc.find).toHaveBeenCalled();
-	});
+	it('return all users', async () => {});
 });

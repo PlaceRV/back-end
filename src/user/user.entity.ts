@@ -69,7 +69,6 @@ export class User extends SensitiveInfomations implements IUser {
 		minNumbers: 1,
 		minSymbols: 1,
 	})
-	@Field()
 	password: string;
 
 	// Methods
@@ -79,6 +78,7 @@ export class User extends SensitiveInfomations implements IUser {
 			lastName: this.lastName,
 			email: this.email,
 			roles: this.roles,
+			description: this.description,
 		};
 	}
 
