@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  TestFormatLint:
+  build:
     name: 'Build & Test & Format & Lint'
 
     runs-on: ubuntu-latest

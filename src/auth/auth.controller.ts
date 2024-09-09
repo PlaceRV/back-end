@@ -65,7 +65,7 @@ export class AuthController {
 				.status(HttpStatus.ACCEPTED);
 			return true;
 		} catch (error) {
-			response.status(HttpStatus.INTERNAL_SERVER_ERROR).send(error);
+			response.status(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
