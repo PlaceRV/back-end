@@ -2,7 +2,6 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import cookieParser from 'cookie-parser';
-import { query } from 'express';
 import { IPlaceInfoKeys } from 'models';
 import { TestModule } from 'module/test.module';
 import request from 'supertest';
