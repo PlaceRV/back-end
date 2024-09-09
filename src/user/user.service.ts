@@ -14,7 +14,7 @@ export class UserService extends DatabaseRequests<User> {
 		return this.findOne({ email: input });
 	}
 
-	assign(newUser: User) {
-		return this.save(newUser);
+	async assign(newUser: User) {
+		return new User(await this.save(newUser));
 	}
 }

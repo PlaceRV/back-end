@@ -1,50 +1,103 @@
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthService, UserMetadata } from 'auth/auth.service';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import cookieParser from 'cookie-parser';
+import { query } from 'express';
+import { IPlaceInfoKeys } from 'models';
 import { TestModule } from 'module/test.module';
+import request from 'supertest';
+import TestAgent from 'supertest/lib/agent';
+import { Repository } from 'typeorm';
 import { User } from 'user/user.entity';
+import { Role } from 'user/user.model';
+import { execute } from 'utils/test.utils';
+import { InterfaceCasting } from 'utils/utils';
 import { Place } from './place.entity';
 import { PlaceModule } from './place.module';
-import { PlaceResolver } from './place.resolver';
-import { PlaceService } from './place.service';
 
 const fileName = curFile(__filename);
-let plcRsv: PlaceResolver, plcSvc: PlaceService, authSvc: AuthService;
 
-beforeEach(async () => {
+let app: INestApplication,
+	headers: object,
+	usr: User,
+	usrRaw: User,
+	usrRepo: Repository<User>,
+	req: TestAgent,
+	plc: Place;
+
+beforeAll(async () => {
 	const module: TestingModule = await Test.createTestingModule({
 		imports: [TestModule, PlaceModule],
 	}).compile();
 
-	(plcRsv = module.get(PlaceResolver)),
-		(plcSvc = module.get(PlaceService)),
-		(authSvc = module.get(AuthService));
+	(app = module.createNestApplication()),
+		(usrRepo = module.get(getRepositoryToken(User)));
+
+	await app.use(cookieParser()).init();
 });
 
-describe('findAll', () => {
-	it('return all places', async () => {
-		const places: Place[] = [
-			Place.test(User.test(fileName)),
-			Place.test(User.test(fileName)),
-		];
-		jest.spyOn(plcSvc, 'find').mockResolvedValue(places);
-		expect(await plcRsv.findAll()).toEqual(places);
-		expect(plcSvc.find).toHaveBeenCalled();
+beforeEach(async () => {
+	(req = request(app.getHttpServer())),
+		(usr = User.test(fileName)),
+		({ headers } = await req.post('/auth/signup').send(usr)),
+		(usrRaw = await usrRepo.findOne({ where: { email: usr.email } })),
+		(plc = Place.test);
+});
+
+describe('placeCreate', () => {
+	it('success', async () => {
+		await usrRepo.save([{ id: usrRaw.id, roles: [Role.STAFF] }]);
+
+		await execute(
+			() =>
+				req
+					.post('/graphql')
+					.set('Cookie', headers['set-cookie'])
+					.send({
+						query: `
+							mutation PlaceCreate($placeAssign: PlaceAssign!) {
+								placeCreate(placeAssign: $placeAssign) {
+									description
+									latitude
+									longitude
+									name
+									type
+								}
+							}`,
+						variables: {
+							placeAssign: InterfaceCasting.quick(plc, IPlaceInfoKeys),
+						},
+					}),
+			{},
+			[
+				{
+					type: 'toHaveProperty',
+					params: ['text', expect.stringContaining(JSON.stringify(plc.info))],
+				},
+				{ type: 'toHaveProperty', params: ['status', HttpStatus.OK] },
+			],
+		);
 	});
 });
 
-describe('createPlace', () => {
-	let usr: User;
-	beforeEach(async () => {
-		// New user sign up
-		usr = User.test(fileName);
-		const mtdt = UserMetadata.test;
-		await authSvc.signUp(usr, mtdt);
-	});
-
-	it('return success', async () => {
-		const input = Place.test(usr);
-		jest.spyOn(plcSvc, 'assign');
-		const result = await plcRsv.createPlace(usr, input);
-		expect(result).toEqual(true);
+describe('placeAll', () => {
+	it('success', async () => {
+		await execute(
+			() =>
+				req.post('/graphql').send({
+					query: `
+						query PlaceAll {
+							placeAll {
+								description
+								latitude
+								longitude
+								name
+								type
+							}
+						}`,
+				}),
+			{},
+			[{ type: 'toHaveProperty', params: ['status', HttpStatus.OK] }],
+		);
 	});
 });

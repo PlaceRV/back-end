@@ -16,13 +16,13 @@ export class SessionService extends DatabaseRequests<Session> {
 	}
 	private readonly use = this.cfgSvc.get('REFRESH_USE');
 
-	assign(device: Device) {
-		return this.save({ device, useTimeLeft: this.use });
+	async assign(device: Device) {
+		return new Session(await this.save({ device, useTimeLeft: this.use }));
 	}
 
 	async update(id: string) {
 		const useTimeLeft = (await this.id(id)).useTimeLeft - 1;
-		return this.save({ id, useTimeLeft });
+		return new Session(await this.save({ id, useTimeLeft }));
 	}
 
 	remove(id: string) {

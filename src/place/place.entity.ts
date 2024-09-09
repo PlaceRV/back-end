@@ -8,7 +8,6 @@ import {
 import {
 	IsAlpha,
 	IsEnum,
-	IsInstance,
 	IsLatitude,
 	IsLongitude,
 	IsString,
@@ -18,7 +17,7 @@ import { IPlaceInfoKeys } from 'models';
 import { Column, Entity, Index, ManyToOne } from 'typeorm';
 import { User } from 'user/user.entity';
 import { SensitiveInfomations } from 'utils/typeorm.utils';
-import { tstStr } from 'utils/utils';
+import { InterfaceCasting, tstStr } from 'utils/utils';
 import { IPlace, PlaceType } from './place.model';
 
 // ! INSTALL PostGIS required
@@ -31,10 +30,8 @@ export class Place extends SensitiveInfomations implements IPlace {
 	}
 
 	// Relationships
-	@IsInstance(User)
-	@HideField()
 	@ManyToOne(() => User, (_: User) => _.placesAssigned)
-	createdBy: User;
+	createdBy?: User;
 
 	// Infomations
 	@IsAlpha()
@@ -82,15 +79,18 @@ export class Place extends SensitiveInfomations implements IPlace {
 	description: string;
 
 	// Methods
-	static test(user: User) {
+	static get test() {
 		return new Place({
 			name: tstStr(),
 			type: PlaceType.CHURCH,
-			createdBy: user,
 			longitude: (32).rd(),
 			latitude: (32).rd(),
 			description: '',
 		});
+	}
+
+	get info() {
+		return InterfaceCasting.quick(this, IPlaceInfoKeys);
 	}
 }
 

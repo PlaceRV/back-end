@@ -20,11 +20,15 @@ function convertForGql(context: ExecutionContext) {
 	return ctx.getContext().req;
 }
 
-// Decorators
+/**
+ * Decorators
+ * ! WARNING: it's must be (data: unknown, context: ExecutionContext) => {}
+ * ! to void error [ExceptionsHandler] Cannot read properties of undefined (reading 'getType')
+ */
 export const Roles = Reflector.createDecorator<Role[]>(),
 	AllowPublic = Reflector.createDecorator<boolean>(),
 	CurrentUser = createParamDecorator(
-		(context: ExecutionContext) => convertForGql(context).user,
+		(data: unknown, context: ExecutionContext) => convertForGql(context).user,
 	),
 	MetaData = createParamDecorator(
 		(data: unknown, context: ExecutionContext): string =>

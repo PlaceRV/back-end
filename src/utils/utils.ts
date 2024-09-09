@@ -51,6 +51,18 @@ export function allImplement(
 	};
 }
 
+export class InterfaceCasting<T, K extends keyof T> {
+	[key: string]: any;
+
+	constructor(input: T, get: readonly K[]) {
+		get.forEach((_) => (this[String(_)] = input[_]));
+	}
+
+	static quick<T, K extends keyof T>(input: T, get: readonly K[]) {
+		return new InterfaceCasting(input, get);
+	}
+}
+
 // Global
 declare global {
 	interface Array<T> {
@@ -81,7 +93,6 @@ declare global {
 	 * @return {string} formatted file's name
 	 */
 	function curFile(file: string, cut?: number): string;
-	function sort(input: object): object;
 }
 
 global.curFile = (file: string, cut = 2) =>
@@ -94,11 +105,6 @@ global.curFile = (file: string, cut = 2) =>
 		.join('');
 global.matching = <T>(input: T[], required: T[]): boolean => {
 	return required.every((i) => input.some((j) => i === j));
-};
-global.sort = function (input: object) {
-	return Object.fromEntries(
-		Object.entries(input).sort(([a], [b]) => a.localeCompare(b)),
-	);
 };
 Array.prototype.get = function (subString: string) {
 	return this.filter((i: string) => i.includes(subString));

@@ -19,12 +19,12 @@ export class PlaceResolver {
 	}
 
 	// Mutations
-	@Mutation(() => Boolean)
+	@Mutation(() => Place)
 	@Roles([Role.STAFF])
-	placeCreate(
+	async placeCreate(
 		@CurrentUser() user: User,
 		@Args('placeAssign') input: PlaceAssign,
 	) {
-		return Boolean(this.plcSvc.assign(input, user));
+		return (await this.plcSvc.assign(input, user)).info;
 	}
 }

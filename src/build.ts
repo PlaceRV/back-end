@@ -11,7 +11,10 @@ const destFile = project.createSourceFile('./src/models.ts', '', {
 });
 
 function createKeys(node: InterfaceDeclaration) {
-	const allKeys = node.getProperties().map((p) => p.getName());
+	const allKeys = node
+		.getProperties()
+		.map((p) => p.getName())
+		.sort((a, b) => a.localeCompare(b));
 	destFile.addVariableStatement({
 		isExported: true,
 		declarationKind: VariableDeclarationKind.Const,

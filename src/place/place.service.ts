@@ -17,8 +17,11 @@ export class PlaceService extends DatabaseRequests<Place> {
 
 	async assign(placeAssign: PlaceAssign, usr: User) {
 		try {
-			return await this.save({ ...placeAssign, createdBy: usr });
-		} catch (error) {}
-		throw new BadRequestException('Invalid input');
+			return new Place(
+				await this.save({ ...new Place(placeAssign), createdBy: usr }),
+			);
+		} catch (error) {
+			throw new BadRequestException(error);
+		}
 	}
 }

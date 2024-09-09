@@ -1,10 +1,11 @@
 import { Field, HideField, ObjectType } from '@nestjs/graphql';
 import { IsAlpha, IsEmail, IsString, IsStrongPassword } from 'class-validator';
 import { Device } from 'device/device.entity';
+import { IUserInfoKeys } from 'models';
 import { Place } from 'place/place.entity';
 import { Column, Entity, OneToMany } from 'typeorm';
 import { SensitiveInfomations } from 'utils/typeorm.utils';
-import { hash, tstStr } from 'utils/utils';
+import { hash, InterfaceCasting, tstStr } from 'utils/utils';
 import { IUser, Role } from './user.model';
 
 @ObjectType()
@@ -73,13 +74,7 @@ export class User extends SensitiveInfomations implements IUser {
 
 	// Methods
 	get info() {
-		return {
-			firstName: this.firstName,
-			lastName: this.lastName,
-			email: this.email,
-			roles: this.roles,
-			description: this.description,
-		};
+		return InterfaceCasting.quick(this, IUserInfoKeys);
 	}
 
 	static test(from: string) {

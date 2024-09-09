@@ -62,10 +62,7 @@ describe('findOne', () => {
 			[
 				{
 					type: 'toHaveProperty',
-					params: [
-						'text',
-						expect.stringContaining(JSON.stringify(sort(usr.info))),
-					],
+					params: ['text', expect.stringContaining(JSON.stringify(usr.info))],
 				},
 			],
 		);
@@ -128,9 +125,7 @@ describe('findAll', () => {
 					type: 'toHaveProperty',
 					params: [
 						'text',
-						expect.stringContaining(
-							JSON.stringify(sort(usr.info)).slice(1, -10),
-						),
+						expect.stringContaining(JSON.stringify(usr.info).slice(1, -10)),
 					],
 				},
 			],

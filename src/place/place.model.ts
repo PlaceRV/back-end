@@ -10,7 +10,7 @@ export interface IPlaceInfo {
 }
 
 export interface IPlace extends IPlaceInfo {
-	createdBy: IUser;
+	createdBy?: IUser;
 }
 
 // Enums
