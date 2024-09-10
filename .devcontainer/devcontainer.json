@@ -1,21 +1,6 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 {
 	"containerEnv": { "POSTGRES_HOST": "host.docker.internal" },
-	"features": {
-		"ghcr.io/devcontainers/features/node:1": {
-			"installYarnUsingApt": true,
-			"nodeGypDependencies": true,
-			"nvmVersion": "latest",
-			"pnpmVersion": "latest",
-			"version": "latest"
-		},
-		"ghcr.io/devcontainers/features/git:1": {
-			"version": "latest",
-			"ppa": "false"
-		}
-	},
-	"image": "mcr.microsoft.com/devcontainers/base:ubuntu",
-	"name": "PlaceRV-backend",
 	"customizations": {
 		"vscode": {
 			"extensions": [
@@ -40,7 +25,20 @@
 			]
 		}
 	},
-	"runArgs": [
-		"--add-host=host.docker.internal:host-gateway"
-	]
+	"features": {
+		"ghcr.io/devcontainers/features/git:1": {
+			"ppa": "false",
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers/features/node:1": {
+			"installYarnUsingApt": true,
+			"nodeGypDependencies": true,
+			"nvmVersion": "latest",
+			"pnpmVersion": "latest",
+			"version": "latest"
+		}
+	},
+	"image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+	"name": "PlaceRV-backend",
+	"runArgs": ["--add-host=host.docker.internal:host-gateway"]
 }
