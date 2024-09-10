@@ -8,11 +8,9 @@ const config: Config = {
 	reporters: [
 		'summary',
 		['github-actions', { silent: false }],
-		['jest-junit', { outputDirectory: 'reports', outputName: 'junit.xml' }],
+		['jest-junit', { outputDirectory: 'reports', outputName: 'report.xml' }],
 	],
-	collectCoverage: true,
-	json: true,
-	coverageReporters: ['json-summary', ['text', { file: 'coverage.txt' }]],
+	coverageThreshold: { global: { lines: 80 } },
 };
 
 export default config;
