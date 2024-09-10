@@ -5,7 +5,11 @@ const config: Config = {
 	detectOpenHandles: true,
 	moduleDirectories: ['node_modules', 'src'],
 	transform: { '^.+.tsx?$': ['ts-jest', {}] },
-	reporters: [['github-actions', { silent: false }], 'summary'],
+	reporters: [
+		'summary',
+		['github-actions', { silent: false }],
+		['jest-junit', { outputDirectory: 'reports', outputName: 'report.xml' }],
+	],
 };
 
 export default config;
