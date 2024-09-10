@@ -10,9 +10,6 @@ export class UserRecieve implements IUserRecieve {
 	refreshToken: string;
 
 	static get test() {
-		return new UserRecieve({
-			accessToken: tstStr(),
-			refreshToken: tstStr(),
-		});
+		return new UserRecieve({ accessToken: tstStr(), refreshToken: tstStr() });
 	}
 }

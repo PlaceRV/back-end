@@ -47,9 +47,7 @@ describe('findOne', () => {
 					.set('Cookie', headers['set-cookie'])
 					.send({
 						query: `
-							query FindOne($findOneId: String!) {
-								user(id: $findOneId) {
-									description
+							query FindOne($findOneId: String!) {								user(id: $findOneId) {									description
 									email
 									firstName
 									lastName
@@ -76,9 +74,7 @@ describe('findOne', () => {
 					.set('Cookie', headers['set-cookie'])
 					.send({
 						query: `
-							query FindOne($findOneId: String!) {
-								user(id: $findOneId) {
-									description
+							query FindOne($findOneId: String!) {								user(id: $findOneId) {									description
 									email
 									firstName
 									lastName
@@ -109,9 +105,7 @@ describe('findAll', () => {
 					.set('Cookie', headers['set-cookie'])
 					.send({
 						query: `
-							query FindAll {
-								userAll {
-									description
+							query FindAll {								userAll {									description
 									email
 									firstName
 									lastName

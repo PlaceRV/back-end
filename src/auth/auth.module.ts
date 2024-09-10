@@ -22,9 +22,7 @@ import { RefreshStrategy } from './strategies/refresh.strategy';
 			useFactory: (cfgSvc: ConfigService) => {
 				return {
 					secret: cfgSvc.get('ACCESS_SECRET'),
-					signOptions: {
-						expiresIn: cfgSvc.get('ACCESS_EXPIRE'),
-					},
+					signOptions: { expiresIn: cfgSvc.get('ACCESS_EXPIRE') },
 				};
 			},
 		}),

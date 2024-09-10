@@ -25,13 +25,7 @@ export class DeviceService extends DatabaseRequests<Device> {
 	private readonly exp = this.cfgSvc.get('REFRESH_EXPIRE');
 
 	refreshTokenSign(id: string) {
-		return this.jwtSvc.sign(
-			{ id },
-			{
-				secret: this.scr,
-				expiresIn: this.exp,
-			},
-		);
+		return this.jwtSvc.sign({ id }, { secret: this.scr, expiresIn: this.exp });
 	}
 
 	async getTokens(user: User, mtdt: string) {

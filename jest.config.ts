@@ -4,9 +4,7 @@ const config: Config = {
 	testEnvironment: 'node',
 	detectOpenHandles: true,
 	moduleDirectories: ['node_modules', 'src'],
-	transform: {
-		'^.+.tsx?$': ['ts-jest', {}],
-	},
+	transform: { '^.+.tsx?$': ['ts-jest', {}] },
 };
 
 export default config;

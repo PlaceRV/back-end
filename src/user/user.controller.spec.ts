@@ -36,21 +36,13 @@ describe('getUser', () => {
 		await execute(
 			() => req.post('/user').set('Cookie', headers['set-cookie']),
 			{},
-			[
-				{
-					type: 'toHaveProperty',
-					params: ['text', JSON.stringify(usr.info)],
-				},
-			],
+			[{ type: 'toHaveProperty', params: ['text', JSON.stringify(usr.info)] }],
 		);
 	});
 
 	it('fail', async () => {
 		await execute(() => req.post('/user').send(usr), {}, [
-			{
-				type: 'toHaveProperty',
-				params: ['status', HttpStatus.UNAUTHORIZED],
-			},
+			{ type: 'toHaveProperty', params: ['status', HttpStatus.UNAUTHORIZED] },
 		]);
 	});
 });

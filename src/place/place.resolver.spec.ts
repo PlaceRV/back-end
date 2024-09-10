@@ -54,9 +54,7 @@ describe('placeCreate', () => {
 					.set('Cookie', headers['set-cookie'])
 					.send({
 						query: `
-							mutation PlaceCreate($placeAssign: PlaceAssign!) {
-								placeCreate(placeAssign: $placeAssign) {
-									description
+							mutation PlaceCreate($placeAssign: PlaceAssign!) {								placeCreate(placeAssign: $placeAssign) {									description
 									latitude
 									longitude
 									name
@@ -85,9 +83,7 @@ describe('placeAll', () => {
 			() =>
 				req.post('/graphql').send({
 					query: `
-						query PlaceAll {
-							placeAll {
-								description
+						query PlaceAll {							placeAll {								description
 								latitude
 								longitude
 								name
