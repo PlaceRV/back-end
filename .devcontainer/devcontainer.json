@@ -6,23 +6,20 @@
 			"extensions": [
 				"NicholasHsiang.vscode-javascript-comment",
 				"MichaelCurrin.auto-commit-msg",
-				"Angular.ng-template",
 				"dbaeumer.vscode-eslint",
 				"GitHub.vscode-pull-request-github",
-				"ecmel.vscode-html-css",
 				"ms-vscode.vscode-typescript-next",
 				"ms-vscode.js-debug-nightly",
 				"Orta.vscode-jest",
 				"esbenp.prettier-vscode",
 				"mutantdino.resourcemonitor",
-				"bradlc.vscode-tailwindcss",
 				"redhat.vscode-yaml",
 				"PeterSchmalfeldt.explorer-exclude",
 				"vscodevim.vim",
-				"GraphQL.vscode-graphql-syntax",
 				"aaron-bond.better-comments",
 				"formulahendry.auto-rename-tag",
-				"github.vscode-github-actions"
+				"github.vscode-github-actions",
+				"wayou.vscode-todo-highlight"
 			]
 		}
 	},
