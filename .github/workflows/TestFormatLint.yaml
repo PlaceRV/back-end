@@ -13,7 +13,12 @@ jobs:
 
     timeout-minutes: 5
 
-    permissions: write-all
+    permissions:
+      contents: write
+      actions: write
+      checks: write
+      issues: write
+      pull-requests: write
 
     services:
       postgres:
@@ -59,20 +64,11 @@ jobs:
           path: './node_modules'
           key: ${{ runner.os }}-node-${{ hashFiles('./package.json') }}
 
-      - uses: dorny/test-reporter@v1
-        if: success() || failure() # run this step even if previous step failed
-        with:
-          name: test-results
-          path: ./reports/*.xml
-          reporter: jest-junit
-
       - name: Jest Coverage Comment
         uses: MishaKav/jest-coverage-comment@main
         id: coverageComment
         with:
           title: Test report
-          junitxml-path: ./reports/junit.xml
-          junitxml-title: JUnit
           coverage-summary-path: ./coverage/coverage-summary.json
           coverage-title: Coverage result
           coverage-path: ./coverage/coverage.txt
