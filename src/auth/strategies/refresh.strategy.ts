@@ -34,7 +34,7 @@ export class RefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
 					acsTkn: this.jwtSvc.sign({ id: session.device.owner.id }),
 					rfsTkn: this.dvcSvc.refreshTokenSign(payload.id),
 				};
-				// Todo: Cập nhật logic refresh token
+				// TODO: Cập nhật logic refresh token
 			} else return { success: false, userId: session.device.owner.id };
 		}
 		throw new UnauthorizedException('Invalid refresh token');
