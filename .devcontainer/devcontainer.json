@@ -1,6 +1,8 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 {
-	"containerEnv": { "POSTGRES_HOST": "host.docker.internal" },
+	"containerEnv": {
+		"POSTGRES_HOST": "host.docker.internal"
+	},
 	"customizations": {
 		"vscode": {
 			"extensions": [
@@ -38,7 +40,13 @@
 			"version": "latest"
 		}
 	},
+	"forwardPorts": [
+		3000,
+		2053
+	],
 	"image": "mcr.microsoft.com/devcontainers/base:ubuntu",
 	"name": "PlaceRV-backend",
-	"runArgs": ["--add-host=host.docker.internal:host-gateway"]
+	"runArgs": [
+		"--add-host=host.docker.internal:host-gateway"
+	]
 }
