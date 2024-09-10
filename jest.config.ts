@@ -15,6 +15,11 @@ const config: Config = {
 	json: true,
 	coverageReporters: ['json', 'json-summary'],
 	collectCoverage: true,
+	coverageThreshold: {
+		global: {
+			lines: 80,
+		},
+	},
 };
 
 export default config;
