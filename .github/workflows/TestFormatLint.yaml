@@ -13,11 +13,7 @@ jobs:
 
     timeout-minutes: 5
 
-    permissions:
-      contents: write
-      actions: write
-      checks: write
-      discussions: write
+    permissions: write-all
 
     services:
       postgres:
