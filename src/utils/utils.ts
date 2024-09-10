@@ -97,7 +97,7 @@ declare global {
 
 global.curFile = (file: string, cut = 2) =>
 	file
-		.split('\\')
+		.split(/\/|\\/)
 		.last()
 		.split('.')
 		.map((w) => w[0].toUpperCase() + w.slice(1))
