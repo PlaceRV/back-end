@@ -21,7 +21,8 @@
 				"vscodevim.vim",
 				"GraphQL.vscode-graphql-syntax",
 				"aaron-bond.better-comments",
-				"formulahendry.auto-rename-tag"
+				"formulahendry.auto-rename-tag",
+				"github.vscode-github-actions"
 			]
 		}
 	},
@@ -38,6 +39,7 @@
 			"version": "latest"
 		}
 	},
+	"forwardPorts": [3000, 2053],
 	"image": "mcr.microsoft.com/devcontainers/base:ubuntu",
 	"name": "PlaceRV-backend",
 	"runArgs": ["--add-host=host.docker.internal:host-gateway"]

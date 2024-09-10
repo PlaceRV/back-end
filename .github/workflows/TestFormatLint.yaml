@@ -2,10 +2,13 @@ name: Build & Test & Format & Lint
 
 on:
   pull_request:
-  merge_group:
+    branches:
+      - main
 
 jobs:
   build:
+    name: 'Test & Format & Lint'
+
     runs-on: ubuntu-latest
 
     timeout-minutes: 5
@@ -14,6 +17,8 @@ jobs:
       # Give the default GITHUB_TOKEN write permission to commit and push the
       # added or changed files to the repository.
       contents: write
+      actions: read
+      checks: write
 
     services:
       postgres:
@@ -39,14 +44,14 @@ jobs:
 
       - uses: actions/cache/restore@v4
         with:
-          path: "./node_modules"
+          path: './node_modules'
           key: ${{ runner.os }}-node-${{ hashFiles('./package.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - run: "npm install"
+      - run: 'npm install'
 
-      - run: npm run build && npm run test && npm run format && npm run lint
+      - run: npm run test && npm run format && npm run lint
         env:
           ACCESS_SECRET: a
           REFRESH_SECRET: a
@@ -56,5 +61,14 @@ jobs:
       - uses: actions/cache/save@v4
         if: always()
         with:
-          path: "./node_modules"
+          path: './node_modules'
           key: ${{ runner.os }}-node-${{ hashFiles('./package.json') }}
+
+      - uses: dorny/test-reporter@v1
+        if: success() || failure() # run this step even if previous step failed
+        with:
+          name: test-results
+          path: ./reports/*.xml # Path to test results
+          reporter: jest-junit
+
+      #- uses: ArtiomTr/jest-coverage-report-action@v2
