@@ -13,7 +13,7 @@
 			"ppa": "false"
 		}
 	},
-	"image": "mcr.microsoft.com/devcontainers/typescript-node",
+	"image": "mcr.microsoft.com/devcontainers/base:ubuntu",
 	"name": "PlaceRV-backend",
 	"customizations": {
 		"vscode": {
