@@ -29,12 +29,12 @@ describe('canActivate', () => {
 			.mockImplementation(() => true);
 	});
 
-	it('allow access when AllowPublic is set', async () => {
+	it('success when AllowPublic is set', async () => {
 		jest.spyOn(rflt, 'get').mockReturnValueOnce(true);
 		expect(await roleGrd.canActivate(ctx)).toBe(true);
 	});
 
-	it('allow access when user roles match the required roles', async () => {
+	it("success when user's roles match the required roles", async () => {
 		const req = { user: { roles: [Role.ADMIN] } };
 		jest
 			.spyOn(rflt, 'get')
@@ -44,7 +44,7 @@ describe('canActivate', () => {
 		expect(await roleGrd.canActivate(ctx)).toBe(true);
 	});
 
-	it('not allow access when user roles not match the required roles', async () => {
+	it("fail due to user's roles not match the required roles", async () => {
 		const req = { user: { roles: [Role.USER] } };
 		jest
 			.spyOn(rflt, 'get')
@@ -54,7 +54,7 @@ describe('canActivate', () => {
 		expect(await roleGrd.canActivate(ctx)).toBe(false);
 	});
 
-	it('throw an error when roles are not defined', async () => {
+	it('fail due to roles are not defined', async () => {
 		await expect(roleGrd.canActivate(ctx)).rejects.toThrow(
 			InternalServerErrorException,
 		);

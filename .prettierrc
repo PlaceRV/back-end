@@ -8,6 +8,7 @@
 		"prettier-plugin-sort-json"
 	],
 	"printWidth": 80,
+	"singleAttributePerLine": false,
 	"singleQuote": true,
 	"tabWidth": 2,
 	"trailingComma": "all",

@@ -1,4 +1,4 @@
-import { tstStr } from 'utils';
+import { tstStr } from 'utils/utils';
 import { IUserRecieve } from './user.model';
 
 export class UserRecieve implements IUserRecieve {
@@ -10,9 +10,6 @@ export class UserRecieve implements IUserRecieve {
 	refreshToken: string;
 
 	static get test() {
-		return new UserRecieve({
-			accessToken: tstStr(),
-			refreshToken: tstStr(),
-		});
+		return new UserRecieve({ accessToken: tstStr(), refreshToken: tstStr() });
 	}
 }

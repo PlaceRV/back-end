@@ -1,31 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-	DeepPartial,
-	FindOptionsWhere,
-	Repository,
-	SaveOptions,
-} from 'typeorm';
+import { Repository } from 'typeorm';
+import { DatabaseRequests } from 'utils/typeorm.utils';
 import { User } from './user.entity';
 
 @Injectable()
-export class UserService {
-	constructor(@InjectRepository(User) private repo: Repository<User>) {}
-
-	// Database requests
-	find(options?: FindOptionsWhere<User>) {
-		return this.repo.find({ where: options });
+export class UserService extends DatabaseRequests<User> {
+	constructor(@InjectRepository(User) repo: Repository<User>) {
+		super(repo);
 	}
 
-	findOne(options?: FindOptionsWhere<User>) {
-		return this.repo.findOne({ where: options });
+	email(input: string) {
+		return this.findOne({ email: input });
 	}
 
-	save(entities: DeepPartial<User>, options?: SaveOptions & { reload: false }) {
-		return this.repo.save(entities, options) as Promise<User>;
-	}
-
-	delete(criteria: FindOptionsWhere<User>) {
-		return this.repo.delete(criteria);
+	async assign(newUser: User) {
+		return new User(await this.save(newUser));
 	}
 }

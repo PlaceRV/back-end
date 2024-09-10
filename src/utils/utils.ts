@@ -51,6 +51,18 @@ export function allImplement(
 	};
 }
 
+export class InterfaceCasting<T, K extends keyof T> {
+	[key: string]: any;
+
+	constructor(input: T, get: readonly K[]) {
+		get.forEach((_) => (this[String(_)] = input[_]));
+	}
+
+	static quick<T, K extends keyof T>(input: T, get: readonly K[]) {
+		return new InterfaceCasting(input, get);
+	}
+}
+
 // Global
 declare global {
 	interface Array<T> {
@@ -64,6 +76,7 @@ declare global {
 		a(): number; // abs()
 		char(chars?: string): string;
 		rd(): number; // random()
+		ra(input: () => Promise<any>): Promise<void>; // range() # like Python's range()
 	}
 
 	/**
@@ -84,12 +97,12 @@ declare global {
 
 global.curFile = (file: string, cut = 2) =>
 	file
-		.split('\\')
+		.split(/\/|\\/)
 		.last()
 		.split('.')
 		.map((w) => w[0].toUpperCase() + w.slice(1))
 		.slice(0, cut)
-		.join(' ');
+		.join('');
 global.matching = <T>(input: T[], required: T[]): boolean => {
 	return required.every((i) => input.some((j) => i === j));
 };
@@ -103,7 +116,7 @@ Array.prototype.last = function () {
 	return this[this.length - 1];
 };
 Number.prototype.char = function (
-	chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
+	chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
 ) {
 	return Array(this)
 		.join()
@@ -113,6 +126,12 @@ Number.prototype.char = function (
 };
 Number.prototype.rd = function () {
 	return Math.floor(Math.random() * (this as number));
+};
+Number.prototype.ra = async function (input: () => Promise<any>) {
+	await Array.from({ length: Number(this) }, (_, i) => i).reduce(async (i) => {
+		await i;
+		return input();
+	}, Promise.resolve());
 };
 Number.prototype.f = function () {
 	return Math.floor(Number(this));

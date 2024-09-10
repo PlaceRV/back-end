@@ -1,154 +1,200 @@
-import { randomBytes } from 'crypto';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DeviceService } from 'device/device.service';
-import { Request, Response } from 'express';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import cookieParser from 'cookie-parser';
+import { Device } from 'device/device.entity';
 import { TestModule } from 'module/test.module';
-import { createRequest, createResponse } from 'node-mocks-http';
-import { UserRecieve } from 'user/user.dto';
+import request from 'supertest';
+import TestAgent from 'supertest/lib/agent';
+import { Repository } from 'typeorm';
 import { User } from 'user/user.entity';
-import { hash } from 'utils';
-import { AuthController } from './auth.controller';
-import { AuthMiddleware } from './auth.middleware';
+import { execute } from 'utils/test.utils';
+import { tstStr } from 'utils/utils';
 import { AuthModule } from './auth.module';
-import { AuthService, UserMetadata } from './auth.service';
 
-const fileName = curFile(__filename),
-	usr = User.test(fileName);
+const fileName = curFile(__filename);
 
-let authCon: AuthController,
-	authSvc: AuthService,
-	dvcSvc: DeviceService,
-	authMdw: AuthMiddleware,
-	cfgSvc: ConfigService,
-	req: Request,
-	res: Response,
-	acsKey: string,
-	rfsKey: string,
-	ckiSfx: string;
+let dvcRepo: Repository<Device>,
+	usrRepo: Repository<User>,
+	req: TestAgent,
+	usr: User,
+	app: INestApplication,
+	rfsTms: number;
 
-beforeEach(async () => {
+beforeAll(async () => {
 	const module: TestingModule = await Test.createTestingModule({
-		imports: [AuthModule, TestModule],
-	}).compile();
+			imports: [AuthModule, TestModule],
+		}).compile(),
+		cfgSvc = module.get(ConfigService);
 
-	(authCon = module.get(AuthController)),
-		(cfgSvc = module.get(ConfigService)),
-		(authSvc = module.get(AuthService)),
-		(dvcSvc = module.get(DeviceService)),
-		(authMdw = new AuthMiddleware(authSvc, cfgSvc));
+	(dvcRepo = module.get(getRepositoryToken(Device))),
+		(usrRepo = module.get(getRepositoryToken(User))),
+		(app = module.createNestApplication()),
+		(rfsTms = cfgSvc.get('REFRESH_USE'));
 
-	(req = createRequest()),
-		(res = createResponse()),
-		(acsKey = cfgSvc.get('ACCESS_KEY')),
-		(rfsKey = cfgSvc.get('REFRESH_KEY')),
-		(ckiSfx = cfgSvc.get('SERVER_COOKIE_PREFIX'));
+	await app.use(cookieParser()).init();
+});
+
+beforeEach(() => {
+	(req = request(app.getHttpServer())), (usr = User.test(fileName));
 });
 
 describe('signup', () => {
-	it('call authSvc.signup and sendBack', () => {
-		const usrRcv = UserRecieve.test,
-			next = async () => {
-				jest.spyOn(authSvc, 'signUp').mockResolvedValue(usrRcv),
-					jest.spyOn(authCon, 'sendBack').mockImplementation();
-				await authCon.signUp(req, usr, res),
-					expect(authSvc.signUp).toHaveBeenCalledWith(
-						usr,
-						expect.any(UserMetadata),
-					),
-					expect(authCon.sendBack).toHaveBeenCalledWith(req, res, usrRcv);
-			};
-		authMdw.use(req, res, next);
+	it('success', async () => {
+		await execute(() => req.post('/auth/signup').send(usr), {}, [
+			{
+				type: 'toHaveProperty',
+				params: [
+					'headers.set-cookie',
+					expect.arrayContaining([expect.anything(), expect.anything()]),
+				],
+			},
+			{ type: 'toHaveProperty', params: ['status', HttpStatus.ACCEPTED] },
+		]);
+
+		await execute(() => usrRepo.findOne({ where: { email: usr.email } }), {}, [
+			{ type: 'toBeInstanceOf', params: [User] },
+		]);
+	});
+
+	it('fail due to email already exist', async () => {
+		await req.post('/auth/signup').send(usr);
+
+		await execute(() => req.post('/auth/signup').send(usr), {}, [
+			{ type: 'toHaveProperty', params: ['status', HttpStatus.BAD_REQUEST] },
+		]);
 	});
 });
 
 describe('login', () => {
-	it('call authSvc.login and sendBack', () => {
-		const usrRcv = UserRecieve.test,
-			next = async () => {
-				jest.spyOn(authSvc, 'login').mockResolvedValue(usrRcv),
-					jest.spyOn(authCon, 'sendBack').mockImplementation();
-				await authCon.login(req, usr, res),
-					expect(authSvc.login).toHaveBeenCalledWith(
-						usr,
-						expect.any(UserMetadata),
-					),
-					expect(authCon.sendBack).toHaveBeenCalledWith(req, res, usrRcv);
-			};
-		authMdw.use(req, res, next);
+	beforeEach(async () => await req.post('/auth/signup').send(usr));
+
+	it('success', async () => {
+		await execute(() => req.post('/auth/login').send(usr), {}, [
+			{
+				type: 'toHaveProperty',
+				params: [
+					'headers.set-cookie',
+					expect.arrayContaining([expect.anything(), expect.anything()]),
+				],
+			},
+			{ type: 'toHaveProperty', params: ['status', HttpStatus.ACCEPTED] },
+		]);
+
+		await execute(
+			() => dvcRepo.find({ where: { owner: { email: usr.email } } }),
+			{},
+			[{ type: 'toHaveLength', params: [2] }],
+		);
+	});
+
+	it('fail due to wrong password', async () => {
+		usr = new User({ ...usr, password: tstStr() });
+
+		await execute(() => req.post('/auth/login').send(usr), {}, [
+			{ type: 'toHaveProperty', params: ['status', HttpStatus.BAD_REQUEST] },
+		]);
 	});
 });
 
 describe('logout', () => {
-	it('clear all cookies and delete device session from databse', async () => {
-		req.user = { id: 'a' };
+	let headers: object;
 
-		jest.spyOn(authCon, 'clearCookies').mockImplementation(),
-			jest.spyOn(dvcSvc, 'delete').mockImplementation();
-		await authCon.logout(req, res),
-			expect(authCon.clearCookies).toHaveBeenCalledWith(req, res),
-			expect(dvcSvc.delete).toHaveBeenCalledWith({ id: req.user['id'] });
+	beforeEach(
+		async () => ({ headers } = await req.post('/auth/signup').send(usr)),
+	);
+
+	it('success', async () => {
+		await execute(
+			() => req.post('/auth/logout').set('Cookie', headers['set-cookie']),
+			{},
+			[
+				{
+					type: 'toHaveProperty',
+					params: ['headers.set-cookie', expect.arrayContaining([])],
+				},
+				{ type: 'toHaveProperty', params: ['status', HttpStatus.ACCEPTED] },
+			],
+		);
+
+		await execute(
+			() => dvcRepo.find({ where: { owner: { email: usr.email } } }),
+			{},
+			[{ type: 'toHaveLength', params: [0] }],
+		);
+	});
+
+	it('fail due to not have valid cookies', async () => {
+		await execute(req.post, { params: ['/auth/logout'] }, [
+			{ type: 'toHaveProperty', params: ['status', HttpStatus.UNAUTHORIZED] },
+		]);
 	});
 });
 
 describe('refresh', () => {
-	it('call dvcSvc.getTokens and sendBack if req.user.success is false', () => {
-		const usrRcv = UserRecieve.test,
-			next = async () => {
-				req.user = { success: false, userId: 'user_id' };
+	let headers: object;
 
-				jest.spyOn(dvcSvc, 'getTokens').mockResolvedValue(usrRcv),
-					jest.spyOn(authCon, 'sendBack').mockImplementation();
-				await authCon.refresh(req, res),
-					expect(dvcSvc.getTokens).toHaveBeenCalledWith(
-						req.user['userId'],
-						expect.any(UserMetadata),
-					),
-					expect(authCon.sendBack).toHaveBeenCalledWith(req, res, usrRcv);
-			};
-		authMdw.use(req, res, next);
+	beforeEach(
+		async () => ({ headers } = await req.post('/auth/signup').send(usr)),
+	);
+
+	it('success', async () => {
+		await execute(
+			() => req.post('/auth/refresh').set('Cookie', headers['set-cookie']),
+			{},
+			[
+				{
+					type: 'toHaveProperty',
+					not: true,
+					params: [
+						'headers.set-cookie',
+						expect.arrayContaining(headers['set-cookie']),
+					],
+				},
+				{
+					type: 'toHaveProperty',
+					params: [
+						'headers.set-cookie',
+						expect.arrayContaining([expect.anything(), expect.anything()]),
+					],
+				},
+				{ type: 'toHaveProperty', params: ['status', HttpStatus.ACCEPTED] },
+			],
+		);
 	});
 
-	it('call sendBack if req.user.success is true and compareSync is true', () => {
-		const next = async () => {
-			req.user = {
-				success: true,
-				ua: hash(new UserMetadata(req).toString()),
-			};
-
-			jest.spyOn(authCon, 'sendBack').mockImplementation();
-			await authCon.refresh(req, res),
-				expect(authCon.sendBack).toHaveBeenCalledWith(
-					req,
-					res,
-					expect.any(UserRecieve),
-				);
-		};
-		authMdw.use(req, res, next);
+	it('fail due to not have valid cookies', async () => {
+		await execute(req.post, { params: ['/auth/refresh'] }, [
+			{ type: 'toHaveProperty', params: ['status', HttpStatus.UNAUTHORIZED] },
+		]);
 	});
-});
 
-describe('clearCookies', () => {
-	it('call res.clearCookie twice', () => {
-		let acs: string, rfs: string;
-		req.cookies[`${(acs = ckiSfx + hash(acsKey))}`] = randomBytes(6).toString();
-		req.cookies[`${(rfs = ckiSfx + hash(rfsKey))}`] = randomBytes(6).toString();
-
-		jest.spyOn(res, 'clearCookie');
-		authCon.clearCookies(req, res),
-			expect(res['cookies'][acs].value).toBe(''),
-			expect(res['cookies'][rfs].value).toBe(''),
-			expect(res.clearCookie).toHaveBeenCalledTimes(2);
-	});
-});
-
-describe('sendBack', () => {
-	it('call clearCookies once and res.cookie twice', () => {
-		jest.spyOn(authCon, 'clearCookies').mockImplementation(),
-			jest.spyOn(res, 'cookie');
-		authCon.sendBack(req, res, UserRecieve.test),
-			expect(authCon.clearCookies).toHaveBeenCalledWith(req, res),
-			expect(res.cookie).toHaveBeenCalledTimes(2),
-			expect(res['cookies']).toBeDefined();
+	it('success in generate new key', async () => {
+		await execute(
+			async (headers: object) =>
+				({ headers } = await req
+					.post('/auth/refresh')
+					.set('Cookie', headers['set-cookie'])),
+			{ numOfRun: rfsTms * 1.2, params: [headers] },
+			[
+				{
+					type: 'toHaveProperty',
+					not: true,
+					params: [
+						'headers.set-cookie',
+						expect.arrayContaining(headers['set-cookie']),
+					],
+				},
+				{
+					type: 'toHaveProperty',
+					params: [
+						'headers.set-cookie',
+						expect.arrayContaining([expect.anything(), expect.anything()]),
+					],
+				},
+				{ type: 'toHaveProperty', params: ['status', HttpStatus.ACCEPTED] },
+			],
+		);
 	});
 });

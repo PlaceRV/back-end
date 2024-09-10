@@ -8,46 +8,30 @@ import {
 import {
 	IsAlpha,
 	IsEnum,
-	IsInstance,
 	IsLatitude,
 	IsLongitude,
 	IsString,
-	IsUUID,
 } from 'class-validator';
 import { Point } from 'geojson';
 import { IPlaceInfoKeys } from 'models';
-import {
-	BaseEntity,
-	Column,
-	Entity,
-	Index,
-	ManyToOne,
-	PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, Index, ManyToOne } from 'typeorm';
 import { User } from 'user/user.entity';
-import { tstStr } from 'utils';
+import { SensitiveInfomations } from 'utils/typeorm.utils';
+import { InterfaceCasting, tstStr } from 'utils/utils';
 import { IPlace, PlaceType } from './place.model';
 
 // ! INSTALL PostGIS required
 @ObjectType()
 @Entity()
-export class Place extends BaseEntity implements IPlace {
+export class Place extends SensitiveInfomations implements IPlace {
 	constructor(payload: IPlace) {
 		super();
 		Object.assign(this, payload);
 	}
 
 	// Relationships
-	@IsInstance(User)
-	@HideField()
 	@ManyToOne(() => User, (_: User) => _.placesAssigned)
-	createdBy: User;
-
-	// Sensitive infomations
-	@IsUUID()
-	@HideField()
-	@PrimaryGeneratedColumn('uuid')
-	id?: string;
+	createdBy?: User;
 
 	// Infomations
 	@IsAlpha()
@@ -95,15 +79,18 @@ export class Place extends BaseEntity implements IPlace {
 	description: string;
 
 	// Methods
-	static test(user: User) {
+	static get test() {
 		return new Place({
 			name: tstStr(),
 			type: PlaceType.CHURCH,
-			createdBy: user,
 			longitude: (32).rd(),
 			latitude: (32).rd(),
 			description: '',
 		});
+	}
+
+	get info() {
+		return InterfaceCasting.quick(this, IPlaceInfoKeys);
 	}
 }
 

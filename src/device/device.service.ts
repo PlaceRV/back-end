@@ -1,71 +1,51 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AuthService, PayLoad, UserMetadata } from 'auth/auth.service';
-import {
-	DeepPartial,
-	FindOptionsWhere,
-	Repository,
-	SaveOptions,
-} from 'typeorm';
-import { UserRecieve } from 'user/user.dto';
+import { SessionService } from 'session/session.service';
+import { Repository } from 'typeorm';
+import { UserRecieve } from 'user/user.class';
 import { User } from 'user/user.entity';
-import { hash } from 'utils';
+import { DatabaseRequests } from 'utils/typeorm.utils';
+import { hash } from 'utils/utils';
 import { Device } from './device.entity';
 
 @Injectable()
-export class DeviceService {
+export class DeviceService extends DatabaseRequests<Device> {
 	constructor(
-		@InjectRepository(Device) private repo: Repository<Device>,
+		@InjectRepository(Device) repo: Repository<Device>,
 		private jwtSvc: JwtService,
 		private cfgSvc: ConfigService,
-		@Inject(forwardRef(() => AuthService))
-		private authSvc: AuthService,
-	) {}
+		private sesSvc: SessionService,
+	) {
+		super(repo);
+	}
 	// session secret
 	private readonly scr = this.cfgSvc.get('REFRESH_SECRET');
 	private readonly exp = this.cfgSvc.get('REFRESH_EXPIRE');
-	private readonly use = this.cfgSvc.get('REFRESH_USE');
 
-	refreshTokenSign(payload: PayLoad) {
-		return this.jwtSvc.sign(payload, {
-			secret: this.scr,
-			expiresIn: this.exp,
-		});
+	refreshTokenSign(id: string) {
+		return this.jwtSvc.sign({ id }, { secret: this.scr, expiresIn: this.exp });
 	}
 
-	async getTokens(user: User, mtdt: UserMetadata) {
-		const session = await this.save({
+	async getTokens(user: User, mtdt: string) {
+		const device = await this.save({
 				owner: user,
 				hashedUserAgent: hash(mtdt.toString()),
-				useTimeLeft: this.use,
+				valid: true,
 			}),
-			refreshToken = this.refreshTokenSign(
-				new PayLoad(session.id).toPlainObj(),
-			),
-			accessToken = this.jwtSvc.sign(new PayLoad(user.id).toPlainObj());
+			session = await this.sesSvc.assign(device),
+			refreshToken = this.refreshTokenSign(session.id),
+			accessToken = this.jwtSvc.sign({ id: user.id });
 
 		return new UserRecieve({ accessToken, refreshToken });
 	}
 
-	// Database requests
-	find(options?: FindOptionsWhere<Device>): Promise<Device[]> {
-		return this.repo.find({ where: options, relations: ['owner'] });
-	}
-
-	findOne(options?: FindOptionsWhere<Device>): Promise<Device> {
-		return this.repo.findOne({ where: options, relations: ['owner'] });
-	}
-
-	save(
-		entities: DeepPartial<Device>,
-		options?: SaveOptions & { reload: false },
-	) {
-		return this.repo.save(entities, options) as Promise<Device>;
-	}
-
-	delete(criteria: FindOptionsWhere<Device>) {
-		return this.repo.delete(criteria);
+	async remove(session_id: string) {
+		const { id, sessions } = (await this.sesSvc.id(session_id)).device;
+		await Promise.all(
+			sessions.map(async (i) => await this.sesSvc.remove(i.id)),
+		);
+		return this.delete({ id });
 	}
 }

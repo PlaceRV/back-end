@@ -10,12 +10,14 @@ export interface IUserAuthentication {
 export interface IUserInfo {
 	firstName: string;
 	lastName: string;
+	description: string;
+	roles?: Role[];
+	email: string;
 }
 
 export interface IUser extends IUserAuthentication, IUserInfo {
-	sessions?: IDevice[];
+	devices?: IDevice[];
 	placesAssigned?: IPlace[];
-	roles?: Role[];
 }
 
 export interface IUserRecieve {

@@ -7,6 +7,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { AuthGuard } from '@nestjs/passport';
+import UAParser from 'ua-parser-js';
 import { Role } from 'user/user.model';
 
 /**
@@ -19,12 +20,24 @@ function convertForGql(context: ExecutionContext) {
 	return ctx.getContext().req;
 }
 
-// Decorators
+/**
+ * Decorators
+ * ! WARNING: it's must be (data: unknown, context: ExecutionContext) => {}
+ * ! to void error [ExceptionsHandler] Cannot read properties of undefined (reading 'getType')
+ */
 export const Roles = Reflector.createDecorator<Role[]>(),
 	AllowPublic = Reflector.createDecorator<boolean>(),
-	CurrentUser = createParamDecorator((context: ExecutionContext) => {
-		return convertForGql(context).user;
-	});
+	CurrentUser = createParamDecorator(
+		(data: unknown, context: ExecutionContext) => convertForGql(context).user,
+	),
+	MetaData = createParamDecorator(
+		(data: unknown, context: ExecutionContext): string =>
+			JSON.stringify(
+				new UAParser()
+					.setUA(convertForGql(context).headers['user-agent'])
+					.getResult(),
+			),
+	);
 
 @Injectable()
 export class RoleGuard extends AuthGuard('access') {

@@ -4,8 +4,8 @@ import { NextFunction, Request, Response } from 'express';
 import { TestModule } from 'module/test.module';
 import { createRequest, createResponse } from 'node-mocks-http';
 import uaParserJs from 'ua-parser-js';
-import { hash } from 'utils';
-import { AuthMiddleware, generateFingerprint } from './auth.middleware';
+import { hash } from 'utils/utils';
+import { AuthMiddleware } from './auth.middleware';
 import { AuthModule } from './auth.module';
 import { AuthService } from './auth.service';
 
@@ -45,14 +45,6 @@ beforeEach(async () => {
 		(ckiSfx = cfgSvc.get('SERVER_COOKIE_PREFIX'));
 });
 
-describe('generateFingerprint', () => {
-	it('generate a fingerprint object', () => {
-		expect(generateFingerprint()).toEqual({
-			userAgent: ua,
-		});
-	});
-});
-
 describe('use', () => {
 	beforeEach(() => {
 		req.cookies[`${ckiSfx + hash(rfsKey)}`] = authSvc.encrypt(
@@ -62,14 +54,14 @@ describe('use', () => {
 		req.cookies[`${ckiSfx + hash(acsKey)}`] = authSvc.encrypt(acsTkn);
 	});
 
-	it('set the request fingerprint and authorization header for refresh', () => {
+	it('refresh', () => {
 		req.url = '/auth/refreshToken';
 		authMdw.use(req, res, next),
 			expect(req.headers.authorization).toBe(`Bearer ${rfsTkn}`),
 			expect(next).toHaveBeenCalled();
 	});
 
-	it('set the request fingerprint and authorization header for access', () => {
+	it('access', () => {
 		authMdw.use(req, res, next),
 			expect(req.headers.authorization).toBe(`Bearer ${acsTkn}`),
 			expect(next).toHaveBeenCalled();
