@@ -10,6 +10,11 @@ const config: Config = {
 		['github-actions', { silent: false }],
 		['jest-junit', { outputDirectory: 'reports', outputName: 'report.xml' }],
 	],
+	ci: true,
+	testLocationInResults: true,
+	json: true,
+	coverageReporters: ['json', 'json-summary'],
+	collectCoverage: true,
 };
 
 export default config;
