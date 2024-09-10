@@ -13,12 +13,6 @@
 			"ppa": "false"
 		}
 	},
-	"portsAttributes": {
-		"5432": {
-			"label": "PostgreSQL port",
-			"elevateIfNeeded": true
-		}
-	},
 	"image": "mcr.microsoft.com/devcontainers/typescript-node",
 	"name": "PlaceRV-backend",
 	"customizations": {
@@ -44,5 +38,8 @@
 				"formulahendry.auto-rename-tag"
 			]
 		}
-	}
+	},
+	"runArgs": [
+		"--add-host=host.docker.internal:host-gateway"
+	]
 }
