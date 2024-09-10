@@ -12,10 +12,7 @@ const config: Config = {
 	],
 	collectCoverage: true,
 	json: true,
-	coverageReporters: [
-		'json-summary',
-		['text', { file: 'coverage.txt' }],
-	],
+	coverageReporters: ['json-summary', ['text', { file: 'coverage.txt' }]],
 };
 
 export default config;
