@@ -1,9 +1,10 @@
 name: Build & Test & Format & Lint
 
 on:
-  pull_request_target:
+  pull_request:
     branches:
       - main
+  merge_group:
 
 jobs:
   build:
@@ -64,6 +65,9 @@ jobs:
           path: './node_modules'
           key: ${{ runner.os }}-node-${{ hashFiles('./package.json') }}
 
-      - uses: ArtiomTr/jest-coverage-report-action@v2
+      - uses: dorny/test-reporter@v1
+        if: success() || failure() # run this step even if previous step failed
         with:
-          coverage-file: coverage/coverage-final.json
+          name: test-results
+          path: ./reports/*.xml # Path to test results
+          reporter: jest-junit
