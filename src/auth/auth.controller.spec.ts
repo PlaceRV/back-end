@@ -50,7 +50,11 @@ describe('signup', () => {
 					expect.arrayContaining([expect.anything(), expect.anything()]),
 				],
 			},
-			{ type: 'toHaveProperty', params: ['status', HttpStatus.ACCEPTED] },
+			{
+				type: 'toHaveProperty',
+				debug: true,
+				params: ['status', HttpStatus.ACCEPTED],
+			},
 		]);
 
 		await execute(() => usrRepo.findOne({ where: { email: usr.email } }), {}, [
@@ -79,7 +83,11 @@ describe('login', () => {
 					expect.arrayContaining([expect.anything(), expect.anything()]),
 				],
 			},
-			{ type: 'toHaveProperty', params: ['status', HttpStatus.ACCEPTED] },
+			{
+				type: 'toHaveProperty',
+				debug: true,
+				params: ['status', HttpStatus.ACCEPTED],
+			},
 		]);
 
 		await execute(
