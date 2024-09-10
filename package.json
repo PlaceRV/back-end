@@ -19,7 +19,6 @@
 		"start:dev": "nest start --watch",
 		"start:prod": "node dist/main",
 		"test": "jest",
-		"test:ci": "jest --ci --json --coverage --testLocationInResults --outputFile=report.json",
 		"test:cov": "jest --coverage",
 		"test:debug": "jest --runInBand",
 		"test:watch": "jest --watch"

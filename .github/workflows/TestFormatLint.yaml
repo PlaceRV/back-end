@@ -1,7 +1,7 @@
 name: Build & Test & Format & Lint
 
 on:
-  pull_request:
+  pull_request_target:
     branches:
       - main
 
@@ -51,7 +51,7 @@ jobs:
 
       - run: 'npm install'
 
-      - run: npm run test:ci && npm run format && npm run lint
+      - run: npm run test && npm run format && npm run lint
         env:
           ACCESS_SECRET: a
           REFRESH_SECRET: a
