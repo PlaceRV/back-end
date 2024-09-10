@@ -2,14 +2,10 @@ name: Build & Test & Format & Lint
 
 on:
   pull_request:
-    branches:
-      - main
   merge_group:
 
 jobs:
   build:
-    name: "Build & Test & Format & Lint"
-
     runs-on: ubuntu-latest
 
     timeout-minutes: 5
