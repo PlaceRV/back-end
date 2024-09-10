@@ -1,8 +1,6 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 {
-	"containerEnv": {
-		"POSTGRES_HOST": "host.docker.internal"
-	},
+	"containerEnv": { "POSTGRES_HOST": "host.docker.internal" },
 	"customizations": {
 		"vscode": {
 			"extensions": [

@@ -11,7 +11,7 @@
 		"postinstall": "npm run build && npm run dts",
 		"build": "ts-node src/build.ts && nest build",
 		"dts": "npm-dts generate --output types.d.ts",
-		"format": "replace '{\n' '{' src -r && prettier --write \"./**/*.ts\" \"./**/*.js*\" \"./**/*.*rc\"",
+		"format": "replace '{\n' '{' . -r --include=\"*.ts,*.json\" --exclude=\"node_modules\" && prettier --write \"./**/*.ts\" \"./**/*.js*\" \"./**/*.*rc\"",
 		"lint": "eslint --fix  --ext .ts .",
 		"safe": "generate-env-example",
 		"start": "nest start",

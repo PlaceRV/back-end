@@ -71,6 +71,4 @@ jobs:
           path: ./reports/*.xml # Path to test results
           reporter: jest-junit
 
-      - uses: ArtiomTr/jest-coverage-report-action@v2
-        with:
-          coverage-file: coverage/coverage-summary.json
+      #- uses: ArtiomTr/jest-coverage-report-action@v2
