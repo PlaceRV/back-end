@@ -23,7 +23,8 @@
 				"vscodevim.vim",
 				"GraphQL.vscode-graphql-syntax",
 				"aaron-bond.better-comments",
-				"formulahendry.auto-rename-tag"
+				"formulahendry.auto-rename-tag",
+				"github.vscode-github-actions"
 			]
 		}
 	},

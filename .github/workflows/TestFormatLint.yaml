@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    name: "Test & Format & Lint"
+    name: 'Test & Format & Lint'
 
     runs-on: ubuntu-latest
 
@@ -41,12 +41,12 @@ jobs:
 
       - uses: actions/cache/restore@v4
         with:
-          path: "./node_modules"
+          path: './node_modules'
           key: ${{ runner.os }}-node-${{ hashFiles('./package.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - run: "npm install"
+      - run: 'npm install'
 
       - run: npm run build && npm run test && npm run format && npm run lint
         env:
@@ -54,9 +54,12 @@ jobs:
           REFRESH_SECRET: a
 
       - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          token: ${{ github.token }}
+          push_options: --force
 
       - uses: actions/cache/save@v4
         if: always()
         with:
-          path: "./node_modules"
+          path: './node_modules'
           key: ${{ runner.os }}-node-${{ hashFiles('./package.json') }}
