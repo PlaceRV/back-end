@@ -30,9 +30,7 @@
 		"secrets": true,
 		"types.d.ts": true
 	},
-	"jest.outputConfig": {
-		"clearOnRun": "terminal"
-	},
+	"jest.outputConfig": { "clearOnRun": "terminal" },
 	"jest.runMode": {
 		"coverage": true,
 		"showInlineError": true,
