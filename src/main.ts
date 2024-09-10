@@ -1,4 +1,4 @@
-import { readFileSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import http from 'http';
 import https from 'https';
 import { ValidationPipe } from '@nestjs/common';
@@ -14,10 +14,7 @@ import { Place } from './place/place.entity';
 import { User } from './user/user.entity';
 
 async function bootstrap() {
-	const httpsOptions = {
-			key: readFileSync('./secrets/key.pem'),
-			cert: readFileSync('./secrets/cert.pem'),
-		},
+	const httpsPemFolder = './secrets',
 		{ AdminJS } = await import('adminjs'),
 		{ buildAuthenticatedRouter } = await import('@adminjs/express'),
 		{ Database, Resource } = await import('@adminjs/typeorm'),
@@ -48,7 +45,18 @@ async function bootstrap() {
 	// Init multiple connection type
 	await app.use(admin.options.rootPath, adminRouter).init();
 	http.createServer(server).listen(cfgSvc.get('SERVER_PORT'));
-	https.createServer(httpsOptions, server).listen(2053);
+
+	if (existsSync(httpsPemFolder))
+		https
+			.createServer(
+				{
+					key: readFileSync(`${httpsPemFolder}/key.pem`),
+					cert: readFileSync(`${httpsPemFolder}/cert.pem`),
+				},
+				server,
+			)
+			.listen(2053);
+	else console.warn('Https connection not initialize');
 }
 
 void bootstrap();

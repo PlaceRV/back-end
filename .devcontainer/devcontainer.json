@@ -1,5 +1,4 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
-// README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
 {
 	"features": {
 		"ghcr.io/devcontainers/features/node:1": {
@@ -21,5 +20,29 @@
 		}
 	},
 	"image": "mcr.microsoft.com/devcontainers/typescript-node",
-	"name": "PlaceRV-backend"
+	"name": "PlaceRV-backend",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"NicholasHsiang.vscode-javascript-comment",
+				"MichaelCurrin.auto-commit-msg",
+				"Angular.ng-template",
+				"dbaeumer.vscode-eslint",
+				"GitHub.vscode-pull-request-github",
+				"ecmel.vscode-html-css",
+				"ms-vscode.vscode-typescript-next",
+				"ms-vscode.js-debug-nightly",
+				"Orta.vscode-jest",
+				"esbenp.prettier-vscode",
+				"mutantdino.resourcemonitor",
+				"bradlc.vscode-tailwindcss",
+				"redhat.vscode-yaml",
+				"PeterSchmalfeldt.explorer-exclude",
+				"vscodevim.vim",
+				"GraphQL.vscode-graphql-syntax",
+				"aaron-bond.better-comments",
+				"formulahendry.auto-rename-tag"
+			]
+		}
+	}
 }
