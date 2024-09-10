@@ -55,7 +55,6 @@ jobs:
 
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          token: ${{ github.token }}
           push_options: --force
 
       - uses: actions/cache/save@v4
