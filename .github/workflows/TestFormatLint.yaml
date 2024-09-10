@@ -13,12 +13,7 @@ jobs:
 
     timeout-minutes: 5
 
-    permissions:
-      # Give the default GITHUB_TOKEN write permission to commit and push the
-      # added or changed files to the repository.
-      contents: write
-      actions: read
-      checks: write
+    permissions: write-all
 
     services:
       postgres:
@@ -68,7 +63,17 @@ jobs:
         if: success() || failure() # run this step even if previous step failed
         with:
           name: test-results
-          path: ./reports/*.xml # Path to test results
+          path: ./reports/*.xml
           reporter: jest-junit
 
-      #- uses: ArtiomTr/jest-coverage-report-action@v2
+      - name: Jest Coverage Comment
+        uses: MishaKav/jest-coverage-comment@main
+        id: coverageComment
+        with:
+          title: Test report
+          junitxml-path: ./reports/junit.xml
+          junitxml-title: JUnit
+          coverage-summary-path: ./coverage/coverage-summary.json
+          coverage-title: Coverage result
+          coverage-path: ./coverage/coverage.txt
+          create-new-comment: true
