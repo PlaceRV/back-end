@@ -1,0 +1,25 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
+{
+	"features": {
+		"ghcr.io/devcontainers/features/node:1": {
+			"installYarnUsingApt": true,
+			"nodeGypDependencies": true,
+			"nvmVersion": "latest",
+			"pnpmVersion": "latest",
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers/features/git:1": {
+			"version": "latest",
+			"ppa": "false"
+		}
+	},
+	"portsAttributes": {
+		"5432": {
+			"label": "PostgreSQL port",
+			"elevateIfNeeded": true
+		}
+	},
+	"image": "mcr.microsoft.com/devcontainers/typescript-node",
+	"name": "PlaceRV-backend"
+}
