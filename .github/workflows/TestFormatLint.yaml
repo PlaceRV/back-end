@@ -49,6 +49,10 @@ jobs:
 
       - run: 'npm install'
 
+      - name: Run tests
+        run: |
+          npx jest --coverage | tee ./coverage.txt && exit ${PIPESTATUS[0]}
+
       - run: npm run test && npm run format && npm run lint
         env:
           ACCESS_SECRET: a
@@ -69,7 +73,13 @@ jobs:
           path: ./reports/*.xml # Path to test results
           reporter: jest-junit
 
-      - uses: ArtiomTr/jest-coverage-report-action@v2
-        env:
-          ACCESS_SECRET: a
-          REFRESH_SECRET: a
+      - name: Jest Coverage Comment
+        uses: MishaKav/jest-coverage-comment@main
+        id: coverageComment
+        with:
+          title: Test report
+          junitxml-path: ./reports/junit.xml
+          junitxml-title: JUnit
+          coverage-summary-path: ./coverage/coverage-summary.json
+          coverage-title: Coverage result
+          coverage-path: ./coverage/coverage.txt
