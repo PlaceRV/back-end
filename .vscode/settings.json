@@ -1,4 +1,5 @@
 {
+	"debug.javascript.autoAttachFilter": "disabled",
 	"editor.foldingImportsByDefault": true,
 	"explorerExclude.backup": {},
 	"files.eol": "\n",

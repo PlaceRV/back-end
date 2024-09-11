@@ -8,8 +8,6 @@
 				"MichaelCurrin.auto-commit-msg",
 				"dbaeumer.vscode-eslint",
 				"GitHub.vscode-pull-request-github",
-				"ms-vscode.vscode-typescript-next",
-				"ms-vscode.js-debug-nightly",
 				"Orta.vscode-jest",
 				"esbenp.prettier-vscode",
 				"mutantdino.resourcemonitor",
@@ -19,7 +17,9 @@
 				"aaron-bond.better-comments",
 				"formulahendry.auto-rename-tag",
 				"github.vscode-github-actions",
-				"wayou.vscode-todo-highlight"
+				"wayou.vscode-todo-highlight",
+				"ms-vscode.js-debug",
+				"ms-vscode.vscode-typescript-next"
 			]
 		}
 	},
