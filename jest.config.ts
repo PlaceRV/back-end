@@ -7,6 +7,7 @@ const config: Config = {
 	transform: { '^.+.tsx?$': ['ts-jest', {}] },
 	reporters: [
 		'summary',
+		'default',
 		['github-actions', { silent: false }],
 		['jest-junit', { outputDirectory: 'reports', outputName: 'junit.xml' }],
 	],
