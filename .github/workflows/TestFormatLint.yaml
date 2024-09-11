@@ -66,7 +66,6 @@ jobs:
         id: coverageComment
         with:
           title: Test report
-          coverage-summary-path: ./coverage/coverage-summary.json
           coverage-title: Coverage result
           coverage-path: ./coverage/coverage.txt
           create-new-comment: true
