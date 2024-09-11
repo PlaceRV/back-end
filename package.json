@@ -12,7 +12,7 @@
 		"build": "npm run build:1 && npm run build:2",
 		"build:1": "tsc --build tsconfig.prebuild.json",
 		"build:2": "node dist/build.js",
-		"dts": "npm-dts generate --output types.d.ts -L debug",
+		"dts": "npm-dts generate --output types.d.ts",
 		"format": "replace '{\n' '{' . -r --include=\"*.ts,*.js*\" --exclude=\"node_modules\" --silent && replace \"\\[\n\" \"[\" . -r --include=\"*.ts,*.js*\" --exclude=\"node_modules\" --silent && prettier --write \"./**/*.ts\" \"./**/*.js*\" \"./**/*.*rc\" --log-level silent",
 		"lint": "eslint --fix  --ext .ts .",
 		"safe": "generate-env-example",
