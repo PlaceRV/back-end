@@ -1,6 +1,7 @@
 import { randomBytes } from 'crypto';
 import { ConfigModule } from '@nestjs/config';
 import Joi from 'joi';
+import { tstStr } from 'utils/utils';
 
 export const loadEnv = (type: 'deploy' | 'test') =>
 	// Load .env
@@ -15,11 +16,15 @@ export const loadEnv = (type: 'deploy' | 'test') =>
 			POSTGRES_PASS: Joi.string().default('postgres'),
 			// Access token
 			ACCESS_SECRET:
-				type === 'deploy' ? Joi.string().required() : Joi.string().default('a'),
+				type === 'deploy'
+					? Joi.string().required()
+					: Joi.string().default(tstStr()),
 			ACCESS_EXPIRE: Joi.string().default('5m'),
 			// Refresh token
 			REFRESH_SECRET:
-				type === 'deploy' ? Joi.string().required() : Joi.string().default('a'),
+				type === 'deploy'
+					? Joi.string().required()
+					: Joi.string().default(tstStr()),
 			REFRESH_EXPIRE: Joi.string().default('366d'),
 			REFRESH_USE: Joi.number().default(6),
 			// Server config
