@@ -70,3 +70,4 @@ jobs:
           coverage-title: Coverage result
           coverage-path: ./coverage/coverage.txt
           create-new-comment: true
+          junitxml-path: ./reports/junit.xml
