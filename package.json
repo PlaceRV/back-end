@@ -17,10 +17,7 @@
 		"start:debug": "nest start --debug --watch",
 		"start:dev": "nest start --watch",
 		"start:prod": "node dist/main",
-		"test": "jest",
-		"test:cov": "jest --coverage",
-		"test:debug": "jest --runInBand",
-		"test:watch": "jest --watch"
+		"test": "npm run build && jest"
 	},
 	"dependencies": {
 		"@adminjs/express": "^6.1.0",
