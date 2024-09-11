@@ -1,7 +1,9 @@
 {
 	"debug.javascript.autoAttachFilter": "disabled",
 	"editor.foldingImportsByDefault": true,
-	"explorerExclude.backup": {
+	"explorerExclude.backup": {},
+	"files.eol": "\n",
+	"files.exclude": {
 		"**/*.example*": true,
 		"**/*.js": true,
 		"**/*spec*": true,
@@ -30,37 +32,6 @@
 		"reports": true,
 		"secrets": true,
 		"types.d.ts": true
-	},
-	"files.eol": "\n",
-	"files.exclude": {
-		"**/*.example*": false,
-		"**/*.js": false,
-		"**/*spec*": false,
-		"**/.DS_Store": false,
-		"**/.git": false,
-		"**/.hg": false,
-		"**/.svn": false,
-		"**/CVS": false,
-		"**/Thumbs.db": false,
-		"**/schema.gql": false,
-		"*.json": false,
-		".adminjs": false,
-		".devcontainer": false,
-		".env": false,
-		".git": false,
-		".github": false,
-		".gitignore": false,
-		".prettierrc": false,
-		".vscode": false,
-		"LICENSE": false,
-		"coverage": false,
-		"dist": false,
-		"nest-cli.json": false,
-		"node_modules": false,
-		"package-lock.json": false,
-		"reports": false,
-		"secrets": false,
-		"types.d.ts": false
 	},
 	"jest.outputConfig": { "clearOnRun": "terminal" },
 	"jest.runMode": {
