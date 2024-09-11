@@ -6,6 +6,7 @@
 	"files.exclude": {
 		"**/*.example*": true,
 		"**/*.js": true,
+		"**/*.tsbuildinfo": true,
 		"**/*spec*": true,
 		"**/.DS_Store": true,
 		"**/.git": true,
@@ -30,8 +31,7 @@
 		"node_modules": true,
 		"package-lock.json": true,
 		"reports": true,
-		"secrets": true,
-		"types.d.ts": true
+		"secrets": true
 	},
 	"jest.outputConfig": { "clearOnRun": "terminal" },
 	"jest.runMode": {
