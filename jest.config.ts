@@ -6,13 +6,12 @@ const config: Config = {
 	moduleDirectories: ['node_modules', 'src'],
 	transform: { '^.+.tsx?$': ['ts-jest', {}] },
 	reporters: [
-		'summary',
+		'default',
 		['github-actions', { silent: false }],
 		['jest-junit', { outputDirectory: 'reports', outputName: 'junit.xml' }],
 	],
 	collectCoverage: true,
-	json: true,
-	coverageReporters: ['json-summary', ['text', { file: 'coverage.txt' }]],
+	coverageReporters: [['text', { file: 'coverage.txt' }]],
 };
 
 export default config;

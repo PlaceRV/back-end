@@ -2,8 +2,8 @@ import { ApolloDriver } from '@nestjs/apollo';
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { AuthMiddleware } from 'auth/auth.middleware';
-import { LoadEnvModule } from 'module/config.module';
 import { SqlModule } from 'module/sql.module';
+import { loadEnv } from './config.module';
 
 @Module({
 	imports: [
@@ -13,7 +13,7 @@ import { SqlModule } from 'module/sql.module';
 			sortSchema: true,
 			playground: false,
 		}),
-		LoadEnvModule,
+		loadEnv('test'),
 		SqlModule('test'),
 	],
 })
