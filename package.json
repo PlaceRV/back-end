@@ -6,6 +6,7 @@
 	"license": "AGPL-3.0-only",
 	"author": "",
 	"type": "commonjs",
+	"main": "utils/utils.js",
 	"types": "types.d.ts",
 	"scripts": {
 		"build": "ts-node src/build.ts && nest build",
