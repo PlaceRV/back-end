@@ -2,6 +2,8 @@ import {
 	ExportedDeclarations,
 	InterfaceDeclaration,
 	Project,
+	SourceFile,
+	ts,
 	VariableDeclarationKind,
 } from 'ts-morph';
 
@@ -14,11 +16,26 @@ const project = new Project(),
 		overwrite: true,
 	});
 
-function createKeys(node: InterfaceDeclaration) {
-	const allKeys = node
-		.getProperties()
-		.map((p) => p.getName())
-		.sort((a, b) => a.localeCompare(b));
+function createKeys(node: InterfaceDeclaration, sourceFile: SourceFile) {
+	function getInterface(node: any): string[] {
+		if (node.getKind() !== ts.SyntaxKind.InterfaceDeclaration) return [];
+
+		const extendedTypes = node
+				.getExtends()
+				.map((expr) => sourceFile.getInterface(expr.getExpression().getText())),
+			extendedInterfaces: string[] = node
+				.getProperties()
+				.map((i) => i.getName());
+
+		for (const extendedType of extendedTypes)
+			extendedInterfaces.push(...getInterface(extendedType));
+
+		return extendedInterfaces.filter(
+			(item, index) => extendedInterfaces.indexOf(item) === index,
+		);
+	}
+
+	const allKeys = getInterface(node).sort((a, b) => a.localeCompare(b));
 	modelsFile.addVariableStatement({
 		isExported: true,
 		declarationKind: VariableDeclarationKind.Const,
@@ -36,7 +53,8 @@ const masterExportNames: string[] = [];
 for (const sourceFile of sourceFiles) {
 	if (/(build.ts|types.ts|models.ts)/.test(sourceFile.getBaseName())) continue;
 
-	for (const intfce of sourceFile.getInterfaces()) createKeys(intfce);
+	for (const intfce of sourceFile.getInterfaces())
+		createKeys(intfce, sourceFile);
 
 	const exportNames: string[] = [];
 	const exportDeclarations: ExportedDeclarations[] = [];
