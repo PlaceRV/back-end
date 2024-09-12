@@ -33,7 +33,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - run: 'npm i && npm run compile'
+      - run: 'npm i && npm run build'
 
       - run: 'cp README.md package.json LICENSE ./dist'
 
