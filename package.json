@@ -6,10 +6,10 @@
 	"license": "AGPL-3.0-only",
 	"author": "",
 	"type": "commonjs",
-	"types": "declaration/types.d.ts",
+	"types": "types.d.ts",
 	"scripts": {
 		"build": "ts-node src/build.ts && nest build",
-		"dts": "npm-dts generate --output declaration/types.d.ts",
+		"dts": "npm-dts generate --output dist/types.d.ts",
 		"format": "replace '{\n' '{' . -r --include=\"*.ts,*.js*\" --exclude=\"node_modules\" --silent && replace \"\\[\n\" \"[\" . -r --include=\"*.ts,*.js*\" --exclude=\"node_modules\" --silent && prettier --write \"./**/*.ts\" \"./**/*.js*\" \"./**/*.*rc\" --log-level silent",
 		"lint": "eslint --fix  --ext .ts .",
 		"safe": "generate-env-example",
@@ -17,7 +17,8 @@
 		"start:debug": "nest start --debug --watch",
 		"start:dev": "nest start --watch",
 		"start:prod": "node dist/main",
-		"test": "npm run build && jest"
+		"test": "npm run build && jest",
+		"compile": "npm run build && npm run dts"
 	},
 	"dependencies": {
 		"@adminjs/express": "^6.1.0",
