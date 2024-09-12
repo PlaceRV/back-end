@@ -5,6 +5,7 @@
 package-lock.json
 .adminjs
 src/models.ts
+src/types.ts
 *.tsbuildinfo
 reports
 

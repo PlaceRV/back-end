@@ -1,6 +1,12 @@
 {
 	"configurations": [
 		{
+			"command": "npm run build",
+			"name": "Debug build",
+			"request": "launch",
+			"type": "node-terminal"
+		},
+		{
 			"command": "npm run test:debug",
 			"name": "Debug Jest tests",
 			"request": "launch",
