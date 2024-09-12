@@ -6,7 +6,7 @@
 	"license": "AGPL-3.0-only",
 	"author": "",
 	"type": "commonjs",
-	"types": "declaration/types.d.ts",
+	"types": "dist/types.d.ts",
 	"scripts": {
 		"build": "ts-node src/build.ts && nest build",
 		"dts": "npm-dts generate --output dist/types.d.ts",
@@ -18,7 +18,7 @@
 		"start:dev": "nest start --watch",
 		"start:prod": "node dist/main",
 		"test": "npm run build && jest",
-		"postinstall": "tsc --project tsconfig.build.json && npm run dts"
+		"compile": "npm run build && npm run dts"
 	},
 	"dependencies": {
 		"@adminjs/express": "^6.1.0",
