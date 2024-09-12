@@ -1,4 +1,7 @@
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
+import { hashSync } from 'bcrypt';
+
+export const hash = (i: string) => hashSync(i, (8).rd() + 4);
 
 export class Cryption {
 	constructor(

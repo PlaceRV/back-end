@@ -1,4 +1,4 @@
-import { IDevice } from 'device/device.interface';
+import { IDevice } from 'device/device.model';
 import { IPlace } from 'place/place.model';
 
 // Interfaces

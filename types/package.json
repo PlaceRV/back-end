@@ -1,0 +1,10 @@
+{
+	"name": "place-review-backend",
+	"version": "0.0.1",
+	"private": true,
+	"license": "AGPL-3.0-only",
+	"author": "Nguyễn Việt Anh <vietuk.nguyen.git@icloud.com>",
+	"type": "commonjs",
+	"main": "dist/utils/utils.js",
+	"types": "dist/types.d.ts"
+}

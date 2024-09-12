@@ -2,14 +2,15 @@
 	"name": "place-review-backend",
 	"version": "0.0.1",
 	"private": true,
-	"description": "",
 	"license": "AGPL-3.0-only",
-	"author": "",
+	"author": "Nguyễn Việt Anh <vietuk.nguyen.git@icloud.com>",
 	"type": "commonjs",
 	"main": "types.js",
 	"types": "types.d.ts",
 	"scripts": {
-		"build": "ts-node src/build.ts && nest build",
+		"buildfile": "ts-node src/build.ts",
+		"prebuild": "npm install && npm run buildfile",
+		"build": "nest build",
 		"format": "replace '{\n' '{' . -r --include=\"*.ts,*.js*\" --exclude=\"node_modules\" --silent && replace \"\\[\n\" \"[\" . -r --include=\"*.ts,*.js*\" --exclude=\"node_modules\" --silent && prettier --write \"./**/*.ts\" \"./**/*.js*\" \"./**/*.*rc\" --log-level silent",
 		"lint": "eslint --fix  --ext .ts .",
 		"safe": "generate-env-example",
@@ -17,7 +18,11 @@
 		"start:debug": "nest start --debug --watch",
 		"start:dev": "nest start --watch",
 		"start:prod": "node dist/main",
-		"test": "npm run build && jest"
+		"pretest": "npm run build",
+		"test": "jest",
+		"types": "tsc --project types/tsconfig.build.json --outDir types/dist",
+		"pretypes": "npm run buildfile",
+		"triathlon": "npm run test && npm run format && npm run lint"
 	},
 	"dependencies": {
 		"@adminjs/express": "^6.1.0",
