@@ -4,16 +4,16 @@
 	"explorerExclude.backup": {},
 	"files.eol": "\n",
 	"files.exclude": {
-		"**/.git": true,
-		"**/.svn": true,
-		"**/.hg": true,
-		"**/CVS": true,
-		"**/.DS_Store": true,
-		"**/Thumbs.db": true,
 		"**/*.example*": true,
 		"**/*.js": true,
 		"**/*.tsbuildinfo": true,
 		"**/*spec*": true,
+		"**/.DS_Store": true,
+		"**/.git": true,
+		"**/.hg": true,
+		"**/.svn": true,
+		"**/CVS": true,
+		"**/Thumbs.db": true,
 		"**/schema.gql": true,
 		"*.json": true,
 		".adminjs": true,
@@ -33,9 +33,7 @@
 		"reports": true,
 		"secrets": true
 	},
-	"jest.outputConfig": {
-		"clearOnRun": "terminal"
-	},
+	"jest.outputConfig": { "clearOnRun": "terminal" },
 	"jest.runMode": {
 		"coverage": true,
 		"showInlineError": true,
