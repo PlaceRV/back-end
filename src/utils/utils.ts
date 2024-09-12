@@ -25,7 +25,9 @@ export const methodDecorator =
 		},
 	),
 	tstStr = () => (12).char(),
-	hash = (i: string) => hashSync(i, (8).rd() + 4);
+	hash = (i: string) => hashSync(i, (8).rd() + 4),
+	matching = <T>(input: T[], required: T[]): boolean =>
+		required.every((i) => input.some((j) => i === j));
 
 export function allImplement(
 	decorator: (
@@ -80,13 +82,6 @@ declare global {
 	}
 
 	/**
-	 * Comparing require objects and input objects
-	 * @param {T[]} input - Input objects
-	 * @param {T[]} required - Require objects
-	 * @return {Boolean} Is input objects sastisfy with require objects
-	 */
-	function matching<T>(input: T[], required: T[]): boolean;
-	/**
 	 * Return the formatted name of current file
 	 * @param {string} file - the current file's name (must be __filename)
 	 * @param {number} cut - How many chunk should get (default: 2)
@@ -103,9 +98,6 @@ global.curFile = (file: string, cut = 2) =>
 		.map((w) => w[0].toUpperCase() + w.slice(1))
 		.slice(0, cut)
 		.join('');
-global.matching = <T>(input: T[], required: T[]): boolean => {
-	return required.every((i) => input.some((j) => i === j));
-};
 Array.prototype.get = function (subString: string) {
 	return this.filter((i: string) => i.includes(subString));
 };

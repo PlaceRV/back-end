@@ -1,5 +1,6 @@
 import { Role } from 'user/user.model';
 import './utils';
+import { matching } from './utils';
 
 describe('Number', () => {
 	describe('char', () => {
