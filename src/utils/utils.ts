@@ -72,12 +72,17 @@ declare global {
 		readonly lastElement: T;
 	}
 	interface Number {
-		f(): number; // floor()
-		r(): number; // round()
-		a(): number; // abs()
+		// number
+		readonly floor: number;
+		readonly round: number;
+		readonly abs: number;
+
+		// string
 		readonly alpha: string;
 		readonly numeric: string;
 		readonly string: string;
+
+		// utils
 		readonly random: number;
 		ra(input: () => Promise<any>): Promise<void>; // range() # like Python's range()
 	}
@@ -181,12 +186,24 @@ Object.defineProperty(Number.prototype, 'numeric', {
 	enumerable: true,
 	configurable: true,
 });
-Number.prototype.f = function () {
-	return Math.floor(Number(this));
-};
-Number.prototype.r = function () {
-	return Math.round(Number(this));
-};
-Number.prototype.a = function () {
-	return Math.abs(Number(this));
-};
+Object.defineProperty(Number.prototype, 'floor', {
+	get: function () {
+		return Math.floor(this);
+	},
+	enumerable: true,
+	configurable: true,
+});
+Object.defineProperty(Number.prototype, 'round', {
+	get: function () {
+		return Math.round(this);
+	},
+	enumerable: true,
+	configurable: true,
+});
+Object.defineProperty(Number.prototype, 'abs', {
+	get: function () {
+		return Math.abs(this);
+	},
+	enumerable: true,
+	configurable: true,
+});
