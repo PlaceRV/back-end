@@ -21,7 +21,7 @@
 		"pretest": "npm run build",
 		"test": "jest",
 		"test:debug": "jest --debug",
-		"types": "tsc --project types/tsconfig.build.json --outDir types/dist",
+		"types": "tsc --project types/tsconfig.build.json --outDir types  --rootDir . --sourceMap false",
 		"pretypes": "npm run buildfile",
 		"triathlon": "npm run test && npm run format && npm run lint"
 	},
