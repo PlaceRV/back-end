@@ -13,7 +13,11 @@ const IKeysProj = new Project(),
 		overwrite: true,
 	}),
 	modelsProject = new Project(),
-	modelsFiles = modelsProject.addSourceFilesAtPaths('src/**/*.model.ts'),
+	modelsFiles = modelsProject.addSourceFilesAtPaths([
+		'src/**/*.model.ts',
+		'src/utils/utils.ts',
+		'src/types.ts',
+	]),
 	modelsOut = modelsProject.createSourceFile('./src/types.ts', '', {
 		overwrite: true,
 	});
