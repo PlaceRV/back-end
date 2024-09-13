@@ -5,6 +5,6 @@
 	"license": "AGPL-3.0-only",
 	"author": "Nguyễn Việt Anh <vietuk.nguyen.git@icloud.com>",
 	"type": "commonjs",
-	"main": "dist/utils/utils.js",
+	"main": "dist/types.js",
 	"types": "dist/types.d.ts"
 }

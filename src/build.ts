@@ -14,7 +14,7 @@ const IKeysProj = new Project(),
 	}),
 	modelsProject = new Project(),
 	modelsFiles = modelsProject.addSourceFilesAtPaths([
-		'src/**/*.model.ts',
+		'src/**/*model*.ts',
 		'src/utils/utils.ts',
 	]),
 	modelsOut = modelsProject.createSourceFile('./src/types.ts', '', {
