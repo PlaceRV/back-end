@@ -13,7 +13,7 @@
 		"noFallthroughCasesInSwitch": false,
 		"noImplicitAny": false,
 		"outDir": "dist",
-		"removeComments": true,
+		"removeComments": false,
 		"rootDir": "src",
 		"skipLibCheck": true,
 		"sourceMap": true,

@@ -6,12 +6,11 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { compareSync } from 'bcrypt';
-import { validate, ValidatorOptions } from 'class-validator';
 import { DeviceService } from 'device/device.service';
 import { User } from 'user/user.entity';
 import { ILogin, ISignUp } from 'user/user.model';
 import { UserService } from 'user/user.service';
-import { Cryption } from 'utils/auth.utils';
+import { Cryption, validation } from 'utils/auth.utils';
 
 @Injectable()
 export class AuthService extends Cryption {
@@ -28,14 +27,12 @@ export class AuthService extends Cryption {
 		const user = await this.usrSvc.email(input.email);
 		if (!user) {
 			const newUser = new User(input);
-			const inputErrors = await validate(newUser, {
-				stopAtFirstError: true,
-			} as ValidatorOptions);
-			if (newUser.hashedPassword && !inputErrors.length) {
-				await this.usrSvc.assign(newUser);
-				return this.dvcSvc.getTokens(newUser, mtdt);
-			}
-			throw new BadRequestException(String(inputErrors));
+			return await validation(newUser, async () => {
+				if (newUser.hashedPassword) {
+					await this.usrSvc.assign(newUser);
+					return this.dvcSvc.getTokens(newUser, mtdt);
+				}
+			});
 		}
 		throw new BadRequestException('Email already assigned');
 	}

@@ -83,8 +83,8 @@ export class Place extends SensitiveInfomations implements IPlace {
 		return new Place({
 			name: tstStr(),
 			type: PlaceType.CHURCH,
-			longitude: (32).rd(),
-			latitude: (32).rd(),
+			longitude: (32).random,
+			latitude: (32).random,
 			description: '',
 		});
 	}

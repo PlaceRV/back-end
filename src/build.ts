@@ -16,7 +16,6 @@ const IKeysProj = new Project(),
 	modelsFiles = modelsProject.addSourceFilesAtPaths([
 		'src/**/*.model.ts',
 		'src/utils/utils.ts',
-		'src/types.ts',
 	]),
 	modelsOut = modelsProject.createSourceFile('./src/types.ts', '', {
 		overwrite: true,
@@ -55,7 +54,6 @@ function createKeys(node: InterfaceDeclaration, sourceFile: SourceFile) {
 	});
 }
 
-const masterExportNames: string[] = [];
 for (const file of IKeysFiles) {
 	if (/(build.ts|types.ts|models.ts)/.test(file.getBaseName())) continue;
 
@@ -70,15 +68,12 @@ for (const file of modelsFiles) {
 	}
 
 	if (exportNames.length) {
-		modelsOut.addImportDeclaration({
-			namedImports: exportNames,
+		modelsOut.addExportDeclaration({
+			namedExports: exportNames,
 			moduleSpecifier: `${file.getFilePath().split('src')[1].slice(1, -3)}`,
 		});
-
-		masterExportNames.push(...exportNames);
 	}
 }
-modelsOut.addExportDeclaration({ namedExports: masterExportNames });
 
 IKeysOut.saveSync();
 modelsOut.saveSync();

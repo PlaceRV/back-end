@@ -3,10 +3,24 @@ import './utils';
 import { matching } from './utils';
 
 describe('Number', () => {
-	describe('char', () => {
-		it('generate a random string with length', () => {
-			const randomLength = (100).rd();
-			expect(randomLength.char().length).toEqual(randomLength);
+	describe('alpha', () => {
+		it('success', () => {
+			const randomLength = (100).random;
+			expect(randomLength.alpha.length).toEqual(randomLength);
+		});
+	});
+
+	describe('numeric', () => {
+		it('success', () => {
+			const randomLength = (100).random;
+			expect(randomLength.numeric.length).toEqual(randomLength);
+		});
+	});
+
+	describe('string', () => {
+		it('success', () => {
+			const randomLength = (100).random;
+			expect(randomLength.string.length).toEqual(randomLength);
 		});
 	});
 });
