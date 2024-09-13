@@ -19,7 +19,15 @@ async function bootstrap() {
 		{ buildAuthenticatedRouter } = await import('@adminjs/express'),
 		{ Database, Resource } = await import('@adminjs/typeorm'),
 		server = express(),
-		app = (await NestFactory.create(AppModule, new ExpressAdapter(server)))
+		app = (
+			await NestFactory.create(AppModule, new ExpressAdapter(server), {
+				cors: {
+					origin: /(https:\/\/){1}(.+)(anhvietnguyen.id.vn){1}/,
+					methods: '*',
+					credentials: true,
+				},
+			})
+		)
 			.use(cookieParser())
 			.useGlobalPipes(new ValidationPipe()),
 		cfgSvc = app.get(ConfigService);

@@ -1,7 +1,17 @@
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
+import { BadRequestException } from '@nestjs/common';
 import { hashSync } from 'bcrypt';
+import { validate } from 'class-validator';
 
-export const hash = (i: string) => hashSync(i, (8).rd() + 4);
+export const hash = (i: string) => hashSync(i, (8).random + 4),
+	validator = async (check: object, then: Function) => {
+		const errors = Object.assign(
+			{},
+			...(await validate(check)).map((i) => i.constraints),
+		) as Object;
+		if (!Object.keys(errors).length) await then();
+		else throw new BadRequestException(JSON.stringify(errors));
+	};
 
 export class Cryption {
 	constructor(

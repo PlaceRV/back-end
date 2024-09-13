@@ -28,14 +28,12 @@ export class AuthService extends Cryption {
 		const user = await this.usrSvc.email(input.email);
 		if (!user) {
 			const newUser = new User(input);
-			const inputErrors = await validate(newUser, {
-				stopAtFirstError: true,
-			} as ValidatorOptions);
+			const inputErrors = (await validate(newUser)).map((i) => i.constraints);
 			if (newUser.hashedPassword && !inputErrors.length) {
 				await this.usrSvc.assign(newUser);
 				return this.dvcSvc.getTokens(newUser, mtdt);
 			}
-			throw new BadRequestException(String(inputErrors));
+			throw new BadRequestException(JSON.stringify(inputErrors));
 		}
 		throw new BadRequestException('Email already assigned');
 	}

@@ -5,7 +5,7 @@ import { matching } from './utils';
 describe('Number', () => {
 	describe('char', () => {
 		it('generate a random string with length', () => {
-			const randomLength = (100).rd();
+			const randomLength = (100).random;
 			expect(randomLength.char().length).toEqual(randomLength);
 		});
 	});

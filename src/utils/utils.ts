@@ -25,31 +25,30 @@ export const methodDecorator =
 	),
 	tstStr = () => (12).char(),
 	matching = <T>(input: T[], required: T[]): boolean =>
-		required.every((i) => input.some((j) => i === j));
-
-export function allImplement(
-	decorator: (
-		target: any,
-		propertyKey: any,
-		descriptor: any,
-	) => PropertyDescriptor,
-) {
-	return function (target: { prototype: any }) {
-		for (const propertyName of Object.getOwnPropertyNames(target.prototype)) {
-			if (typeof target.prototype[propertyName] === 'function') {
-				const descriptor = Object.getOwnPropertyDescriptor(
-					target.prototype,
-					propertyName,
-				);
-				Object.defineProperty(
-					target.prototype,
-					propertyName,
-					decorator(target, propertyName, descriptor),
-				);
+		required.every((i) => input.some((j) => i === j)),
+	allImplement = (
+		decorator: (
+			target: any,
+			propertyKey: any,
+			descriptor: any,
+		) => PropertyDescriptor,
+	) => {
+		return function (target: { prototype: any }) {
+			for (const propertyName of Object.getOwnPropertyNames(target.prototype)) {
+				if (typeof target.prototype[propertyName] === 'function') {
+					const descriptor = Object.getOwnPropertyDescriptor(
+						target.prototype,
+						propertyName,
+					);
+					Object.defineProperty(
+						target.prototype,
+						propertyName,
+						decorator(target, propertyName, descriptor),
+					);
+				}
 			}
-		}
+		};
 	};
-}
 
 export class InterfaceCasting<T, K extends keyof T> {
 	[key: string]: any;
@@ -65,7 +64,7 @@ export class InterfaceCasting<T, K extends keyof T> {
 
 declare global {
 	interface Array<T> {
-		random(): T;
+		readonly randomElement: T;
 		get(subString: string): Array<T>;
 		last(): T;
 	}
@@ -74,7 +73,7 @@ declare global {
 		r(): number; // round()
 		a(): number; // abs()
 		char(chars?: string): string;
-		rd(): number; // random()
+		readonly random: number; // random()
 		ra(input: () => Promise<any>): Promise<void>; // range() # like Python's range()
 	}
 
@@ -87,6 +86,13 @@ declare global {
 	function curFile(file: string, cut?: number): string;
 }
 
+Object.defineProperty(Number.prototype, 'random', {
+	get: function () {
+		return Math.floor(Math.random() * (this as number));
+	},
+	enumerable: true,
+	configurable: true,
+});
 global.curFile = (file: string, cut = 2) =>
 	file
 		.split(/\/|\\/)
@@ -98,9 +104,13 @@ global.curFile = (file: string, cut = 2) =>
 Array.prototype.get = function (subString: string) {
 	return this.filter((i: string) => i.includes(subString));
 };
-Array.prototype.random = function () {
-	return this[this.length.rd()];
-};
+Object.defineProperty(Array.prototype, 'randomElement', {
+	get: function () {
+		return this[this.length.random];
+	},
+	enumerable: true,
+	configurable: true,
+});
 Array.prototype.last = function () {
 	return this[this.length - 1];
 };
@@ -110,11 +120,8 @@ Number.prototype.char = function (
 	return Array(this)
 		.join()
 		.split(',')
-		.map(() => chars.charAt(chars.length.rd()))
+		.map(() => chars.charAt(chars.length.random))
 		.join('');
-};
-Number.prototype.rd = function () {
-	return Math.floor(Math.random() * (this as number));
 };
 Number.prototype.ra = async function (input: () => Promise<any>) {
 	await Array.from({ length: Number(this) }, (_, i) => i).reduce(async (i) => {
