@@ -20,6 +20,7 @@
 		"start:prod": "node dist/main",
 		"pretest": "npm run build",
 		"test": "jest",
+		"test:debug": "jest --debug",
 		"types": "tsc --project types/tsconfig.build.json --outDir types/dist",
 		"pretypes": "npm run buildfile",
 		"triathlon": "npm run test && npm run format && npm run lint"

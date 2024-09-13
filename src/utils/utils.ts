@@ -1,3 +1,5 @@
+if (!navigator.userAgent.includes('Node.js')) (window as any).global = window;
+
 export const methodDecorator =
 		(
 			before?: (t: any, args: any) => void,
