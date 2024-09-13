@@ -6,8 +6,8 @@ import { SessionService } from 'session/session.service';
 import { Repository } from 'typeorm';
 import { UserRecieve } from 'user/user.class';
 import { User } from 'user/user.entity';
+import { hash } from 'utils/auth.utils';
 import { DatabaseRequests } from 'utils/typeorm.utils';
-import { hash } from 'utils/utils';
 import { Device } from './device.entity';
 
 @Injectable()

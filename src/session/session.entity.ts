@@ -1,7 +1,7 @@
 import { Device } from 'device/device.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { SensitiveInfomations } from 'utils/typeorm.utils';
-import { ISession } from './session.interface';
+import { ISession } from './session.model';
 
 @Entity()
 export class Session extends SensitiveInfomations implements ISession {

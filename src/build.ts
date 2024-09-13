@@ -7,12 +7,14 @@ import {
 	VariableDeclarationKind,
 } from 'ts-morph';
 
-const project = new Project(),
-	sourceFiles = project.addSourceFilesAtPaths('src/**/*.ts'),
-	modelsFile = project.createSourceFile('./src/models.ts', '', {
+const IKeysProj = new Project(),
+	IKeysFiles = IKeysProj.addSourceFilesAtPaths('src/**/*.ts'),
+	IKeysOut = IKeysProj.createSourceFile('./src/models.ts', '', {
 		overwrite: true,
 	}),
-	typesFile = project.createSourceFile('./src/types.ts', '', {
+	modelsProject = new Project(),
+	modelsFiles = modelsProject.addSourceFilesAtPaths('src/**/*.model.ts'),
+	modelsOut = modelsProject.createSourceFile('./src/types.ts', '', {
 		overwrite: true,
 	});
 
@@ -36,7 +38,7 @@ function createKeys(node: InterfaceDeclaration, sourceFile: SourceFile) {
 	}
 
 	const allKeys = getInterface(node).sort((a, b) => a.localeCompare(b));
-	modelsFile.addVariableStatement({
+	IKeysOut.addVariableStatement({
 		isExported: true,
 		declarationKind: VariableDeclarationKind.Const,
 		declarations: [
@@ -50,32 +52,29 @@ function createKeys(node: InterfaceDeclaration, sourceFile: SourceFile) {
 }
 
 const masterExportNames: string[] = [];
-for (const sourceFile of sourceFiles) {
-	if (/(build.ts|types.ts|models.ts)/.test(sourceFile.getBaseName())) continue;
+for (const file of IKeysFiles) {
+	if (/(build.ts|types.ts|models.ts)/.test(file.getBaseName())) continue;
 
-	for (const intfce of sourceFile.getInterfaces())
-		createKeys(intfce, sourceFile);
-
+	for (const intfce of file.getInterfaces()) createKeys(intfce, file);
+}
+for (const file of modelsFiles) {
 	const exportNames: string[] = [];
 	const exportDeclarations: ExportedDeclarations[] = [];
-	for (const [
-		exportName,
-		declarations,
-	] of sourceFile.getExportedDeclarations()) {
+	for (const [exportName, declarations] of file.getExportedDeclarations()) {
 		exportNames.push(exportName);
 		exportDeclarations.push(...declarations);
 	}
 
 	if (exportNames.length) {
-		typesFile.addImportDeclaration({
+		modelsOut.addImportDeclaration({
 			namedImports: exportNames,
-			moduleSpecifier: `${sourceFile.getFilePath().split('src')[1].slice(1, -3)}`,
+			moduleSpecifier: `${file.getFilePath().split('src')[1].slice(1, -3)}`,
 		});
 
 		masterExportNames.push(...exportNames);
 	}
 }
-typesFile.addExportDeclaration({ namedExports: masterExportNames });
+modelsOut.addExportDeclaration({ namedExports: masterExportNames });
 
-modelsFile.saveSync();
-typesFile.saveSync();
+IKeysOut.saveSync();
+modelsOut.saveSync();

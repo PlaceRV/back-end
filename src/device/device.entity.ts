@@ -2,7 +2,7 @@ import { Session } from 'session/session.entity';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { User } from 'user/user.entity';
 import { SensitiveInfomations } from 'utils/typeorm.utils';
-import { IDevice } from './device.interface';
+import { IDevice } from './device.model';
 
 @Entity()
 export class Device extends SensitiveInfomations implements IDevice {

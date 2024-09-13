@@ -4,8 +4,9 @@ import { Device } from 'device/device.entity';
 import { IUserInfoKeys } from 'models';
 import { Place } from 'place/place.entity';
 import { Column, Entity, OneToMany } from 'typeorm';
+import { hash } from 'utils/auth.utils';
 import { SensitiveInfomations } from 'utils/typeorm.utils';
-import { hash, InterfaceCasting, tstStr } from 'utils/utils';
+import { InterfaceCasting, tstStr } from 'utils/utils';
 import { IUser, Role } from './user.model';
 
 @ObjectType()

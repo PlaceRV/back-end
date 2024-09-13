@@ -14,7 +14,7 @@ import { DeviceService } from 'device/device.service';
 import { CookieOptions, Request, Response } from 'express';
 import { UserRecieve } from 'user/user.class';
 import { ILogin, ISignUp } from 'user/user.model';
-import { hash } from 'utils/utils';
+import { hash } from 'utils/auth.utils';
 import { MetaData } from './auth.guard';
 import { AuthService } from './auth.service';
 

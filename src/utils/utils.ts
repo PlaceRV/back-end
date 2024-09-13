@@ -1,6 +1,3 @@
-import { hashSync } from 'bcrypt';
-
-// Local
 export const methodDecorator =
 		(
 			before?: (t: any, args: any) => void,
@@ -25,7 +22,6 @@ export const methodDecorator =
 		},
 	),
 	tstStr = () => (12).char(),
-	hash = (i: string) => hashSync(i, (8).rd() + 4),
 	matching = <T>(input: T[], required: T[]): boolean =>
 		required.every((i) => input.some((j) => i === j));
 
@@ -65,7 +61,6 @@ export class InterfaceCasting<T, K extends keyof T> {
 	}
 }
 
-// Global
 declare global {
 	interface Array<T> {
 		random(): T;
