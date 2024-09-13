@@ -1,4 +1,4 @@
-name: Build & Test & Format & Lint
+name: Test Format Lint
 
 on:
   pull_request:
@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   build:
-    name: 'Test & Format & Lint'
+    name: 'The triathlon'
 
     runs-on: ubuntu-latest
 
