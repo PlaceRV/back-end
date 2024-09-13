@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { compareSync } from 'bcrypt';
-import { validate, ValidatorOptions } from 'class-validator';
+import { validate } from 'class-validator';
 import { DeviceService } from 'device/device.service';
 import { User } from 'user/user.entity';
 import { ILogin, ISignUp } from 'user/user.model';

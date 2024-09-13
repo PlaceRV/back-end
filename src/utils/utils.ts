@@ -23,7 +23,7 @@ export const methodDecorator =
 			console.log(`Result of ${propertyKey}:`, result);
 		},
 	),
-	tstStr = () => (12).char(),
+	tstStr = () => (12).alpha,
 	matching = <T>(input: T[], required: T[]): boolean =>
 		required.every((i) => input.some((j) => i === j)),
 	allImplement = (
@@ -62,19 +62,27 @@ export class InterfaceCasting<T, K extends keyof T> {
 	}
 }
 
+const alphaChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+	numChars = '0123456789';
+
 declare global {
 	interface Array<T> {
 		readonly randomElement: T;
 		get(subString: string): Array<T>;
-		last(): T;
+		readonly lastElement: T;
 	}
 	interface Number {
 		f(): number; // floor()
 		r(): number; // round()
 		a(): number; // abs()
-		char(chars?: string): string;
-		readonly random: number; // random()
+		readonly alpha: string;
+		readonly numeric: string;
+		readonly string: string;
+		readonly random: number;
 		ra(input: () => Promise<any>): Promise<void>; // range() # like Python's range()
+	}
+	interface String {
+		readonly randomChar: string;
 	}
 
 	/**
@@ -84,23 +92,37 @@ declare global {
 	 * @return {string} formatted file's name
 	 */
 	function curFile(file: string, cut?: number): string;
+	/**
+	 * Return an array with length
+	 * @param {number} length - the length of the array
+	 * @param {any} initValue - the initial value for each element in array
+	 * @return {any[]} the output array with length
+	 */
+	function array(length: number, initValue?: any): any[];
 }
 
-Object.defineProperty(Number.prototype, 'random', {
+// Global functions
+global.curFile = (file: string, cut = 2) =>
+	file
+		.split(/\/|\\/)
+		.lastElement.split('.')
+		.map((w) => w[0].toUpperCase() + w.slice(1))
+		.slice(0, cut)
+		.join('');
+global.array = (length: number, initValue: any = '') =>
+	Array(length)
+		.join()
+		.split(',')
+		.map(() => initValue);
+// String.prototype
+Object.defineProperty(String.prototype, 'randomChar', {
 	get: function () {
-		return Math.floor(Math.random() * (this as number));
+		return (this as string).charAt((this as string).length.random);
 	},
 	enumerable: true,
 	configurable: true,
 });
-global.curFile = (file: string, cut = 2) =>
-	file
-		.split(/\/|\\/)
-		.last()
-		.split('.')
-		.map((w) => w[0].toUpperCase() + w.slice(1))
-		.slice(0, cut)
-		.join('');
+// Array.prototype
 Array.prototype.get = function (subString: string) {
 	return this.filter((i: string) => i.includes(subString));
 };
@@ -111,24 +133,54 @@ Object.defineProperty(Array.prototype, 'randomElement', {
 	enumerable: true,
 	configurable: true,
 });
-Array.prototype.last = function () {
-	return this[this.length - 1];
-};
-Number.prototype.char = function (
-	chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
-) {
-	return Array(this)
-		.join()
-		.split(',')
-		.map(() => chars.charAt(chars.length.random))
-		.join('');
-};
+Object.defineProperty(Array.prototype, 'lastElement', {
+	get: function () {
+		return this[this.length - 1];
+	},
+	enumerable: true,
+	configurable: true,
+});
+// Number.prototype
 Number.prototype.ra = async function (input: () => Promise<any>) {
 	await Array.from({ length: Number(this) }, (_, i) => i).reduce(async (i) => {
 		await i;
 		return input();
 	}, Promise.resolve());
 };
+Object.defineProperty(Number.prototype, 'random', {
+	get: function () {
+		return Math.floor(Math.random() * (this as number));
+	},
+	enumerable: true,
+	configurable: true,
+});
+Object.defineProperty(Number.prototype, 'alpha', {
+	get: function () {
+		return array(this)
+			.map(() => alphaChars.randomChar)
+			.join('');
+	},
+	enumerable: true,
+	configurable: true,
+});
+Object.defineProperty(Number.prototype, 'string', {
+	get: function () {
+		return array(this)
+			.map(() => (alphaChars + numChars).randomChar)
+			.join('');
+	},
+	enumerable: true,
+	configurable: true,
+});
+Object.defineProperty(Number.prototype, 'numeric', {
+	get: function () {
+		return array(this)
+			.map(() => numChars.randomChar)
+			.join('');
+	},
+	enumerable: true,
+	configurable: true,
+});
 Number.prototype.f = function () {
 	return Math.floor(Number(this));
 };
