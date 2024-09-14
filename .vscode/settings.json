@@ -93,10 +93,34 @@
 			"text": " Enums"
 		},
 		{
-			"backgroundColor": "#320D6D",
-			"color": "#D8D8F6",
+			"backgroundColor": "#A50104",
+			"color": "#FCBA04",
 			"isWholeLine": true,
-			"text": " DTOs"
+			"text": " Number.prototype"
+		},
+		{
+			"backgroundColor": "#659157",
+			"color": "#FFCAB1",
+			"isWholeLine": true,
+			"text": " Array.prototype"
+		},
+		{
+			"backgroundColor": "#022B3A",
+			"color": "#B89685",
+			"isWholeLine": true,
+			"text": " String.prototype"
+		},
+		{
+			"backgroundColor": "#FDFFFF",
+			"color": "#B10F2E",
+			"isWholeLine": true,
+			"text": " Global functions"
+		},
+		{
+			"backgroundColor": "#E27396",
+			"color": "#7DDF64",
+			"isWholeLine": true,
+			"text": " Defines"
 		}
 	]
 }
