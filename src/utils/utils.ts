@@ -62,6 +62,7 @@ export class InterfaceCasting<T, K extends keyof T> {
 	}
 }
 
+// Defines
 const alphaChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
 	numChars = '0123456789';
 
