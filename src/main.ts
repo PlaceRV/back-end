@@ -5,7 +5,6 @@ import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import { validate } from 'class-validator';
 import cookieParser from 'cookie-parser';
 import express from 'express';
 import { AppModule } from './app.module';
@@ -31,7 +30,6 @@ async function bootstrap() {
 			.use(cookieParser())
 			.useGlobalPipes(new ValidationPipe()),
 		cfgSvc = app.get(ConfigService);
-	Resource.validate = validate;
 	AdminJS.registerAdapter({ Resource, Database });
 	const admin = new AdminJS({ resources: [User, Device, Place] }),
 		adminRouter = buildAuthenticatedRouter(

@@ -5,13 +5,7 @@ import {
 	ObjectType,
 	PickType,
 } from '@nestjs/graphql';
-import {
-	IsAlpha,
-	IsEnum,
-	IsLatitude,
-	IsLongitude,
-	IsString,
-} from 'class-validator';
+import { IsEnum, IsLatitude, IsLongitude, IsString } from 'class-validator';
 import { Point } from 'geojson';
 import { IPlaceInfoKeys } from 'models';
 import { Column, Entity, Index, ManyToOne } from 'typeorm';
@@ -34,7 +28,7 @@ export class Place extends SensitiveInfomations implements IPlace {
 	createdBy?: User;
 
 	// Infomations
-	@IsAlpha()
+	@IsString()
 	@Field()
 	@Column()
 	name: string;
