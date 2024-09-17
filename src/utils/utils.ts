@@ -1,10 +1,7 @@
 if (!navigator.userAgent.includes('Node.js')) (window as any).global = window;
 
 export const methodDecorator =
-		(
-			before?: (t: any, args: any) => void,
-			after?: (t: any, result: any) => void,
-		) =>
+		(before?: Function, after?: Function) =>
 		(_target: any, propertyKey: any, descriptor: PropertyDescriptor) => {
 			const originalMethod = descriptor.value;
 			descriptor.value = function (...args: any) {
