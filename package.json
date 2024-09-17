@@ -15,6 +15,7 @@
 		"lint": "eslint --fix  --ext .ts .",
 		"safe": "generate-env-example",
 		"start": "nest start",
+		"prestart": "npm run build",
 		"start:debug": "nest start --debug --watch",
 		"start:dev": "nest start --watch",
 		"start:prod": "node dist/main",

@@ -8,24 +8,6 @@ import {
 } from 'typeorm';
 import { RelationMetadata } from 'typeorm/metadata/RelationMetadata.js';
 
-function exploreEntityMetadata(
-	input: RelationMetadata,
-	parentName: string = '',
-): Array<string> {
-	if (
-		[input.propertyName, input.inverseSidePropertyPath].every((i) =>
-			parentName.split('.').includes(i),
-		)
-	)
-		return [];
-	const currentRelationName = parentName + input.propertyName;
-	return [`${currentRelationName}`].concat(
-		...input.inverseEntityMetadata.relations.map((i) =>
-			exploreEntityMetadata(i, `${currentRelationName}.`),
-		),
-	);
-}
-
 export class SensitiveInfomations extends BaseEntity {
 	constructor() {
 		super();
@@ -37,10 +19,35 @@ export class SensitiveInfomations extends BaseEntity {
 export class DatabaseRequests<T extends SensitiveInfomations> {
 	constructor(protected repo: Repository<T>) {}
 
+	private exploreEntityMetadata(
+		input: RelationMetadata,
+		parentName: string = '',
+		avoidNames: string = '',
+	): Array<string> {
+		if (
+			[input.propertyName].every(
+				(i) =>
+					parentName.split('.').includes(i) ||
+					avoidNames.split('.').includes(i),
+			)
+		)
+			return [];
+		const currentRelationName = parentName + input.propertyName;
+		return [`${currentRelationName}`].concat(
+			...input.inverseEntityMetadata.relations.map((i) =>
+				this.exploreEntityMetadata(
+					i,
+					`${currentRelationName}.`,
+					`${avoidNames}.${i.inverseSidePropertyPath}`,
+				),
+			),
+		);
+	}
+
 	protected find(options?: FindOptionsWhere<T>): Promise<T[]> {
 		const relations = [].concat(
 			...this.repo.metadata.relations.map((i) => {
-				return exploreEntityMetadata(i);
+				return this.exploreEntityMetadata(i);
 			}),
 		);
 		return this.repo.find({ where: options, relations });
@@ -49,7 +56,7 @@ export class DatabaseRequests<T extends SensitiveInfomations> {
 	protected findOne(options?: FindOptionsWhere<T>): Promise<T> {
 		const relations = [].concat(
 			...this.repo.metadata.relations.map((i) => {
-				return exploreEntityMetadata(i);
+				return this.exploreEntityMetadata(i);
 			}),
 		);
 		return this.repo.findOne({ where: options, relations });
