@@ -37,11 +37,7 @@ type MethodDecorator = (
 	descriptor: PropertyDescriptor,
 ) => PropertyDescriptor;
 
-type MethodPrerun = (
-	target: any,
-	propertyKey: Function,
-	args: any,
-) => boolean | void | Promise<any>;
+type MethodPrerun = (target: any, propertyKey: Function, args: any) => void;
 type MethodPostrun = (target: any, propertyKey: Function, result: any) => void;
 
 // Decorators
@@ -82,8 +78,8 @@ export function methodDecorator(functions: {
 		descriptor: PropertyDescriptor,
 	) => {
 		const originalMethod = descriptor.value;
-		descriptor.value = async function (...args: any) {
-			if (await prerun(this, originalMethod, args)) return;
+		descriptor.value = function (...args: any) {
+			prerun(this, originalMethod, args);
 			const result = originalMethod.apply(this, args);
 			postrun(this, originalMethod, result);
 			return result;
