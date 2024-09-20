@@ -19,7 +19,7 @@ export const loadEnv = (type: 'deploy' | 'test') =>
 				type === 'deploy'
 					? Joi.string().required()
 					: Joi.string().default(tstStr()),
-			ACCESS_EXPIRE: Joi.string().default('5m'),
+			ACCESS_EXPIRE: Joi.string().default('6m'),
 			// Refresh token
 			REFRESH_SECRET:
 				type === 'deploy'

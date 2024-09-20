@@ -1,52 +1,5 @@
 if (!navigator.userAgent.includes('Node.js')) (window as any).global = window;
 
-export const methodDecorator =
-		(before?: Function, after?: Function) =>
-		(_target: any, propertyKey: any, descriptor: PropertyDescriptor) => {
-			const originalMethod = descriptor.value;
-			descriptor.value = function (...args: any) {
-				before ? before(this, args) : null;
-				const result = originalMethod.apply(this, args);
-				after ? after(this, result) : null;
-				return result;
-			};
-			return descriptor;
-		},
-	logMethodCall = methodDecorator(
-		(propertyKey, args) => {
-			console.log(`Calling ${propertyKey} with arguments:`, args);
-		},
-		(propertyKey, result) => {
-			console.log(`Result of ${propertyKey}:`, result);
-		},
-	),
-	tstStr = () => (12).alpha,
-	matching = <T>(input: T[], required: T[]): boolean =>
-		required.every((i) => input.some((j) => i === j)),
-	allImplement = (
-		decorator: (
-			target: any,
-			propertyKey: any,
-			descriptor: any,
-		) => PropertyDescriptor,
-	) => {
-		return function (target: { prototype: any }) {
-			for (const propertyName of Object.getOwnPropertyNames(target.prototype)) {
-				if (typeof target.prototype[propertyName] === 'function') {
-					const descriptor = Object.getOwnPropertyDescriptor(
-						target.prototype,
-						propertyName,
-					);
-					Object.defineProperty(
-						target.prototype,
-						propertyName,
-						decorator(target, propertyName, descriptor),
-					);
-				}
-			}
-		};
-	};
-
 export class InterfaceCasting<T, K extends keyof T> {
 	[key: string]: any;
 
@@ -57,6 +10,82 @@ export class InterfaceCasting<T, K extends keyof T> {
 	static quick<T, K extends keyof T>(input: T, get: readonly K[]) {
 		return new InterfaceCasting(input, get);
 	}
+}
+
+export const logMethodCall = methodDecorator({
+		prerun: (target: any, propertyKey: Function, args: any) => {
+			console.log(
+				`Calling ${target.constructor.name}.${propertyKey.name} with arguments:`,
+				args,
+			);
+		},
+		postrun: (target: any, propertyKey: Function, result: any) => {
+			console.log(
+				`Result of ${target.constructor.name}.${propertyKey.name}:`,
+				result,
+			);
+		},
+	}),
+	tstStr = () => (12).alpha,
+	matching = <T>(input: T[], required: T[]): boolean =>
+		required.every((i) => input.some((j) => i === j));
+
+// Types
+type MethodDecorator = (
+	target: any,
+	propertyKey: string,
+	descriptor: PropertyDescriptor,
+) => PropertyDescriptor;
+
+type MethodPrerun = (target: any, propertyKey: Function, args: any) => void;
+type MethodPostrun = (target: any, propertyKey: Function, result: any) => void;
+
+// Decorators
+/**
+ * A class decorator that get all functions in class and implement them a function declared in argument
+ * @param {MethodDecorator} decorator - the function will implement to all functions in class
+ */
+export function allImplement(decorator: MethodDecorator) {
+	return function (target: Function) {
+		for (const propertyName of Object.getOwnPropertyNames(target.prototype)) {
+			if (typeof target.prototype[propertyName] === 'function') {
+				const descriptor = Object.getOwnPropertyDescriptor(
+					target.prototype,
+					propertyName,
+				);
+				Object.defineProperty(
+					target.prototype,
+					propertyName,
+					decorator(target, propertyName, descriptor),
+				);
+			}
+		}
+	};
+}
+
+/**
+ * A function decorator that implements prerun and postrun functions
+ * @param {Object} functions - A two-element array that contains prerun and postrun functions
+ */
+export function methodDecorator(functions: {
+	prerun?: MethodPrerun;
+	postrun?: MethodPostrun;
+}): MethodDecorator {
+	const { prerun = () => 0, postrun = () => 0 } = functions || {};
+	return (
+		_target: any,
+		_propertyKey: string,
+		descriptor: PropertyDescriptor,
+	) => {
+		const originalMethod = descriptor.value;
+		descriptor.value = function (...args: any) {
+			prerun(this, originalMethod, args);
+			const result = originalMethod.apply(this, args);
+			postrun(this, originalMethod, result);
+			return result;
+		};
+		return descriptor;
+	};
 }
 
 // Defines
