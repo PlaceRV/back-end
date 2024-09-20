@@ -25,7 +25,7 @@ export const loadEnv = (type: 'deploy' | 'test') =>
 				type === 'deploy'
 					? Joi.string().required()
 					: Joi.string().default(tstStr()),
-			REFRESH_EXPIRE: Joi.string().default('366d'),
+			REFRESH_EXPIRE: Joi.string().default('66d'),
 			REFRESH_USE: Joi.number().default(6),
 			// Server config
 			SERVER_SECRET: Joi.string().default(randomBytes(8).toString('hex')),

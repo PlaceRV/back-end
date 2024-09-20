@@ -18,6 +18,8 @@ export class Device extends SensitiveInfomations implements IDevice {
 	@OneToMany(() => Session, (_: Session) => _.device)
 	sessions: Session[];
 
+	@Column({ nullable: true }) child: string;
+
 	// Infomations
 	@Column() hashedUserAgent: string;
 	@Column() valid: boolean;

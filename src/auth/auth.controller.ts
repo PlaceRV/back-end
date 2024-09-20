@@ -12,6 +12,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { compareSync } from 'bcrypt';
 import { DeviceService } from 'device/device.service';
 import { CookieOptions, Request, Response } from 'express';
+import { SessionService } from 'session/session.service';
 import { UserRecieve } from 'user/user.class';
 import { ILogin, ISignUp } from 'user/user.model';
 import { hash } from 'utils/auth.utils';
@@ -23,6 +24,7 @@ export class AuthController {
 	constructor(
 		private authSvc: AuthService,
 		private dvcSvc: DeviceService,
+		private sesSvc: SessionService,
 		private cfgSvc: ConfigService,
 	) {}
 
@@ -42,10 +44,9 @@ export class AuthController {
 				(compareSync(this.rfsKey, cki.substring(this.ckiPfx.length)) && rfs)
 			)
 				response.clearCookie(cki, this.ckiOpt);
-		response.status(HttpStatus.ACCEPTED);
 	}
 
-	sendBack(request: Request, response: Response, usrRcv: UserRecieve): boolean {
+	sendBack(request: Request, response: Response, usrRcv: UserRecieve): void {
 		try {
 			this.clearCookies(request, response);
 			response
@@ -62,10 +63,10 @@ export class AuthController {
 					),
 					this.ckiOpt,
 				)
-				.status(HttpStatus.ACCEPTED);
-			return true;
+				.status(HttpStatus.ACCEPTED)
+				.json(true);
 		} catch (error) {
-			response.status(HttpStatus.INTERNAL_SERVER_ERROR);
+			response.status(HttpStatus.INTERNAL_SERVER_ERROR).json(false);
 		}
 	}
 
@@ -123,6 +124,6 @@ export class AuthController {
 					refreshToken: request.user['rfsTkn'],
 				}),
 			);
-		} else sendBack(await this.dvcSvc.getTokens(request.user['userId'], mtdt));
+		} else sendBack(await this.sesSvc.addTokens(request.user['id']));
 	}
 }
