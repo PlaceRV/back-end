@@ -24,8 +24,8 @@ export class AuthMiddleware extends Cryption implements NestMiddleware {
 			else if (compareSync(this.acsKey, cki.substring(this.ckiPfx.length)))
 				acsTkn = req.cookies[cki];
 
-		const tknPld = this.decrypt(acsTkn);
-		req.headers.authorization = `Bearer ${isRefresh ? this.decrypt(rfsTkn, tknPld.split('.')[2]) : tknPld}`;
+		const tknPld = this.decrypt(rfsTkn);
+		req.headers.authorization = `Bearer ${!isRefresh ? this.decrypt(acsTkn, tknPld.split('.')[2]) : tknPld}`;
 
 		next();
 	}

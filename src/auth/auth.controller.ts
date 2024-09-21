@@ -51,15 +51,15 @@ export class AuthController {
 			this.clearCookies(request, response);
 			response
 				.cookie(
-					this.ckiPfx + hash(this.acsKey),
-					this.authSvc.encrypt(usrRcv.accessToken),
+					this.ckiPfx + hash(this.rfsKey),
+					this.authSvc.encrypt(usrRcv.refreshToken),
 					this.ckiOpt,
 				)
 				.cookie(
-					this.ckiPfx + hash(this.rfsKey),
+					this.ckiPfx + hash(this.acsKey),
 					this.authSvc.encrypt(
-						usrRcv.refreshToken,
-						usrRcv.accessToken.split('.')[2],
+						usrRcv.accessToken,
+						usrRcv.refreshToken.split('.')[2],
 					),
 					this.ckiOpt,
 				)
@@ -117,7 +117,8 @@ export class AuthController {
 	) {
 		const sendBack = (usrRcv: UserRecieve) =>
 			this.sendBack(request, response, usrRcv);
-		if (request.user['success'] && compareSync(mtdt, request.user['ua'])) {
+		if (request.user['lockdown']) return;
+		else if (request.user['success'] && compareSync(mtdt, request.user['ua'])) {
 			sendBack(
 				new UserRecieve({
 					accessToken: request.user['acsTkn'],

@@ -53,8 +53,8 @@ export class DeviceService extends DatabaseRequests<Device> {
 		return this.save(entity, options);
 	}
 
-	async remove(session_id: string) {
-		const { id, sessions } = (await this.sesSvc.id(session_id)).device;
+	async remove(id: string) {
+		const { sessions } = await this.id(id);
 		await Promise.all(
 			sessions.map(async (i) => await this.sesSvc.remove(i.id)),
 		);

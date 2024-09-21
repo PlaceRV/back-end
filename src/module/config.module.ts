@@ -1,4 +1,3 @@
-import { randomBytes } from 'crypto';
 import { ConfigModule } from '@nestjs/config';
 import Joi from 'joi';
 import { tstStr } from 'utils/utils';
@@ -28,19 +27,17 @@ export const loadEnv = (type: 'deploy' | 'test') =>
 			REFRESH_EXPIRE: Joi.string().default('66d'),
 			REFRESH_USE: Joi.number().default(6),
 			// Server config
-			SERVER_SECRET: Joi.string().default(randomBytes(8).toString('hex')),
+			SERVER_SECRET: Joi.string().default((64).alpha),
 			SERVER_IN_DEV: Joi.bool().default(true),
 			SERVER_PORT: Joi.number().default(3000),
-			SERVER_COOKIE_PREFIX: Joi.string().default(
-				randomBytes(3).toString('hex'),
-			),
+			SERVER_COOKIE_PREFIX: Joi.string().default((12).alpha),
 			// AES
 			AES_ALGO: Joi.string().default('aes-256-ctr'),
 			// ADMIN
 			ADMIN_EMAIL: Joi.string().default('admin'),
 			ADMIN_PASSWORD: Joi.string().default('admin'),
 			// Custom keys
-			REFRESH_KEY: Joi.string().default(randomBytes(6).toString('hex')),
-			ACCESS_KEY: Joi.string().default(randomBytes(6).toString('hex')),
+			REFRESH_KEY: Joi.string().default((32).string),
+			ACCESS_KEY: Joi.string().default((32).string),
 		}),
 	});
