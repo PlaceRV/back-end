@@ -47,27 +47,23 @@ export class AuthController {
 	}
 
 	sendBack(request: Request, response: Response, usrRcv: UserRecieve): void {
-		try {
-			this.clearCookies(request, response);
-			response
-				.cookie(
-					this.ckiPfx + hash(this.rfsKey),
-					this.authSvc.encrypt(usrRcv.refreshToken),
-					this.ckiOpt,
-				)
-				.cookie(
-					this.ckiPfx + hash(this.acsKey),
-					this.authSvc.encrypt(
-						usrRcv.accessToken,
-						usrRcv.refreshToken.split('.')[2],
-					),
-					this.ckiOpt,
-				)
-				.status(HttpStatus.ACCEPTED)
-				.json(true);
-		} catch (error) {
-			response.status(HttpStatus.INTERNAL_SERVER_ERROR).json(false);
-		}
+		this.clearCookies(request, response);
+		response
+			.cookie(
+				this.ckiPfx + hash(this.rfsKey),
+				this.authSvc.encrypt(usrRcv.refreshToken),
+				this.ckiOpt,
+			)
+			.cookie(
+				this.ckiPfx + hash(this.acsKey),
+				this.authSvc.encrypt(
+					usrRcv.accessToken,
+					usrRcv.refreshToken.split('.')[2],
+				),
+				this.ckiOpt,
+			)
+			.status(HttpStatus.ACCEPTED)
+			.json(true);
 	}
 
 	@Post('login')
