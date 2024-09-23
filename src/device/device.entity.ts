@@ -22,5 +22,4 @@ export class Device extends SensitiveInfomations implements IDevice {
 
 	// Infomations
 	@Column() hashedUserAgent: string;
-	@Column() valid: boolean;
 }

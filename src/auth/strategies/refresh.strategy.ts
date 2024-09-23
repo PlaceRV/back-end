@@ -27,17 +27,17 @@ export class RefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
 		if (session) {
 			if (session.useTimeLeft > 0) {
 				await this.sesSvc.update(session.id);
-				if (session.useTimeLeft - 1)
-					return {
-						success: true,
-						ua: session.device.hashedUserAgent,
-						acsTkn: this.jwtSvc.sign({ id: session.device.owner.id }),
-						rfsTkn: this.dvcSvc.refreshTokenSign(payload.id),
-					};
-				else {
-					if ((await this.dvcSvc.id(session.device.id)).child === session.id)
-						return { success: false, id: session.id };
-				}
+				return {
+					success: true,
+					id: session.device.id,
+					ua: session.device.hashedUserAgent,
+					acsTkn: this.jwtSvc.sign({ id: session.device.owner.id }),
+					rfsTkn: this.dvcSvc.refreshTokenSign(payload.id),
+				};
+			} else {
+				if ((await this.dvcSvc.id(session.device.id)).child === session.id)
+					return { success: false, id: session.id };
+				else return { lockdown: true, id: session.device.id };
 			}
 		}
 		throw new UnauthorizedException('Invalid refresh token');

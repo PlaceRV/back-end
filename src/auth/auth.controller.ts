@@ -117,14 +117,18 @@ export class AuthController {
 	) {
 		const sendBack = (usrRcv: UserRecieve) =>
 			this.sendBack(request, response, usrRcv);
-		if (request.user['lockdown']) return;
-		else if (request.user['success'] && compareSync(mtdt, request.user['ua'])) {
-			sendBack(
-				new UserRecieve({
-					accessToken: request.user['acsTkn'],
-					refreshToken: request.user['rfsTkn'],
-				}),
-			);
-		} else sendBack(await this.sesSvc.addTokens(request.user['id']));
+		if (request.user['lockdown']) {
+			await this.dvcSvc.remove(request.user['id']);
+			sendBack({ refreshToken: '', accessToken: '' });
+		} else {
+			if (request.user['success'] && compareSync(mtdt, request.user['ua'])) {
+				sendBack(
+					new UserRecieve({
+						accessToken: request.user['acsTkn'],
+						refreshToken: request.user['rfsTkn'],
+					}),
+				);
+			} else sendBack(await this.sesSvc.addTokens(request.user['id']));
+		}
 	}
 }

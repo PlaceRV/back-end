@@ -7,5 +7,4 @@ export interface IDevice {
 	child: string;
 	sessions: ISession[];
 	hashedUserAgent: string;
-	valid: boolean;
 }

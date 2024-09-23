@@ -33,7 +33,6 @@ export class DeviceService extends DatabaseRequests<Device> {
 		const device = await this.save({
 				owner: user,
 				hashedUserAgent: hash(mtdt.toString()),
-				valid: true,
 				child: null,
 			}),
 			session = await this.sesSvc.assign({
