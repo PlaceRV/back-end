@@ -29,7 +29,6 @@ export class RefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
 				await this.sesSvc.update(session.id);
 				return {
 					success: true,
-					id: session.device.id,
 					ua: session.device.hashedUserAgent,
 					acsTkn: this.jwtSvc.sign({ id: session.device.owner.id }),
 					rfsTkn: this.dvcSvc.refreshTokenSign(payload.id),
