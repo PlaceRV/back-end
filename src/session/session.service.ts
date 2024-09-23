@@ -1,8 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Device } from 'device/device.entity';
-import { Repository } from 'typeorm';
+import { DeviceService } from 'device/device.service';
+import { DeepPartial, Repository } from 'typeorm';
+import { UserRecieve } from 'user/user.class';
 import { DatabaseRequests } from 'utils/typeorm.utils';
 import { Session } from './session.entity';
 
@@ -11,13 +13,36 @@ export class SessionService extends DatabaseRequests<Session> {
 	constructor(
 		@InjectRepository(Session) repo: Repository<Session>,
 		private cfgSvc: ConfigService,
+		@Inject(forwardRef(() => DeviceService))
+		private dvcSvc: DeviceService,
+		private jwtSvc: JwtService,
 	) {
 		super(repo);
 	}
 	private readonly use = this.cfgSvc.get('REFRESH_USE');
 
-	async assign(device: Device) {
-		return new Session(await this.save({ device, useTimeLeft: this.use }));
+	async assign(session: DeepPartial<Session>) {
+		return new Session(await this.save({ ...session, useTimeLeft: this.use }));
+	}
+
+	async addNode(oldNode: Session) {
+		const newSession = await this.save({
+			device: oldNode.device,
+			parrent: oldNode.device.id,
+			useTimeLeft: this.use,
+			child: oldNode.id,
+		});
+		await this.save({ id: oldNode.id, parrent: newSession.id });
+		await this.dvcSvc.update({ id: oldNode.device.id, child: newSession.id });
+		return new Session(newSession);
+	}
+
+	async addTokens(oldNodeId: string) {
+		const newSession = await this.addNode(await this.id(oldNodeId)),
+			refreshToken = this.dvcSvc.refreshTokenSign(newSession.id),
+			accessToken = this.jwtSvc.sign({ id: newSession.device.owner.id });
+
+		return new UserRecieve({ accessToken, refreshToken });
 	}
 
 	async update(id: string) {

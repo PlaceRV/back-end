@@ -13,7 +13,7 @@ jest.mock('ua-parser-js');
 
 const ua = { test: 'test' },
 	acsTkn = '..access-token',
-	rfsTkn = 'refresh-token';
+	rfsTkn = '..refresh-token';
 
 (uaParserJs.UAParser as unknown as jest.Mock).mockReturnValue(ua);
 
@@ -47,15 +47,15 @@ beforeEach(async () => {
 
 describe('use', () => {
 	beforeEach(() => {
-		req.cookies[`${ckiSfx + hash(rfsKey)}`] = authSvc.encrypt(
-			rfsTkn,
-			acsTkn.split('.')[2],
+		req.cookies[`${ckiSfx + hash(rfsKey)}`] = authSvc.encrypt(rfsTkn);
+		req.cookies[`${ckiSfx + hash(acsKey)}`] = authSvc.encrypt(
+			acsTkn,
+			rfsTkn.split('.')[2],
 		);
-		req.cookies[`${ckiSfx + hash(acsKey)}`] = authSvc.encrypt(acsTkn);
 	});
 
 	it('refresh', () => {
-		req.url = '/auth/refreshToken';
+		req.url = '/auth/refresh';
 		authMdw.use(req, res, next),
 			expect(req.headers.authorization).toBe(`Bearer ${rfsTkn}`),
 			expect(next).toHaveBeenCalled();

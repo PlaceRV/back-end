@@ -42,28 +42,32 @@ beforeEach(() => {
 
 describe('signup', () => {
 	it('success', async () => {
-		await execute(() => req.post('/auth/signup').send(usr), {}, [
-			{
-				type: 'toHaveProperty',
-				params: [
-					'headers.set-cookie',
-					expect.arrayContaining([expect.anything(), expect.anything()]),
-				],
-			},
-			{ type: 'toHaveProperty', params: ['status', HttpStatus.ACCEPTED] },
-		]);
+		await execute(() => req.post('/auth/signup').send(usr), {
+			exps: [
+				{
+					type: 'toHaveProperty',
+					params: [
+						'headers.set-cookie',
+						expect.arrayContaining([expect.anything(), expect.anything()]),
+					],
+				},
+				{ type: 'toHaveProperty', params: ['status', HttpStatus.ACCEPTED] },
+			],
+		});
 
-		await execute(() => usrRepo.findOne({ where: { email: usr.email } }), {}, [
-			{ type: 'toBeInstanceOf', params: [User] },
-		]);
+		await execute(() => usrRepo.findOne({ where: { email: usr.email } }), {
+			exps: [{ type: 'toBeInstanceOf', params: [User] }],
+		});
 	});
 
 	it('fail due to email already exist', async () => {
 		await req.post('/auth/signup').send(usr);
 
-		await execute(() => req.post('/auth/signup').send(usr), {}, [
-			{ type: 'toHaveProperty', params: ['status', HttpStatus.BAD_REQUEST] },
-		]);
+		await execute(() => req.post('/auth/signup').send(usr), {
+			exps: [
+				{ type: 'toHaveProperty', params: ['status', HttpStatus.BAD_REQUEST] },
+			],
+		});
 	});
 });
 
@@ -71,30 +75,33 @@ describe('login', () => {
 	beforeEach(async () => await req.post('/auth/signup').send(usr));
 
 	it('success', async () => {
-		await execute(() => req.post('/auth/login').send(usr), {}, [
-			{
-				type: 'toHaveProperty',
-				params: [
-					'headers.set-cookie',
-					expect.arrayContaining([expect.anything(), expect.anything()]),
-				],
-			},
-			{ type: 'toHaveProperty', params: ['status', HttpStatus.ACCEPTED] },
-		]);
+		await execute(() => req.post('/auth/login').send(usr), {
+			exps: [
+				{
+					type: 'toHaveProperty',
+					params: [
+						'headers.set-cookie',
+						expect.arrayContaining([expect.anything(), expect.anything()]),
+					],
+				},
+				{ type: 'toHaveProperty', params: ['status', HttpStatus.ACCEPTED] },
+			],
+		});
 
 		await execute(
 			() => dvcRepo.find({ where: { owner: { email: usr.email } } }),
-			{},
-			[{ type: 'toHaveLength', params: [2] }],
+			{ exps: [{ type: 'toHaveLength', params: [2] }] },
 		);
 	});
 
 	it('fail due to wrong password', async () => {
 		usr = new User({ ...usr, password: tstStr() });
 
-		await execute(() => req.post('/auth/login').send(usr), {}, [
-			{ type: 'toHaveProperty', params: ['status', HttpStatus.BAD_REQUEST] },
-		]);
+		await execute(() => req.post('/auth/login').send(usr), {
+			exps: [
+				{ type: 'toHaveProperty', params: ['status', HttpStatus.BAD_REQUEST] },
+			],
+		});
 	});
 });
 
@@ -108,27 +115,30 @@ describe('logout', () => {
 	it('success', async () => {
 		await execute(
 			() => req.post('/auth/logout').set('Cookie', headers['set-cookie']),
-			{},
-			[
-				{
-					type: 'toHaveProperty',
-					params: ['headers.set-cookie', expect.arrayContaining([])],
-				},
-				{ type: 'toHaveProperty', params: ['status', HttpStatus.ACCEPTED] },
-			],
-		);
-
-		await execute(
-			() => dvcRepo.find({ where: { owner: { email: usr.email } } }),
-			{},
-			[{ type: 'toHaveLength', params: [0] }],
+			{
+				exps: [
+					{
+						type: 'toHaveProperty',
+						params: ['headers.set-cookie', expect.arrayContaining([])],
+					},
+					{ type: 'toHaveProperty', params: ['status', HttpStatus.ACCEPTED] },
+				],
+				onFinish: () =>
+					execute(
+						() => dvcRepo.find({ where: { owner: { email: usr.email } } }),
+						{ exps: [{ type: 'toHaveLength', params: [0] }] },
+					),
+			},
 		);
 	});
 
 	it('fail due to not have valid cookies', async () => {
-		await execute(req.post, { params: ['/auth/logout'] }, [
-			{ type: 'toHaveProperty', params: ['status', HttpStatus.UNAUTHORIZED] },
-		]);
+		await execute(req.post, {
+			params: ['/auth/logout'],
+			exps: [
+				{ type: 'toHaveProperty', params: ['status', HttpStatus.UNAUTHORIZED] },
+			],
+		});
 	});
 });
 
@@ -142,32 +152,36 @@ describe('refresh', () => {
 	it('success', async () => {
 		await execute(
 			() => req.post('/auth/refresh').set('Cookie', headers['set-cookie']),
-			{},
-			[
-				{
-					type: 'toHaveProperty',
-					not: true,
-					params: [
-						'headers.set-cookie',
-						expect.arrayContaining(headers['set-cookie']),
-					],
-				},
-				{
-					type: 'toHaveProperty',
-					params: [
-						'headers.set-cookie',
-						expect.arrayContaining([expect.anything(), expect.anything()]),
-					],
-				},
-				{ type: 'toHaveProperty', params: ['status', HttpStatus.ACCEPTED] },
-			],
+			{
+				exps: [
+					{
+						type: 'toHaveProperty',
+						not: true,
+						params: [
+							'headers.set-cookie',
+							expect.arrayContaining(headers['set-cookie']),
+						],
+					},
+					{
+						type: 'toHaveProperty',
+						params: [
+							'headers.set-cookie',
+							expect.arrayContaining([expect.anything(), expect.anything()]),
+						],
+					},
+					{ type: 'toHaveProperty', params: ['status', HttpStatus.ACCEPTED] },
+				],
+			},
 		);
 	});
 
 	it('fail due to not have valid cookies', async () => {
-		await execute(req.post, { params: ['/auth/refresh'] }, [
-			{ type: 'toHaveProperty', params: ['status', HttpStatus.UNAUTHORIZED] },
-		]);
+		await execute(req.post, {
+			params: ['/auth/refresh'],
+			exps: [
+				{ type: 'toHaveProperty', params: ['status', HttpStatus.UNAUTHORIZED] },
+			],
+		});
 	});
 
 	it('success in generate new key', async () => {
@@ -176,25 +190,28 @@ describe('refresh', () => {
 				({ headers } = await req
 					.post('/auth/refresh')
 					.set('Cookie', headers['set-cookie'])),
-			{ numOfRun: rfsTms * 1.2, params: [headers] },
-			[
-				{
-					type: 'toHaveProperty',
-					not: true,
-					params: [
-						'headers.set-cookie',
-						expect.arrayContaining(headers['set-cookie']),
-					],
-				},
-				{
-					type: 'toHaveProperty',
-					params: [
-						'headers.set-cookie',
-						expect.arrayContaining([expect.anything(), expect.anything()]),
-					],
-				},
-				{ type: 'toHaveProperty', params: ['status', HttpStatus.ACCEPTED] },
-			],
+			{
+				numOfRun: rfsTms * 1.2,
+				params: [headers],
+				exps: [
+					{
+						type: 'toHaveProperty',
+						not: true,
+						params: [
+							'headers.set-cookie',
+							expect.arrayContaining(headers['set-cookie']),
+						],
+					},
+					{
+						type: 'toHaveProperty',
+						params: [
+							'headers.set-cookie',
+							expect.arrayContaining([expect.anything(), expect.anything()]),
+						],
+					},
+					{ type: 'toHaveProperty', params: ['status', HttpStatus.ACCEPTED] },
+				],
+			},
 		);
 	});
 });

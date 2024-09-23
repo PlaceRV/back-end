@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from 'user/user.entity';
@@ -16,12 +16,8 @@ export class PlaceService extends DatabaseRequests<Place> {
 	}
 
 	async assign(placeAssign: PlaceAssign, usr: User) {
-		try {
-			return new Place(
-				await this.save({ ...new Place(placeAssign), createdBy: usr }),
-			);
-		} catch (error) {
-			throw new BadRequestException(error);
-		}
+		return new Place(
+			await this.save({ ...new Place(placeAssign), createdBy: usr }),
+		);
 	}
 }

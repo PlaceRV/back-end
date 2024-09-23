@@ -25,17 +25,20 @@ export class RefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
 	async validate(payload: IPayload) {
 		const session = await this.sesSvc.id(payload.id);
 		if (session) {
-			if (session.useTimeLeft - 1 >= 0) {
+			if (session.useTimeLeft > 0) {
 				await this.sesSvc.update(session.id);
 				return {
 					success: true,
-					id: session.id,
+					id: session.device.id, // for logout requests
 					ua: session.device.hashedUserAgent,
 					acsTkn: this.jwtSvc.sign({ id: session.device.owner.id }),
 					rfsTkn: this.dvcSvc.refreshTokenSign(payload.id),
 				};
-				// TODO: Cập nhật logic refresh token
-			} else return { success: false, userId: session.device.owner.id };
+			} else {
+				if ((await this.dvcSvc.id(session.device.id)).child === session.id)
+					return { success: false, id: session.id };
+				else return { lockdown: true, id: session.device.id };
+			}
 		}
 		throw new UnauthorizedException('Invalid refresh token');
 	}

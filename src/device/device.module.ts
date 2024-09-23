@@ -10,7 +10,7 @@ import { DeviceService } from './device.service';
 	imports: [
 		TypeOrmModule.forFeature([Device]),
 		forwardRef(() => AuthModule),
-		SessionModule,
+		forwardRef(() => SessionModule),
 	],
 	providers: [DeviceResolver, DeviceService],
 	exports: [DeviceService, SessionModule],

@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SessionService } from 'session/session.service';
-import { Repository } from 'typeorm';
+import { DeepPartial, Repository, SaveOptions } from 'typeorm';
 import { UserRecieve } from 'user/user.class';
 import { User } from 'user/user.entity';
 import { hash } from 'utils/auth.utils';
@@ -16,6 +16,7 @@ export class DeviceService extends DatabaseRequests<Device> {
 		@InjectRepository(Device) repo: Repository<Device>,
 		private jwtSvc: JwtService,
 		private cfgSvc: ConfigService,
+		@Inject(forwardRef(() => SessionService))
 		private sesSvc: SessionService,
 	) {
 		super(repo);
@@ -32,17 +33,27 @@ export class DeviceService extends DatabaseRequests<Device> {
 		const device = await this.save({
 				owner: user,
 				hashedUserAgent: hash(mtdt.toString()),
-				valid: true,
+				child: null,
 			}),
-			session = await this.sesSvc.assign(device),
+			session = await this.sesSvc.assign({
+				child: null,
+				parrent: device.id,
+				device,
+			}),
 			refreshToken = this.refreshTokenSign(session.id),
 			accessToken = this.jwtSvc.sign({ id: user.id });
+
+		await this.save({ ...device, child: session.id });
 
 		return new UserRecieve({ accessToken, refreshToken });
 	}
 
-	async remove(session_id: string) {
-		const { id, sessions } = (await this.sesSvc.id(session_id)).device;
+	async update(entity: DeepPartial<Device>, options?: SaveOptions) {
+		return this.save(entity, options);
+	}
+
+	async remove(id: string) {
+		const { sessions } = await this.id(id);
 		await Promise.all(
 			sessions.map(async (i) => await this.sesSvc.remove(i.id)),
 		);

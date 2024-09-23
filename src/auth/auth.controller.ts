@@ -12,6 +12,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { compareSync } from 'bcrypt';
 import { DeviceService } from 'device/device.service';
 import { CookieOptions, Request, Response } from 'express';
+import { SessionService } from 'session/session.service';
 import { UserRecieve } from 'user/user.class';
 import { ILogin, ISignUp } from 'user/user.model';
 import { hash } from 'utils/auth.utils';
@@ -23,6 +24,7 @@ export class AuthController {
 	constructor(
 		private authSvc: AuthService,
 		private dvcSvc: DeviceService,
+		private sesSvc: SessionService,
 		private cfgSvc: ConfigService,
 	) {}
 
@@ -42,31 +44,26 @@ export class AuthController {
 				(compareSync(this.rfsKey, cki.substring(this.ckiPfx.length)) && rfs)
 			)
 				response.clearCookie(cki, this.ckiOpt);
-		response.status(HttpStatus.ACCEPTED);
 	}
 
-	sendBack(request: Request, response: Response, usrRcv: UserRecieve): boolean {
-		try {
-			this.clearCookies(request, response);
-			response
-				.cookie(
-					this.ckiPfx + hash(this.acsKey),
-					this.authSvc.encrypt(usrRcv.accessToken),
-					this.ckiOpt,
-				)
-				.cookie(
-					this.ckiPfx + hash(this.rfsKey),
-					this.authSvc.encrypt(
-						usrRcv.refreshToken,
-						usrRcv.accessToken.split('.')[2],
-					),
-					this.ckiOpt,
-				)
-				.status(HttpStatus.ACCEPTED);
-			return true;
-		} catch (error) {
-			response.status(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+	sendBack(request: Request, response: Response, usrRcv: UserRecieve): void {
+		this.clearCookies(request, response);
+		response
+			.cookie(
+				this.ckiPfx + hash(this.rfsKey),
+				this.authSvc.encrypt(usrRcv.refreshToken),
+				this.ckiOpt,
+			)
+			.cookie(
+				this.ckiPfx + hash(this.acsKey),
+				this.authSvc.encrypt(
+					usrRcv.accessToken,
+					usrRcv.refreshToken.split('.')[2],
+				),
+				this.ckiOpt,
+			)
+			.status(HttpStatus.ACCEPTED)
+			.json(true);
 	}
 
 	@Post('login')
@@ -103,8 +100,8 @@ export class AuthController {
 		@Req() request: Request,
 		@Res({ passthrough: true }) response: Response,
 	) {
-		this.clearCookies(request, response);
 		await this.dvcSvc.remove(request.user['id']);
+		this.sendBack(request, response, { refreshToken: '', accessToken: '' });
 	}
 
 	@Post('refresh')
@@ -116,13 +113,18 @@ export class AuthController {
 	) {
 		const sendBack = (usrRcv: UserRecieve) =>
 			this.sendBack(request, response, usrRcv);
-		if (request.user['success'] && compareSync(mtdt, request.user['ua'])) {
-			sendBack(
-				new UserRecieve({
-					accessToken: request.user['acsTkn'],
-					refreshToken: request.user['rfsTkn'],
-				}),
-			);
-		} else sendBack(await this.dvcSvc.getTokens(request.user['userId'], mtdt));
+		if (request.user['lockdown']) {
+			await this.dvcSvc.remove(request.user['id']);
+			sendBack({ refreshToken: '', accessToken: '' });
+		} else {
+			if (request.user['success'] && compareSync(mtdt, request.user['ua'])) {
+				sendBack(
+					new UserRecieve({
+						accessToken: request.user['acsTkn'],
+						refreshToken: request.user['rfsTkn'],
+					}),
+				);
+			} else sendBack(await this.sesSvc.addTokens(request.user['id']));
+		}
 	}
 }

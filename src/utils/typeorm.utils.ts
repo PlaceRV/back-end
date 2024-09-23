@@ -17,7 +17,15 @@ export class SensitiveInfomations extends BaseEntity {
 }
 
 export class DatabaseRequests<T extends SensitiveInfomations> {
-	constructor(protected repo: Repository<T>) {}
+	relations: string[];
+
+	constructor(protected repo: Repository<T>) {
+		this.relations = [].concat(
+			...this.repo.metadata.relations.map((i) => {
+				return this.exploreEntityMetadata(i);
+			}),
+		);
+	}
 
 	private exploreEntityMetadata(
 		input: RelationMetadata,
@@ -45,25 +53,15 @@ export class DatabaseRequests<T extends SensitiveInfomations> {
 	}
 
 	protected find(options?: FindOptionsWhere<T>): Promise<T[]> {
-		const relations = [].concat(
-			...this.repo.metadata.relations.map((i) => {
-				return this.exploreEntityMetadata(i);
-			}),
-		);
-		return this.repo.find({ where: options, relations });
+		return this.repo.find({ where: options, relations: this.relations });
 	}
 
 	protected findOne(options?: FindOptionsWhere<T>): Promise<T> {
-		const relations = [].concat(
-			...this.repo.metadata.relations.map((i) => {
-				return this.exploreEntityMetadata(i);
-			}),
-		);
-		return this.repo.findOne({ where: options, relations });
+		return this.repo.findOne({ where: options, relations: this.relations });
 	}
 
-	protected save(entities: DeepPartial<T>, options?: SaveOptions) {
-		return this.repo.save(entities, options) as Promise<T>;
+	protected save(entity: DeepPartial<T>, options?: SaveOptions) {
+		return this.repo.save(entity, options) as Promise<T>;
 	}
 
 	protected delete(criteria: FindOptionsWhere<T>) {
