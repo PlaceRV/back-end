@@ -1,5 +1,5 @@
 import { Device } from 'device/device.entity';
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { SensitiveInfomations } from 'utils/typeorm.utils';
 import { ISession } from './session.model';
 
