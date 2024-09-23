@@ -35,14 +35,22 @@ describe('getUser', () => {
 	it('success', async () => {
 		await execute(
 			() => req.post('/user').set('Cookie', headers['set-cookie']),
-			{},
-			[{ type: 'toHaveProperty', params: ['text', JSON.stringify(usr.info)] }],
+			{
+				exps: [
+					{
+						type: 'toHaveProperty',
+						params: ['text', JSON.stringify(usr.info)],
+					},
+				],
+			},
 		);
 	});
 
 	it('fail', async () => {
-		await execute(() => req.post('/user').send(usr), {}, [
-			{ type: 'toHaveProperty', params: ['status', HttpStatus.UNAUTHORIZED] },
-		]);
+		await execute(() => req.post('/user').send(usr), {
+			exps: [
+				{ type: 'toHaveProperty', params: ['status', HttpStatus.UNAUTHORIZED] },
+			],
+		});
 	});
 });

@@ -28,15 +28,23 @@ export async function execute<
 	K extends keyof jest.Matchers<T>,
 >(
 	func: T,
-	{
-		params,
-		throwError = false,
-		numOfRun = 1,
-	}: { params?: Parameters<T>; throwError?: boolean; numOfRun?: number },
-	exps: Expectation<T, K>[],
+	options: {
+		params?: Parameters<T>;
+		throwError?: boolean;
+		numOfRun?: number;
+		exps: Expectation<T, K>[];
+		onFinish?: Function;
+	},
 ) {
 	let funcResult: any;
-	const chamber = () => (params ? func(...params) : func());
+	const {
+			params,
+			throwError = false,
+			numOfRun = 1,
+			exps,
+			onFinish = () => {},
+		} = options || {},
+		chamber = () => (params ? func(...params) : func());
 
 	if (!throwError && numOfRun - 1) await numOfRun.ra(chamber);
 
@@ -47,4 +55,5 @@ export async function execute<
 	for (const exp of exps) {
 		await (exp.not ? result.not : result)[exp.type].apply(null, exp.params);
 	}
+	await onFinish();
 }

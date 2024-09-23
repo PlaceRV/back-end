@@ -56,13 +56,14 @@ describe('findOne', () => {
 							}`,
 						variables: { findOneId: usrRaw.id },
 					}),
-			{},
-			[
-				{
-					type: 'toHaveProperty',
-					params: ['text', expect.stringContaining(JSON.stringify(usr.info))],
-				},
-			],
+			{
+				exps: [
+					{
+						type: 'toHaveProperty',
+						params: ['text', expect.stringContaining(JSON.stringify(usr.info))],
+					},
+				],
+			},
 		);
 	});
 
@@ -83,13 +84,14 @@ describe('findOne', () => {
 							}`,
 						variables: { findOneId: tstStr() },
 					}),
-			{},
-			[
-				{
-					type: 'toHaveProperty',
-					params: ['text', expect.stringContaining('error')],
-				},
-			],
+			{
+				exps: [
+					{
+						type: 'toHaveProperty',
+						params: ['text', expect.stringContaining('error')],
+					},
+				],
+			},
 		);
 	});
 });
@@ -113,16 +115,17 @@ describe('findAll', () => {
 								}
 							}`,
 					}),
-			{},
-			[
-				{
-					type: 'toHaveProperty',
-					params: [
-						'text',
-						expect.stringContaining(JSON.stringify(usr.info).slice(1, -10)),
-					],
-				},
-			],
+			{
+				exps: [
+					{
+						type: 'toHaveProperty',
+						params: [
+							'text',
+							expect.stringContaining(JSON.stringify(usr.info).slice(1, -10)),
+						],
+					},
+				],
+			},
 		);
 	});
 });

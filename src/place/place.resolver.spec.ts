@@ -65,14 +65,15 @@ describe('placeCreate', () => {
 							placeAssign: InterfaceCasting.quick(plc, IPlaceInfoKeys),
 						},
 					}),
-			{},
-			[
-				{
-					type: 'toHaveProperty',
-					params: ['text', expect.stringContaining(JSON.stringify(plc.info))],
-				},
-				{ type: 'toHaveProperty', params: ['status', HttpStatus.OK] },
-			],
+			{
+				exps: [
+					{
+						type: 'toHaveProperty',
+						params: ['text', expect.stringContaining(JSON.stringify(plc.info))],
+					},
+					{ type: 'toHaveProperty', params: ['status', HttpStatus.OK] },
+				],
+			},
 		);
 	});
 });
@@ -91,8 +92,7 @@ describe('placeAll', () => {
 							}
 						}`,
 				}),
-			{},
-			[{ type: 'toHaveProperty', params: ['status', HttpStatus.OK] }],
+			{ exps: [{ type: 'toHaveProperty', params: ['status', HttpStatus.OK] }] },
 		);
 	});
 });

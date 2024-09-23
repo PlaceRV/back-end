@@ -104,8 +104,8 @@ export class AuthController {
 		@Req() request: Request,
 		@Res({ passthrough: true }) response: Response,
 	) {
-		this.clearCookies(request, response);
 		await this.dvcSvc.remove(request.user['id']);
+		this.sendBack(request, response, { refreshToken: '', accessToken: '' });
 	}
 
 	@Post('refresh')
