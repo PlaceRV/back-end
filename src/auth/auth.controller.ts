@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, NoFilesInterceptor } from '@nestjs/platform-express';
 import { compareSync } from 'bcrypt';
 import { DeviceService } from 'device/device.service';
 import { CookieOptions, Request, Response } from 'express';
@@ -72,6 +72,7 @@ export class AuthController {
 	}
 
 	@Post('login')
+	@UseInterceptors(NoFilesInterceptor())
 	async login(
 		@Req() request: Request,
 		@Body() body: ILogin,
@@ -93,7 +94,7 @@ export class AuthController {
 		@UploadedFile(
 			new ParseFilePipeBuilder()
 				.addFileTypeValidator({ fileType: '.(png|jpeg|jpg)' })
-				.addMaxSizeValidator({ maxSize: (2).mb })
+				.addMaxSizeValidator({ maxSize: (0.3).mb })
 				.build({
 					fileIsRequired: false,
 					errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
