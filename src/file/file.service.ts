@@ -19,6 +19,8 @@ export class FileService extends DatabaseRequests<File> {
 	}
 
 	assign(input: Express.Multer.File, createdBy: User) {
+		if (!input?.buffer) return null;
+
 		const path = `${createHash('sha256')
 			.update(input.buffer)
 			.digest('hex')}${extname(input.originalname)}`;
@@ -26,7 +28,7 @@ export class FileService extends DatabaseRequests<File> {
 		return this.save({ path, createdBy });
 	}
 
-	path(input: string, options: FindOptionsWithCustom<File>) {
-		return this.findOne({ path: input, ...options });
+	path(input: string, userId: string, options: FindOptionsWithCustom<File>) {
+		return this.findOne({ path: input, ...options, createdBy: { id: userId } });
 	}
 }

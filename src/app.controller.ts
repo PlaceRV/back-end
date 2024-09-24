@@ -19,17 +19,16 @@ export class AppController {
 		@Res() res: Response,
 		@CurrentUser() user: User,
 	) {
-		const file = await this.fileSvc.path(filename, {
-			withRelations: true,
-			relations: ['createdBy'],
-		});
-
 		if (existsSync(`${this.cfgSvc.get('SERVER_PUBLIC')}/${filename}`)) {
 			if (filename.match(/.+\.server\..+/g))
 				return res.sendFile(filename, {
 					root: this.cfgSvc.get('SERVER_PUBLIC'),
 				});
 
+			const file = await this.fileSvc.path(filename, user?.id, {
+				withRelations: true,
+				relations: ['createdBy'],
+			});
 			if (user?.id === file.createdBy.id || file.forEveryone)
 				return res.sendFile(filename, {
 					root: this.cfgSvc.get('SERVER_PUBLIC'),
