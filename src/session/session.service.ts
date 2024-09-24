@@ -38,7 +38,12 @@ export class SessionService extends DatabaseRequests<Session> {
 	}
 
 	async addTokens(oldNodeId: string) {
-		const newSession = await this.addNode(await this.id(oldNodeId)),
+		const newSession = await this.addNode(
+				await this.id(oldNodeId, {
+					withRelations: true,
+					relations: ['device'],
+				}),
+			),
 			refreshToken = this.dvcSvc.refreshTokenSign(newSession.id),
 			accessToken = this.jwtSvc.sign({ id: newSession.device.owner.id });
 
