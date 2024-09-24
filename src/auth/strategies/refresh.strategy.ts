@@ -23,10 +23,13 @@ export class RefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
 	}
 
 	async validate(payload: IPayload) {
-		const session = await this.sesSvc.id(payload.id);
+		const session = await this.sesSvc.id(payload.id, {
+			withRelations: true,
+			relations: ['device'],
+		});
 		if (session) {
 			if (session.useTimeLeft > 0) {
-				await this.sesSvc.update(session.id);
+				await this.sesSvc.useToken(session.id);
 				return {
 					success: true,
 					id: session.device.id, // for logout requests

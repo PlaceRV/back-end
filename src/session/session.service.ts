@@ -45,7 +45,7 @@ export class SessionService extends DatabaseRequests<Session> {
 		return new UserRecieve({ accessToken, refreshToken });
 	}
 
-	async update(id: string) {
+	async useToken(id: string) {
 		const useTimeLeft = (await this.id(id)).useTimeLeft - 1;
 		return new Session(await this.save({ id, useTimeLeft }));
 	}

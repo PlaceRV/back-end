@@ -3,6 +3,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { AppController } from 'app.controller';
+import { FileModule } from 'file/file.module';
 import { loadEnv } from 'module/config.module';
 import { AuthMiddleware } from './auth/auth.middleware';
 import { AuthModule } from './auth/auth.module';
@@ -29,6 +30,7 @@ import { SqlModule } from './module/sql.module';
 		}),
 		// Sub modules
 		AuthModule,
+		FileModule,
 		loadEnv('deploy'),
 		SqlModule('deploy'),
 	],

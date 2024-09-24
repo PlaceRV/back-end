@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SessionService } from 'session/session.service';
-import { DeepPartial, Repository, SaveOptions } from 'typeorm';
+import { Repository } from 'typeorm';
 import { UserRecieve } from 'user/user.class';
 import { User } from 'user/user.entity';
 import { hash } from 'utils/auth.utils';
@@ -48,12 +48,11 @@ export class DeviceService extends DatabaseRequests<Device> {
 		return new UserRecieve({ accessToken, refreshToken });
 	}
 
-	async update(entity: DeepPartial<Device>, options?: SaveOptions) {
-		return this.save(entity, options);
-	}
-
 	async remove(id: string) {
-		const { sessions } = await this.id(id);
+		const { sessions } = await this.id(id, {
+			withRelations: true,
+			relations: ['session'],
+		});
 		await Promise.all(
 			sessions.map(async (i) => await this.sesSvc.remove(i.id)),
 		);

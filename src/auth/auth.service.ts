@@ -1,6 +1,3 @@
-import { createHash } from 'crypto';
-import * as fs from 'fs';
-import { extname } from 'path';
 import {
 	BadRequestException,
 	forwardRef,
@@ -10,6 +7,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { compareSync } from 'bcrypt';
 import { DeviceService } from 'device/device.service';
+import { FileService } from 'file/file.service';
 import { User } from 'user/user.entity';
 import { ILogin, ISignUp } from 'user/user.model';
 import { UserService } from 'user/user.service';
@@ -18,8 +16,9 @@ import { Cryption, validation } from 'utils/auth.utils';
 @Injectable()
 export class AuthService extends Cryption {
 	constructor(
-		private cfgSvc: ConfigService,
+		cfgSvc: ConfigService,
 		private usrSvc: UserService,
+		private fileSvc: FileService,
 		@Inject(forwardRef(() => DeviceService))
 		private dvcSvc: DeviceService,
 	) {
@@ -29,17 +28,15 @@ export class AuthService extends Cryption {
 	async signUp(input: ISignUp, mtdt: string, avatar: Express.Multer.File) {
 		const user = await this.usrSvc.email(input.email);
 		if (!user) {
-			const avatarFilePath = `${createHash('sha256')
-				.update(avatar.buffer)
-				.digest('hex')}${extname(avatar.originalname)}`;
-			fs.writeFileSync(
-				`${this.cfgSvc.get('SERVER_PUBLIC')}${avatarFilePath}`,
-				avatar.buffer,
-			);
-			const newUser = new User({ ...input, avatarFilePath: avatarFilePath });
-			return await validation(newUser, async () => {
-				if (newUser.hashedPassword) {
-					await this.usrSvc.assign(newUser);
+			const newUserRaw = new User({ ...input });
+			return await validation(newUserRaw, async () => {
+				if (newUserRaw.hashedPassword) {
+					const newUser = await this.usrSvc.assign(newUserRaw),
+						avatarFile = await this.fileSvc.assign(avatar, newUser);
+					await this.usrSvc.update({
+						...newUser,
+						avatarFilePath: avatarFile.path,
+					});
 					return this.dvcSvc.getTokens(newUser, mtdt);
 				}
 			});
