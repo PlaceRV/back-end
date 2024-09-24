@@ -13,6 +13,7 @@ export interface IUserInfo {
 	description: string;
 	roles?: Role[];
 	email: string;
+	avatarFilePath?: string;
 }
 
 export interface IUser extends IUserAuthentication, IUserInfo {

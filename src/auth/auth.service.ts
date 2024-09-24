@@ -1,3 +1,6 @@
+import { createHash } from 'crypto';
+import * as fs from 'fs';
+import { extname } from 'path';
 import {
 	BadRequestException,
 	forwardRef,
@@ -15,7 +18,7 @@ import { Cryption, validation } from 'utils/auth.utils';
 @Injectable()
 export class AuthService extends Cryption {
 	constructor(
-		cfgSvc: ConfigService,
+		private cfgSvc: ConfigService,
 		private usrSvc: UserService,
 		@Inject(forwardRef(() => DeviceService))
 		private dvcSvc: DeviceService,
@@ -23,10 +26,17 @@ export class AuthService extends Cryption {
 		super(cfgSvc.get('AES_ALGO'), cfgSvc.get('SERVER_SECRET'));
 	}
 
-	async signUp(input: ISignUp, mtdt: string) {
+	async signUp(input: ISignUp, mtdt: string, avatar: Express.Multer.File) {
 		const user = await this.usrSvc.email(input.email);
 		if (!user) {
-			const newUser = new User(input);
+			const avatarFilePath = `${createHash('sha256')
+				.update(avatar.buffer)
+				.digest('hex')}${extname(avatar.originalname)}`;
+			fs.writeFileSync(
+				`${this.cfgSvc.get('SERVER_PUBLIC')}${avatarFilePath}`,
+				avatar.buffer,
+			);
+			const newUser = new User({ ...input, avatarFilePath: avatarFilePath });
 			return await validation(newUser, async () => {
 				if (newUser.hashedPassword) {
 					await this.usrSvc.assign(newUser);

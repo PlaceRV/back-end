@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'fs';
+import { existsSync, mkdirSync, readFileSync } from 'fs';
 import http from 'http';
 import https from 'https';
 import { ValidationPipe } from '@nestjs/common';
@@ -32,6 +32,7 @@ async function bootstrap() {
 			.useGlobalPipes(new ValidationPipe()),
 		cfgSvc = app.get(ConfigService);
 	AdminJS.registerAdapter({ Resource, Database });
+	mkdirSync(cfgSvc.get('SERVER_PUBLIC'), { recursive: true });
 	const admin = new AdminJS({ resources: [User, Device, Place] }),
 		adminRouter = buildAuthenticatedRouter(
 			admin,

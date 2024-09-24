@@ -40,6 +40,9 @@ export class User extends SensitiveInfomations implements IUser {
 	placesAssigned?: Place[];
 
 	// Infomations
+	@Column({ nullable: true })
+	avatarFilePath?: string;
+
 	@IsAlpha()
 	@Field()
 	@Column()
@@ -58,7 +61,7 @@ export class User extends SensitiveInfomations implements IUser {
 	@IsString()
 	@Field()
 	@Column()
-	description: string;
+	description: string = '';
 
 	@Field(() => [Role])
 	@Column({ type: 'enum', enum: Role, array: true, default: [Role.USER] })
