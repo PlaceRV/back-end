@@ -1,0 +1,16 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ExpectationKeys = exports.ISignUpKeys = exports.ILoginKeys = exports.IUserRecieveKeys = exports.IUserKeys = exports.IUserInfoKeys = exports.IUserAuthenticationKeys = exports.ISessionKeys = exports.IPlaceKeys = exports.IPlaceInfoKeys = exports.IFileKeys = exports.IDeviceKeys = exports.IPayloadKeys = void 0;
+exports.IPayloadKeys = ["id"];
+exports.IDeviceKeys = ["child", "hashedUserAgent", "owner", "sessions"];
+exports.IFileKeys = ["createdBy", "forEveryone", "path"];
+exports.IPlaceInfoKeys = ["description", "latitude", "longitude", "name", "type"];
+exports.IPlaceKeys = ["createdBy", "description", "latitude", "longitude", "name", "type"];
+exports.ISessionKeys = ["child", "device", "parrent", "useTimeLeft"];
+exports.IUserAuthenticationKeys = ["email", "password"];
+exports.IUserInfoKeys = ["avatarFilePath", "description", "email", "firstName", "lastName", "roles"];
+exports.IUserKeys = ["avatarFilePath", "description", "devices", "email", "firstName", "lastName", "password", "placesAssigned", "roles", "uploadFiles"];
+exports.IUserRecieveKeys = ["accessToken", "refreshToken"];
+exports.ILoginKeys = ["email", "password"];
+exports.ISignUpKeys = ["avatarFilePath", "description", "email", "firstName", "lastName", "password", "roles"];
+exports.ExpectationKeys = ["debug", "not", "params", "type"];
