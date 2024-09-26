@@ -1,4 +1,5 @@
 import { existsSync } from 'fs';
+import { resolve } from 'path';
 import { Controller, Get, HttpStatus, Param, Res } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CurrentUser } from 'auth/auth.guard';
@@ -14,6 +15,7 @@ export class AppController {
 	) {}
 
 	private serverFilesReg = /.+\.server\..+/g;
+	private rootDir = this.cfgSvc.get('SERVER_PUBLIC');
 
 	@Get(':filename')
 	async seeUploadedFile(
@@ -21,23 +23,16 @@ export class AppController {
 		@Res() res: Response,
 		@CurrentUser() user: User,
 	) {
-		if (
-			!filename.match(/.*(\\|\/).*/g) &&
-			existsSync(`${this.cfgSvc.get('SERVER_PUBLIC')}/${filename}`)
-		) {
+		if (existsSync(resolve(this.rootDir, filename))) {
 			if (filename.match(this.serverFilesReg))
-				return res.sendFile(filename, {
-					root: this.cfgSvc.get('SERVER_PUBLIC'),
-				});
+				return res.sendFile(filename, { root: this.rootDir });
 
 			const file = await this.fileSvc.path(filename, user?.id, {
 				withRelations: true,
 				relations: ['createdBy'],
 			});
 			if (user?.id === file.createdBy.id || file.forEveryone)
-				return res.sendFile(filename, {
-					root: this.cfgSvc.get('SERVER_PUBLIC'),
-				});
+				return res.sendFile(filename, { root: this.rootDir });
 		}
 		return res
 			.status(HttpStatus.BAD_REQUEST)

@@ -45,6 +45,7 @@ export class User extends SensitiveInfomations implements IUser {
 	uploadFiles?: IFile[];
 
 	// Infomations
+	@Field({ nullable: true })
 	@Column({ nullable: true })
 	avatarFilePath?: string;
 
@@ -88,6 +89,7 @@ export class User extends SensitiveInfomations implements IUser {
 
 	static test(from: string) {
 		const n = new User({
+			avatarFilePath: null,
 			email: tstStr() + '@gmail.com',
 			password: 'Aa1!000000000000',
 			firstName: from,
