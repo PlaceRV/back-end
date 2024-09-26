@@ -38,14 +38,19 @@ export class SessionService extends DatabaseRequests<Session> {
 	}
 
 	async addTokens(oldNodeId: string) {
-		const newSession = await this.addNode(await this.id(oldNodeId)),
+		const newSession = await this.addNode(
+				await this.id(oldNodeId, {
+					withRelations: true,
+					relations: ['device'],
+				}),
+			),
 			refreshToken = this.dvcSvc.refreshTokenSign(newSession.id),
 			accessToken = this.jwtSvc.sign({ id: newSession.device.owner.id });
 
 		return new UserRecieve({ accessToken, refreshToken });
 	}
 
-	async update(id: string) {
+	async useToken(id: string) {
 		const useTimeLeft = (await this.id(id)).useTimeLeft - 1;
 		return new Session(await this.save({ id, useTimeLeft }));
 	}

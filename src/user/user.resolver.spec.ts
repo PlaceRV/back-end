@@ -47,11 +47,14 @@ describe('findOne', () => {
 					.set('Cookie', headers['set-cookie'])
 					.send({
 						query: `
-							query FindOne($findOneId: String!) {								user(id: $findOneId) {									description
+							query FindOne($findOneId: String!) {								user(id: $findOneId) {									
+							avatarFilePath
+							description
 									email
 									firstName
 									lastName
 									roles
+									avatarFilePath
 								}
 							}`,
 						variables: { findOneId: usrRaw.id },
@@ -75,7 +78,8 @@ describe('findOne', () => {
 					.set('Cookie', headers['set-cookie'])
 					.send({
 						query: `
-							query FindOne($findOneId: String!) {								user(id: $findOneId) {									description
+							query FindOne($findOneId: String!) {								user(id: $findOneId) {				avatarFilePath
+									description
 									email
 									firstName
 									lastName
@@ -106,8 +110,7 @@ describe('findAll', () => {
 					.post('/graphql')
 					.set('Cookie', headers['set-cookie'])
 					.send({
-						query: `
-							query FindAll {								userAll {									description
+						query: `query FindAll {	userAll {	avatarFilePath description
 									email
 									firstName
 									lastName

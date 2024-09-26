@@ -1,6 +1,8 @@
 import { Field, HideField, ObjectType } from '@nestjs/graphql';
 import { IsAlpha, IsEmail, IsString, IsStrongPassword } from 'class-validator';
 import { Device } from 'device/device.entity';
+import { File } from 'file/file.entity';
+import { IFile } from 'file/file.model';
 import { IUserInfoKeys } from 'models';
 import { Place } from 'place/place.entity';
 import { Column, Entity, OneToMany } from 'typeorm';
@@ -39,7 +41,14 @@ export class User extends SensitiveInfomations implements IUser {
 	@OneToMany(() => Place, (_: Place) => _.createdBy)
 	placesAssigned?: Place[];
 
+	@OneToMany(() => File, (_) => _.createdBy)
+	uploadFiles?: IFile[];
+
 	// Infomations
+	@Field({ nullable: true })
+	@Column({ nullable: true })
+	avatarFilePath?: string;
+
 	@IsAlpha()
 	@Field()
 	@Column()
@@ -58,7 +67,7 @@ export class User extends SensitiveInfomations implements IUser {
 	@IsString()
 	@Field()
 	@Column()
-	description: string;
+	description: string = '';
 
 	@Field(() => [Role])
 	@Column({ type: 'enum', enum: Role, array: true, default: [Role.USER] })
@@ -80,6 +89,7 @@ export class User extends SensitiveInfomations implements IUser {
 
 	static test(from: string) {
 		const n = new User({
+			avatarFilePath: null,
 			email: tstStr() + '@gmail.com',
 			password: 'Aa1!000000000000',
 			firstName: from,

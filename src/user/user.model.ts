@@ -1,4 +1,5 @@
 import { IDevice } from 'device/device.model';
+import { IFile } from 'file/file.model';
 import { IPlace } from 'place/place.model';
 
 // Interfaces
@@ -13,11 +14,13 @@ export interface IUserInfo {
 	description: string;
 	roles?: Role[];
 	email: string;
+	avatarFilePath?: string;
 }
 
 export interface IUser extends IUserAuthentication, IUserInfo {
 	devices?: IDevice[];
 	placesAssigned?: IPlace[];
+	uploadFiles?: IFile[];
 }
 
 export interface IUserRecieve {

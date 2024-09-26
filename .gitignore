@@ -9,6 +9,8 @@ src/types.ts
 types/src
 src/**/*.js*
 src/**/*.d.ts
+public/*
+!public/*.server.*
 
 # Logs
 logs

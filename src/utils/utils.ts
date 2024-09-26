@@ -109,6 +109,9 @@ declare global {
 		readonly numeric: string;
 		readonly string: string;
 
+		// file size
+		readonly mb: number;
+
 		// utils
 		readonly random: number;
 		ra(input: () => Promise<any>): Promise<void>; // range() # like Python's range()
@@ -230,6 +233,13 @@ Object.defineProperty(Number.prototype, 'round', {
 Object.defineProperty(Number.prototype, 'abs', {
 	get: function () {
 		return Math.abs(this);
+	},
+	enumerable: true,
+	configurable: true,
+});
+Object.defineProperty(Number.prototype, 'mb', {
+	get: function () {
+		return this * 1024 * 1024;
 	},
 	enumerable: true,
 	configurable: true,

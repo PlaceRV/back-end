@@ -1,12 +1,16 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 import { compareSync } from 'bcrypt';
 import { NextFunction, Request, Response } from 'express';
 import { Cryption } from 'utils/auth.utils';
 
 @Injectable()
 export class AuthMiddleware extends Cryption implements NestMiddleware {
-	constructor(private cfgSvc: ConfigService) {
+	constructor(
+		private cfgSvc: ConfigService,
+		private jwtSvc: JwtService,
+	) {
 		super(cfgSvc.get('AES_ALGO'), cfgSvc.get('SERVER_SECRET'));
 	}
 	private readonly rfsgrd = /\/(auth){1}\/(logout|refresh){1}/gi;
@@ -14,7 +18,7 @@ export class AuthMiddleware extends Cryption implements NestMiddleware {
 	private readonly rfsKey = this.cfgSvc.get('REFRESH_KEY');
 	private readonly acsKey = this.cfgSvc.get('ACCESS_KEY');
 
-	use(req: Request, res: Response, next: NextFunction) {
+	async use(req: Request, res: Response, next: NextFunction) {
 		const isRefresh = req.url.match(this.rfsgrd);
 
 		let acsTkn: string, rfsTkn: string;
@@ -26,6 +30,12 @@ export class AuthMiddleware extends Cryption implements NestMiddleware {
 
 		const tknPld = this.decrypt(rfsTkn);
 		req.headers.authorization = `Bearer ${!isRefresh ? this.decrypt(acsTkn, tknPld.split('.')[2]) : tknPld}`;
+
+		try {
+			req.user = await this.jwtSvc.verify(
+				this.decrypt(acsTkn, tknPld.split('.')[2]),
+			);
+		} catch {}
 
 		next();
 	}

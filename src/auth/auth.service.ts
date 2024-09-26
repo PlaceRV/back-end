@@ -7,6 +7,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { compareSync } from 'bcrypt';
 import { DeviceService } from 'device/device.service';
+import { FileService } from 'file/file.service';
 import { User } from 'user/user.entity';
 import { ILogin, ISignUp } from 'user/user.model';
 import { UserService } from 'user/user.service';
@@ -17,19 +18,25 @@ export class AuthService extends Cryption {
 	constructor(
 		cfgSvc: ConfigService,
 		private usrSvc: UserService,
+		private fileSvc: FileService,
 		@Inject(forwardRef(() => DeviceService))
 		private dvcSvc: DeviceService,
 	) {
 		super(cfgSvc.get('AES_ALGO'), cfgSvc.get('SERVER_SECRET'));
 	}
 
-	async signUp(input: ISignUp, mtdt: string) {
+	async signUp(input: ISignUp, mtdt: string, avatar: Express.Multer.File) {
 		const user = await this.usrSvc.email(input.email);
 		if (!user) {
-			const newUser = new User(input);
-			return await validation(newUser, async () => {
-				if (newUser.hashedPassword) {
-					await this.usrSvc.assign(newUser);
+			const newUserRaw = new User({ ...input });
+			return await validation(newUserRaw, async () => {
+				if (newUserRaw.hashedPassword) {
+					const newUser = await this.usrSvc.assign(newUserRaw),
+						avatarFile = await this.fileSvc.assign(avatar, newUser);
+					await this.usrSvc.update({
+						...newUser,
+						avatarFilePath: avatarFile?.path,
+					});
 					return this.dvcSvc.getTokens(newUser, mtdt);
 				}
 			});

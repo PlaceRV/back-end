@@ -8,6 +8,12 @@ import {
 } from 'typeorm';
 import { RelationMetadata } from 'typeorm/metadata/RelationMetadata.js';
 
+export type FindOptionsWithCustom<T> = FindOptionsWhere<T> & {
+	withRelations?: boolean;
+	deep?: number;
+	relations?: string[];
+};
+
 export class SensitiveInfomations extends BaseEntity {
 	constructor() {
 		super();
@@ -21,9 +27,7 @@ export class DatabaseRequests<T extends SensitiveInfomations> {
 
 	constructor(protected repo: Repository<T>) {
 		this.relations = [].concat(
-			...this.repo.metadata.relations.map((i) => {
-				return this.exploreEntityMetadata(i);
-			}),
+			...this.repo.metadata.relations.map((i) => this.exploreEntityMetadata(i)),
 		);
 	}
 
@@ -52,12 +56,38 @@ export class DatabaseRequests<T extends SensitiveInfomations> {
 		);
 	}
 
-	protected find(options?: FindOptionsWhere<T>): Promise<T[]> {
-		return this.repo.find({ where: options, relations: this.relations });
+	protected find(options?: FindOptionsWithCustom<T>): Promise<T[]> {
+		const {
+			withRelations = false,
+			deep = global.Infinity,
+			relations = [''],
+			...newOptions
+		} = options || {};
+		return this.repo.find({
+			where: <FindOptionsWhere<T>>newOptions,
+			relations: withRelations
+				? this.relations
+						.map((i) => i.split('.').slice(0, deep).join('.'))
+						.filter((i) => relations.some((j) => i.includes(j)))
+				: null,
+		});
 	}
 
-	protected findOne(options?: FindOptionsWhere<T>): Promise<T> {
-		return this.repo.findOne({ where: options, relations: this.relations });
+	protected findOne(options?: FindOptionsWithCustom<T>): Promise<T> {
+		const {
+			withRelations = false,
+			deep = global.Infinity,
+			relations = [''],
+			...newOptions
+		} = options || {};
+		return this.repo.findOne({
+			where: <FindOptionsWhere<T>>newOptions,
+			relations: withRelations
+				? this.relations
+						.map((i) => i.split('.').slice(0, deep).join('.'))
+						.filter((i) => relations.some((j) => i.includes(j)))
+				: null,
+		});
 	}
 
 	protected save(entity: DeepPartial<T>, options?: SaveOptions) {
@@ -68,8 +98,12 @@ export class DatabaseRequests<T extends SensitiveInfomations> {
 		return this.repo.delete(criteria);
 	}
 
-	id(id: string) {
-		return this.findOne({ id } as FindOptionsWhere<T>);
+	update(entity: DeepPartial<T>, options?: SaveOptions) {
+		return this.save(entity, options);
+	}
+
+	id(id: string, options?: FindOptionsWithCustom<T>) {
+		return this.findOne({ id, ...options });
 	}
 
 	all() {

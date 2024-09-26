@@ -2,16 +2,21 @@ import {
 	Body,
 	Controller,
 	HttpStatus,
+	ParseFilePipeBuilder,
 	Post,
 	Req,
 	Res,
+	UploadedFile,
 	UseGuards,
+	UseInterceptors,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
+import { FileInterceptor, NoFilesInterceptor } from '@nestjs/platform-express';
 import { compareSync } from 'bcrypt';
 import { DeviceService } from 'device/device.service';
 import { CookieOptions, Request, Response } from 'express';
+import { memoryStorage } from 'multer';
 import { SessionService } from 'session/session.service';
 import { UserRecieve } from 'user/user.class';
 import { ILogin, ISignUp } from 'user/user.model';
@@ -67,6 +72,7 @@ export class AuthController {
 	}
 
 	@Post('login')
+	@UseInterceptors(NoFilesInterceptor())
 	async login(
 		@Req() request: Request,
 		@Body() body: ILogin,
@@ -81,16 +87,27 @@ export class AuthController {
 	}
 
 	@Post('signup')
+	@UseInterceptors(FileInterceptor('avatar', { storage: memoryStorage() }))
 	async signUp(
 		@Req() request: Request,
 		@Body() body: ISignUp,
+		@UploadedFile(
+			new ParseFilePipeBuilder()
+				.addFileTypeValidator({ fileType: '.(png|jpeg|jpg)' })
+				.addMaxSizeValidator({ maxSize: (0.3).mb })
+				.build({
+					fileIsRequired: false,
+					errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+				}),
+		)
+		avatar: Express.Multer.File,
 		@Res({ passthrough: true }) response: Response,
 		@MetaData() mtdt: string,
 	) {
 		return this.sendBack(
 			request,
 			response,
-			await this.authSvc.signUp(body, mtdt),
+			await this.authSvc.signUp(body, mtdt, avatar || null),
 		);
 	}
 

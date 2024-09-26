@@ -31,6 +31,7 @@ export const loadEnv = (type: 'deploy' | 'test') =>
 			SERVER_IN_DEV: Joi.bool().default(true),
 			SERVER_PORT: Joi.number().default(3000),
 			SERVER_COOKIE_PREFIX: Joi.string().default((12).alpha),
+			SERVER_PUBLIC: Joi.string().default('./public/'),
 			// AES
 			AES_ALGO: Joi.string().default('aes-256-ctr'),
 			// ADMIN
