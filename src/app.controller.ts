@@ -23,7 +23,8 @@ export class AppController {
 		@Res() res: Response,
 		@CurrentUser() user: User,
 	) {
-		if (existsSync(resolve(this.rootDir, filename))) {
+		const filePath = resolve(this.rootDir, filename);
+		if (filePath.startsWith(this.rootDir) && existsSync(filePath)) {
 			if (filename.match(this.serverFilesReg))
 				return res.sendFile(filename, { root: this.rootDir });
 
