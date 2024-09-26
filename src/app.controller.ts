@@ -14,7 +14,7 @@ export class AppController {
 		private fileSvc: FileService,
 	) {}
 
-	private serverFilesReg = /.+\.server\..+/g;
+	private serverFilesReg = /^\.*\.server\.(.*)/g;
 	private rootDir = this.cfgSvc.get('SERVER_PUBLIC');
 
 	@Get(':filename')
