@@ -13,14 +13,19 @@ export class AppController {
 		private fileSvc: FileService,
 	) {}
 
+	private serverFilesReg = /.+\.server\..+/g;
+
 	@Get(':filename')
 	async seeUploadedFile(
 		@Param('filename') filename: string,
 		@Res() res: Response,
 		@CurrentUser() user: User,
 	) {
-		if (existsSync(`${this.cfgSvc.get('SERVER_PUBLIC')}/${filename}`)) {
-			if (filename.match(/.+\.server\..+/g))
+		if (
+			!filename.match(/.*(\\|\/).*/g) &&
+			existsSync(`${this.cfgSvc.get('SERVER_PUBLIC')}/${filename}`)
+		) {
+			if (filename.match(this.serverFilesReg))
 				return res.sendFile(filename, {
 					root: this.cfgSvc.get('SERVER_PUBLIC'),
 				});
